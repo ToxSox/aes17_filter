@@ -58,6 +58,27 @@ def ascii_only(text):
     return ''.join(c for c in text if ord(c) < 128)
 
 
+# JLCPCB's placement wants the centre of the part and a rotation in its own convention. KiCad's
+# footprint origin is pad 1 for axial and radial parts, so the centre is taken from the courtyard
+# (the part's outline) instead. Rotation offsets per reference, in degrees, added to KiCad's
+# rotation when JLCPCB's preview shows a part turned the wrong way; empty until the preview says so.
+ROTATION_OFFSET = {}
+
+
+def part_centre(fp):
+    """Centre of the footprint's courtyard, or of its pads when it has no courtyard, in mm."""
+    try:
+        poly = fp.GetCourtyard(pcbnew.F_CrtYd)
+        if poly.OutlineCount() > 0:
+            bb = poly.BBox()
+            return pcbnew.ToMM(bb.Centre().x), pcbnew.ToMM(bb.Centre().y)
+    except Exception:
+        pass
+    xs = [pcbnew.ToMM(p.GetPosition().x) for p in fp.Pads()]
+    ys = [pcbnew.ToMM(p.GetPosition().y) for p in fp.Pads()]
+    return (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+
+
 def bom_and_cpl():
     board = pcbnew.LoadBoard(PCB)
     fps = {fp.GetReference(): fp for fp in board.GetFootprints()}
@@ -75,8 +96,9 @@ def bom_and_cpl():
             continue
         key = (design.comment(ref, value), footprint, lcsc)
         bom_rows.setdefault(key, []).append(ref)
-        pos = fp.GetPosition()
-        cpl_rows.append((ref, f"{pcbnew.ToMM(pos.x):.3f}", f"{-pcbnew.ToMM(pos.y):.3f}", 'Top', f"{fp.GetOrientationDegrees():.0f}"))
+        cx, cy = part_centre(fp)
+        rot = (fp.GetOrientationDegrees() + ROTATION_OFFSET.get(ref, 0)) % 360
+        cpl_rows.append((ref, f"{cx:.3f}", f"{-cy:.3f}", 'Top', f"{rot:.0f}"))
     with open(os.path.join(FAB, 'aes17-filter-bom.csv'), 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['Comment', 'Designator', 'Footprint', 'LCSC Part #'])
