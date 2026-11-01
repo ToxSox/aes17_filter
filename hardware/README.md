@@ -10,7 +10,7 @@ changed value or part is a changed line and a re-run.
 | `make_pcb.py` | places and routes the board with KiCad 7's `pcbnew` module, fills the ground planes, runs the DRC; writes `aes17-filter.kicad_pcb` |
 | `export.py` | writes `fab/`: the Gerber + drill zip, the JLCPCB bill of materials and placement file, a parts list with notes |
 | `make_schematic.py` | draws `aes17-filter-schematic.svg/.png` (schemdraw) |
-| `make_endplates.py` | draws the two end plates' drilling, `aes17-filter-endplates.svg/.png` |
+| `make_frontwall.py` | draws the front wall's drilling, `aes17-filter-frontwall.svg/.png` |
 | `aes17-filter.kicad_pcb` | the board, for KiCad 7 or newer; there is no `.kicad_sch`, the schematic is the drawing |
 | `fab/aes17-filter-gerbers.zip` | upload this to JLCPCB |
 | `fab/aes17-filter-bom.csv` | upload this as the BOM (Comment, Designator, Footprint, LCSC Part #) |
@@ -21,22 +21,21 @@ changed value or part is a changed line and a re-run.
 
 ## The board
 
-100 × 158 mm, four layers, 1.6 mm. 100 mm because the Hammond 1455N1601's rails take a 100 mm
-board (confirmed from Hammond's drawing: "extrusion designed for 100 mm wide PC board", slot
-100.00 ± 0.51 mm, 1.6 mm wide). 158 mm because the connectors on the two short edges pass
-through the box's end plates and the extrusion is 160 mm long. Layer 1 carries the signal, layer
-2 is a ground plane, layer 3 a ground plane with the two filter-output tracks to the switch in
-it, layer 4 the few crossings. Both legs are mirror images about the centre line. The DRC in
-KiCad 7 reports no errors and no unconnected nets; the warnings it does report are silkscreen
-over pads and the footprints not being from a library table.
-
-The connectors are the AUX-0025's, so the same cables fit both: the input end plate carries a
-female XLR (pin 2 +, pin 3 −, pin 1 and shell ground) and, next to it, red and black 4 mm
-sockets at 19.05 mm for a dual banana plug and a green common; the output plate carries a male
-XLR (pin 2 +, pin 3 −) and the pad toggle. The QA403 is fed through a self-made lead, XLR
-female to two BNC males. The connectors' fronts stick out through the plates: the XLRs are
-screwed to the plate, the Cliff sockets held by the board alone (they have no panel retention;
-the plate just has a clearance hole for the Ø11 barrel).
+158 × 124 mm, four layers, 1.6 mm, in a **Hammond 1444-862** aluminium chassis (203 × 152 × 51 mm,
+flat 1 mm walls, closed by the 1434-86 bottom plate). **Every connector is on the front long
+edge** and comes through the chassis' front long wall, so the filter hangs with that wall towards
+the operator, as the AUX-0025's front panel does. From the left, seen from the front: the female
+XLR input (pin 2 +, pin 3 −, pin 1 and shell ground), red and black 4 mm sockets at AP's
+19.05 mm for a dual banana plug, the green common, the pad toggle in the wall, the male XLR
+output (pin 2 +, pin 3 −). The QA403 is fed through a self-made lead, XLR female to two BNC
+males. The first 24 mm behind the front edge are the connector strip; the filter is the 100 mm
+band behind it, laid out as before: the two legs mirror images about its centre line, the
+signal on layer 1, ground planes on layers 2 and 3 (layer 3 also carries the two filter-output
+tracks to the switch), the few crossings and the long input and output runs on layer 4. The
+board stands on four M3 spacers on the bottom plate; the XLRs are screwed to the wall, the Cliff
+sockets held by the board alone (they have no panel retention; the wall just has a clearance
+hole for the Ø11 barrel). The DRC in KiCad 7 reports no errors and no unconnected nets; the
+warnings are silkscreen over pads and the footprints not being from a library table.
 
 ## Ordering at JLCPCB
 
@@ -101,7 +100,8 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 | 1 | a cable from the amplifier's terminals to a male XLR plug (pin 2 +, pin 3 −), or dual banana leads - the same cable then feeds an AUX-0025 | self-made |
 | 2 | an XLR-female-to-two-BNC-male lead to the QA403: pin 2 to L+ centre, pin 3 to L− centre, pin 1 to both BNC shells; about 30 cm, both legs equal | self-made (Neutrik NC3FXX, two BNC plugs, two pieces of RG58 or RG174) |
 | 2 | DPDT toggle, ON-ON, panel mount, 1/4 in bushing, solder lugs | any; APEM 5000, C&K 7201, Knitter MTA 206 |
-| 2 | Hammond 1455N1601 (or 1455N1601BK black) | Reichelt, Mouser, Digi-Key, RS, Conrad |
+| 2 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
+| 8 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate | any |
 | 6 | Cliff FCR7350 R, B, G if bought outside JLCPCB | Digi-Key, Farnell |
 | | wire for the toggle: six short pieces to J8 | |
 
@@ -109,12 +109,11 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 
 1. Check the assembled board against `fab/aes17-filter-parts.csv`; measure the four coils if
    an LCR meter is at hand (not required, the trimmer takes care of their spread).
-2. Drill the end plates after `aes17-filter-endplates.png`. The hole table is at the end of this
-   file. The drawing assumes the board in the **lowest rail**; the plate's holes move up by one
-   rail pitch per rail, so measure the box and the rail you use before drilling. Easiest: slide
-   the board in, hold the undrilled plate against the connector fronts, mark through from
-   inside.
-3. Slide the board in, fit the plates, nuts on the BNCs.
+2. Drill the front wall after `aes17-filter-frontwall.png`; the hole table is at the end of this
+   file. Easiest and safest: drill the four spacer holes in the bottom plate, stand the board on
+   its spacers, put the chassis over it, and mark the connector centres through from inside.
+3. Fit the board on the bottom plate, put the chassis over it, screw the XLR flanges to the
+   wall, fit the toggle.
 4. Wire the toggle to J8: lugs of pole A to pins 1 (pad), 3 (common), 5 (direct); pole B to
    2, 4, 6. Check with an ohmmeter that in one position pin 3 reads to pin 1 and 4 to 2, in the
    other 3 to 5 and 4 to 6.
@@ -128,27 +127,31 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 python3 hardware/make_pcb.py        # board + DRC report (needs KiCad 7 with pcbnew for Python)
 python3 hardware/export.py          # fab/ (needs kicad-cli)
 python3 hardware/make_schematic.py  # schematic (pip install schemdraw)
-python3 hardware/make_endplates.py  # end plates (matplotlib)
+python3 hardware/make_frontwall.py  # front wall drilling (matplotlib)
 ```
 
-## End plate holes
+## Front wall holes
 
-See `aes17-filter-endplates.png`; the table below is printed by `make_endplates.py`.
+See `aes17-filter-frontwall.png`; the table below is printed by `make_frontwall.py`. The wall is
+the front long wall of the Hammond 1444-862, seen from outside, x from its left end, y from its
+bottom edge (which rests on the 1434-86 bottom plate).
 
-| Plate | Hole | Ø mm | x from left, seen from inside | y above the bottom edge |
-|---|---|---|---|---|
-| input | XLR IN (female), Neutrik NC3FAAH2 | 22.5 | 22.2 | 20.5 |
-| input | its two M3 screws | 3.2 | 32.1 / 12.3 | 30.4 / 10.6 |
-| input | 4 mm IN + (red) | 11.5 | 51.6 | 14.3 |
-| input | 4 mm IN − (black) | 11.5 | 70.6 | 14.3 |
-| input | 4 mm GND (green) | 11.5 | 89.6 | 14.3 |
-| output | XLR OUT (male), Neutrik NC3MAAH | 22.5 | 81.6 | 20.5 |
-| output | its two M3 screws | 3.2 | 71.7 / 91.5 | 30.4 / 10.6 |
-| output | pad toggle, 1/4 in bushing | 6.4 | 51.6 | 34.0 |
+| Hole | Ø mm | x | y |
+|---|---|---|---|
+| XLR IN (female), Neutrik NC3FAAH2 | 22.5 | 40.6 | 24.1 |
+| its two M3 screws, upper left and lower right | 3.2 | 30.7 / 50.5 | 34.0 / 14.2 |
+| 4 mm IN + (red) | 11.5 | 67.6 | 17.9 |
+| 4 mm IN − (black), 19.05 mm from the red one | 11.5 | 86.6 | 17.9 |
+| 4 mm GND (green) | 11.5 | 107.6 | 17.9 |
+| pad toggle, 1/4 in bushing | 6.4 | 134.6 | 24.1 |
+| XLR OUT (male), Neutrik NC3MAAH | 22.5 | 162.6 | 24.1 |
+| its two M3 screws, upper left and lower right | 3.2 | 152.7 / 172.5 | 34.0 / 14.2 |
 
-The y values assume the board's top surface 8.0 mm above the plate's bottom edge (lowest rail,
-6.4 mm floor to slot plus the 1.6 mm board); the Cliff socket axis is 6.3 mm above the board.
-**The XLR axis height of 12.5 mm is read off Neutrik's front view, not a dimensioned value: hold
-a connector against the board before drilling.** Cliff does not specify a panel hole for the
-S16N-PC; Ø11.5 clears its Ø11.0 barrel. Neutrik asks for a hole of at least Ø22 and two Ø3.2
-screw holes 19.8 mm apart on the diagonal.
+The heights assume the board on **10 mm M3 spacers** on the bottom plate, so its top surface is
+11.6 mm above the wall's bottom edge; the Cliff socket axis is 6.3 mm above the board, the XLR
+axis 12.5 mm. **The XLR axis height is read off Neutrik's front view, not a dimensioned value:
+fit the board on its spacers, hold the undrilled wall against the connector fronts and mark
+through before drilling.** The board's front edge sits 3.3 mm behind the wall's inner face, so
+the XLR flanges and the shoulders of the 4 mm sockets lie against the wall. Cliff does not
+specify a panel hole for the S16N-PC; Ø11.5 clears its Ø11.0 barrel. Neutrik asks for a hole of
+at least Ø22 and two Ø3.2 screw holes 19.8 mm apart on the diagonal.

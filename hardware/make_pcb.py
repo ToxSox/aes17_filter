@@ -4,8 +4,10 @@
     python3 hardware/aes17-filter/make_pcb.py            # writes the board and a DRC report
 
 Everything is placed and routed from the tables below, so the board is reproducible from the
-repository without a mouse. Coordinates are millimetres, x along the board (input end at 0),
-y across it (positive leg at the top).
+repository without a mouse. Coordinates are millimetres, x along the front edge (input end at 0),
+y from the front edge backwards. The filter band was laid out first on a 100 mm deep board; its
+coordinates are kept as they were and moved back by design.FRONT, so 'core' coordinates below
+are written in that 0..100 frame and shifted where they are used.
 """
 import os
 import sys
@@ -21,6 +23,13 @@ OUT = os.path.join(HERE, 'aes17-filter.kicad_pcb')
 LIB = '/usr/share/kicad/footprints'
 
 L, W = design.BOARD_LENGTH, design.BOARD_WIDTH
+FRONT = design.FRONT
+WALL = design.WALL
+
+
+def core(y):
+    """A y in the filter band's own 0..100 frame, moved behind the connector strip."""
+    return y + FRONT
 
 
 def mm(v):
@@ -36,8 +45,8 @@ def pt(x, y):
 # resistor pad 1; for the radial inductor pad 1; for the FKP2 capacitor pad 1; for the Cliff
 # socket its signal pin, front facing -x at rotation 0; for the header pin 1.
 # ----------------------------------------------------------------------------------------------
-Y_P = 17.0            # the positive leg's signal line
-Y_N = W - Y_P         # the negative leg, mirrored
+Y_P = core(17.0)      # the positive leg's signal line
+Y_N = core(83.0)      # the negative leg, mirrored about the band's centre line
 # x positions along the signal line (pad 1 of each part); the pitches are the footprints'
 X_IN_BUS = 30.0
 X_R1 = 36.0           # 1k 3W, pitch 20.32 -> pad 2 at 56.32
@@ -85,18 +94,27 @@ def place_leg(names, y, flip):
 place_leg(design.NAMES_P, Y_P, flip=False)
 place_leg(design.NAMES_N, Y_N, flip=True)
 
+# The connector row on the front edge, all faces towards -y. Each one's front is located from its
+# footprint's fabrication layer (the flange), so that the flange's front face or the socket's
+# shoulder lands on the wall's inner face at y = WALL:
+#   Neutrik NC3FAAH2 (female): flange at footprint x = 12.7..15.4, front at +x; turned 90 the
+#     front faces -y and the flange's front face is 15.4 in front of pin 1. The axis is at
+#     footprint (-0.62, 3.79), i.e. 3.79 to the right of pin 1 once turned.
+#   Neutrik NC3MAAH (male): flange at footprint y = 17.78..20.48, front at +y; turned 180 the
+#     front faces -y, 20.48 in front of the pin row. The axis is 3.81 to the left of pin 1.
+#   Cliff S16N-PC: the barrel faces -x, its shoulder 13.5 in front of the signal pin; turned 270
+#     it faces -y.
+# X positions of the axes along the front: XLR in, red and black at AP's 19.05 mm, green common;
+# then the pad toggle in the wall (wired to J8, not on the board); then the XLR out.
+AX_XLR_IN, AX_RED, AX_BLACK, AX_GREEN, AX_TOGGLE, AX_XLR_OUT = 18.0, 45.0, 64.05, 85.0, 112.0, 140.0
 PLACE.update({
-    # input end plate, top to bottom: female XLR (flange rear face 3.2 mm inside the board edge,
-    # pin 1 another 8.89 behind it), red and black 4 mm at 19.05 mm pitch (a dual banana plug),
-    # green common. The Cliff sockets' fronts protrude through the plate, pins 14 mm inside.
-    'J4': (12.09, 20.0, 90), 'J1': (14.0, 50.0, 0), 'J2': (14.0, 69.05, 0), 'J3': (14.0, 88.0, 0),
-    # output end plate: male XLR (pin row 3.81 behind the flange rear face at 154.8) and the toggle
-    'J5': (L - 0.5 - 2.7 - 3.81, 16.19, 270),
-    # pad switch header (rows: 1-3-5 at y = 47.46 with pin 1 at the right, 2-4-6 at y = 50),
-    # relay and coil connector in the middle band
-    'J8': (144.54, 47.46, 270), 'K1': (118.0, 46.19, 0), 'J9': (108.0, 48.73, 0), 'D1': (112.0, 50.0, 270),
-    # mounting holes, for a box without rails; on the centre line where nothing else is
-    'H1': (30.0, 50.0, 0), 'H2': (50.0, 50.0, 0), 'H3': (90.0, 50.0, 0), 'H4': (153.5, 42.0, 0),
+    'J4': (AX_XLR_IN - 3.79, WALL + 15.4, 90),
+    'J1': (AX_RED, WALL + 13.5, 270), 'J2': (AX_BLACK, WALL + 13.5, 270), 'J3': (AX_GREEN, WALL + 13.5, 270),
+    'J5': (AX_XLR_OUT + 3.81, WALL + 20.48, 180),
+    # pad switch header, relay and coil connector in the middle of the filter band
+    'J8': (144.54, core(47.46), 270), 'K1': (118.0, core(46.19), 0), 'J9': (108.0, core(48.73), 0), 'D1': (112.0, core(50.0), 270),
+    # M3 holes for stand-offs on the chassis' bottom plate, on the band's centre line
+    'H1': (30.0, core(50.0), 0), 'H2': (50.0, core(50.0), 0), 'H3': (90.0, core(50.0), 0), 'H4': (151.5, core(50.0), 0),
 })
 
 # ----------------------------------------------------------------------------------------------
@@ -276,19 +294,29 @@ def leg_routes(n, y0, s):
 # pins 2-4-6 (- leg) at y = 50.
 X_F_RUN = 147.5       # the F nets come down the east side on the inner layer
 INPUT_ROUTES = [
-    # XLR pin 2 (+) and the red socket onto the positive leg's bus; pin 3 (-) and the black socket
-    # down to the negative leg's bus, the long run on the back
-    ('IN_P', F, W_IN, [('J4', 2), (22.0, 20.64), (22.0, 12.0), (X_IN_BUS, 12.0)]),
-    ('IN_P', F, W_IN, [('J1', 1), (23.0, 50.0), (23.0, 32.0), (X_IN_BUS, 32.0)]),
-    ('IN_N', B, W_IN, [('J4', 3), (24.5, 24.45), (24.5, 69.05), ('J2', 1)]),
-    ('IN_N', F, W_IN, [('J2', 1), (X_IN_BUS, 69.05)]),
+    # XLR pin 2 (+) and the red socket along y = 21 to the top of the positive leg's input bus;
+    # XLR pin 3 (-) and the black socket along y = 23 on the back, down the left edge to the
+    # negative leg's input resistor
+    ('IN_P', F, W_IN, [('J4', 2), (24.0, 12.7), (24.0, 21.0), (AX_RED, 21.0), ('J1', 1)]),
+    ('IN_P', F, W_IN, [(X_IN_BUS, 21.0), (X_IN_BUS, Y_P - 5.0)]),
+    ('IN_N', B, W_IN, [('J2', 1), (AX_BLACK, 23.0), (5.0, 23.0), (5.0, Y_N - 5.0), ('R12', 1)]),
+    ('IN_N', B, W_IN, [('J4', 3), (18.0, 23.0)]),
 ]
 
-MIDDLE_ROUTES = [
+
+def shifted(routes):
+    """The routes written in the band's 0..100 frame, with every plain y moved by FRONT."""
+    out = []
+    for net, layer, width, points in routes:
+        out.append((net, layer, width, [p if isinstance(p[0], str) else (p[0], core(p[1])) for p in points]))
+    return out
+
+
+MIDDLE_ROUTES_CORE = [
     # --- positive leg ---
     ('F_P', I2, W_SIG, [('R7', 2), (X_R9 + 10.16, 39.5), (X_F_RUN, 39.5), (X_F_RUN, 42.0), (139.46, 42.0), ('J8', 5)]),
     ('F_P', I2, W_SIG, [('K1', 8), (135.78, 42.0), (139.46, 42.0)]),
-    ('OUT_P', B, W_SIG, [('J5', 2), (146.3, 23.81), (146.3, 40.0), (125.62, 40.0), ('K1', 4)]),
+    ('OUT_P', B, W_SIG, [(146.3, 40.0), (125.62, 40.0), ('K1', 4)]),
     ('OUT_P', B, W_SIG, [(142.0, 40.0), ('J8', 3)]),
     ('PAD_P', F, W_SIG, [('R10', 1), (130.7, 35.0), ('K1', 6)]),
     ('PAD_P', F, W_SIG, [(130.7, 38.0), (144.54, 38.0), ('J8', 1)]),
@@ -297,7 +325,7 @@ MIDDLE_ROUTES = [
     ('F_N', I2, W_SIG, [('K1', 9), (135.78, 55.5), (139.46, 55.5)]),
     ('OUT_N', B, W_SIG, [(125.62, 60.0), ('K1', 13)]),
     ('OUT_N', B, W_SIG, [(142.0, 60.0), ('J8', 4)]),
-    ('OUT_N', B, W_SIG, [('J5', 3), (156.5, 20.0), (156.5, 60.0), (125.62, 60.0)]),
+    ('OUT_N', B, W_SIG, [(156.5, 60.0), (125.62, 60.0)]),
     ('PAD_N', F, W_SIG, [('R20', 1), (130.7, 65.0), ('K1', 11)]),
     ('PAD_N', F, W_SIG, [(130.7, 62.0), (144.54, 62.0), ('J8', 2)]),
     # --- coil ---
@@ -306,6 +334,15 @@ MIDDLE_ROUTES = [
     ('COIL-', F, W_SIG, [('J9', 2), (109.5, 51.27), (109.5, 52.8), (115.0, 52.8), (115.0, 53.81), ('K1', 16)]),
     ('COIL-', F, W_SIG, [('D1', 2), (115.0, 57.62), (115.0, 53.81)]),
 ]
+
+OUTPUT_ROUTES = [
+    # the male XLR's pins 2 (+) and 3 (-) at the front, down the right side on the back to the
+    # relay commons and the header's middle pins
+    ('OUT_P', B, W_SIG, [('J5', 2), (AX_XLR_OUT - 3.81, 22.5), (146.3, 22.5), (146.3, core(40.0))]),
+    ('OUT_N', B, W_SIG, [('J5', 3), (AX_XLR_OUT, 20.5), (156.5, 20.5), (156.5, core(60.0))]),
+]
+
+MIDDLE_ROUTES = shifted(MIDDLE_ROUTES_CORE) + OUTPUT_ROUTES
 
 VIAS = []
 
@@ -362,16 +399,16 @@ def add_text(board, text, x, y, size=1.2, layer=pcbnew.F_SilkS, angle=0, bold=Fa
 
 
 def add_silk(board):
-    add_text(board, 'klirr AES17 filter', 75.0, 48.8, 1.3, bold=True)
-    add_text(board, 'github.com/ToxSox/aes17_filter', 75.0, 51.2, 0.9)
-    add_text(board, 'IN +', 24.0, 50.0, 1.2); add_text(board, 'IN -', 24.0, 69.05, 1.2); add_text(board, 'GND', 24.0, 88.0, 1.2)
-    add_text(board, 'IN XLR: 2 = +, 3 = -', 30.0, 8.0, 0.9)
-    add_text(board, 'OUT XLR: 2 = +, 3 = -', 138.0, 8.0, 0.9)
-    add_text(board, 'QA403: XLR to 2 x BNC lead', 140.0, 70.0, 0.9)
-    add_text(board, '1-3-5: PAD+ OUT+ DIR+', 151.0, 44.0, 0.8); add_text(board, '2-4-6: PAD- OUT- DIR-', 151.0, 53.5, 0.8)
-    add_text(board, 'K1 not fitted: toggle on J8', 127.0, 58.0, 0.8)
-    add_text(board, 'positive leg', 86.0, 24.0, 0.9); add_text(board, 'negative leg', 86.0, 76.0, 0.9)
-    add_text(board, 'trim: 20 kHz = 1 kHz', 52.0, 37.0, 0.8); add_text(board, 'trim: 20 kHz = 1 kHz', 52.0, 63.0, 0.8)
+    add_text(board, 'klirr AES17 filter', 75.0, core(48.8), 1.3, bold=True)
+    add_text(board, 'github.com/ToxSox/aes17_filter', 75.0, core(51.2), 0.9)
+    add_text(board, 'IN XLR 2+ 3-', AX_XLR_IN, 21.5, 0.9)
+    add_text(board, 'IN +', AX_RED, 18.5, 1.1); add_text(board, 'IN -', AX_BLACK, 18.5, 1.1); add_text(board, 'GND', AX_GREEN, 18.5, 1.1)
+    add_text(board, 'toggle in the wall', AX_TOGGLE, 8.0, 0.9)
+    add_text(board, 'OUT XLR 2+ 3- (QA403: XLR to 2 x BNC)', 118.0, 25.0, 0.8)
+    add_text(board, '1-3-5: PAD+ OUT+ DIR+', 151.0, core(44.0), 0.8); add_text(board, '2-4-6: PAD- OUT- DIR-', 151.0, core(53.5), 0.8)
+    add_text(board, 'K1 not fitted: toggle on J8', 127.0, core(58.0), 0.8)
+    add_text(board, 'positive leg', 86.0, core(24.0), 0.9); add_text(board, 'negative leg', 86.0, core(76.0), 0.9)
+    add_text(board, 'trim: 20 kHz = 1 kHz', 52.0, core(37.0), 0.8); add_text(board, 'trim: 20 kHz = 1 kHz', 52.0, core(63.0), 0.8)
 
 
 # ----------------------------------------------------------------------------------------------

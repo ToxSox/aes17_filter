@@ -244,7 +244,7 @@ and the analyzer's 100 kΩ is about 20.8:1, and Klirr measures it anyway. Loadin
 is 20 kΩ, 0.25 dB of insertion loss that the measured ratio absorbs. At 140 V the 19 kΩ
 dissipates 1 W; at 63 V, 0.2 W.
 
-The switch is a **DPDT toggle in the end plate, wired to a 2 × 3 header on the board** - the
+The switch is a **DPDT toggle in the front wall, wired to a 2 × 3 header on the board** - the
 original's arrangement - with the footprint of a DPDT signal relay (Omron G6A-274P) sitting on
 the same six nets, **unpopulated**. A toggle because today nothing exists to
 drive a relay: the QA403 cannot (its front expansion connector carries I2S and I2C for digital
@@ -332,7 +332,7 @@ of winding resistance; the unshielded ±5 % WE-TI 7447480102 is the fallback.
 The trimmed residual is the same whatever the parts, and it is the shape of the curve, not the
 tolerance, that sets it: the extra 1.1 Ω of the shielded coil's winding and its wider tolerance
 cost 0.002 dB after trimming. Selecting parts by hand would move the 0.029 to about 0.025. So the
-whole board goes through assembly, and the hand work is: drill the end plates, wire the toggle,
+whole board goes through assembly, and the hand work is: drill the front wall, wire the toggle,
 turn two trimmers, measure the pad ratio. Of the five boards, two are assembled; JLCPCB lets
 the assembly count differ from the board count.
 
@@ -351,20 +351,24 @@ has, and the box is bonded to it. The XLR-to-two-BNC lead to the analyzer should
 30 cm or so: it keeps the capacitive load under AP's 360 pF limit (RG58 is 100 pF/m), and its
 two BNC legs should be the same length.
 
-**Board:** four layers, 1.6 mm, **100 × 158 mm**: 100 mm because that is what the box's rails
-take, 158 because the connectors on the two short edges pass through the end plates of a 160 mm
-extrusion, so the board has to span it. Layer 2 and layer 3 are ground planes (layer 3 also
-carries the two filter-output tracks to the switch); signal on top, the few crossings on the
-bottom. Four M3 holes on the centre line, on GND, for a box without rails. No Zeners, no fuses.
+**Board:** four layers, 1.6 mm, **158 × 124 mm**, every connector on the front long edge. The
+first 24 mm behind that edge are the connector strip, the filter is the 100 mm band behind it.
+Layers 2 and 3 are ground planes (layer 3 also carries the two filter-output tracks to the
+switch); signal on top, the crossings and the long input and output runs on the bottom. Four M3
+holes on the band's centre line for spacers on the bottom plate. No Zeners, no fuses.
 The design files are generated, not drawn: [hardware/](../hardware/) holds the data module,
 the generator that places and routes the board with KiCad's Python module, the Gerbers, the
 JLCPCB bill of materials and placement file, and the ordering notes.
 
-**Box:** Hammond 1455N1601 (extruded aluminium, 160 × 103 × 53 mm, about 30 €). The 1455
-series is an aluminium extrusion with PCB guide rails inside and two removable end plates: a
-100 mm wide board slides into the rails and the end plates take the sockets and BNCs, input at
-one end, output at the other, so the box is the chassis and nothing hangs off the board. The
-repo's 1444-862 is an open chassis that still needs a bottom plate.
+**Box:** Hammond 1444-862 (bent aluminium chassis, 203 × 152 × 51 mm, flat 1 mm walls, about
+20 €) with its 1434-86 bottom plate (about 11 €) - the box the original V2 recommended. **All
+connectors come through its front long wall**, so the filter hangs with that wall towards the
+operator, as the AUX-0025's front panel does: from the left the XLR input, the red and black
+4 mm sockets at 19.05 mm, the green common, the pad toggle, the XLR output. Its walls are
+straight, unlike a die-cast box's 2-3° draft and its lid-screw bosses in the middle of the long
+walls, which both stood in the way of a connector row. The board stands on 10 mm spacers on the
+bottom plate, its front edge 3.3 mm behind the wall so the XLR flanges and the sockets'
+shoulders lie against it.
 
 ## Bill of materials, per board
 
@@ -396,10 +400,11 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 1 | Neutrik NC3FAAH2, female XLR, horizontal PCB | J4, input | C368522 | in stock at LCSC; AP's input connector | $0.84-1.80 |
 | 1 | Neutrik NC3MAAH, male XLR, horizontal PCB | J5, output | C368463 | in stock at LCSC; AP's output connector; the QA403 hangs on an XLR-to-two-BNC lead | $0.79-1.80 |
 | 3 | Cliff FCR7350 R / B / G, 4 mm safety socket, PCB | J1-J3, at 19.05 mm for a dual banana | C6041087 / C6555263 / C6041085 | pre-order at $11-12 each at LCSC; 6.80 € at Digi-Key - buy there and solder the three by hand if the JLCPCB price stands | $11 |
-| 1 | DPDT toggle ON-ON, panel mount, 1/4 in bushing | pad switch, in the output end plate | - | wired to J8 | 3 € |
+| 1 | DPDT toggle ON-ON, panel mount, 1/4 in bushing | pad switch, in the front wall | - | wired to J8 | 3 € |
 | 8 | M3 screws and nuts | the two XLR flanges | - | | 0.5 € |
-| 1 | Hammond 1455N1601 | box | - | 100 mm rails confirmed from the drawing | 30 € |
-| | four-layer PCB 100 × 158 mm, five pieces, two assembled | | | JLCPCB | see README |
+| 1 | Hammond 1444-862 chassis + 1434-86 bottom plate | box | - | flat 1 mm aluminium walls; all connectors in the front long wall | 31 € |
+| 4 | M3 spacers 10 mm + screws | board on the bottom plate | - | | 1 € |
+| | four-layer PCB 158 × 124 mm, five pieces, two assembled | | | JLCPCB | see README |
 
 JLCPCB's assembly terms, from their help pages in October 2026: minimum two boards; Economic
 assembly setup $8.18 and $3.07 per unique extended part for feeder loading; through-hole parts

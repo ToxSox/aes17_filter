@@ -6,16 +6,18 @@ The circuit is the one in docs/design-review.md: the AUX-0025 values per leg, AP
 input network, a 20:1 pad after the output resistor, switched by one pole per leg through a
 2 x 3 header (a DPDT toggle today, the on-board DPDT relay once the matrix drives it).
 
-Coordinates are millimetres on a 158 x 100 mm board: x runs from the input end plate (x = 0)
-to the output end plate (x = 158), y from the top long edge (y = 0, the positive leg) to the
-bottom long edge (y = 100, the negative leg). The long edges sit in the rails of a Hammond
-1455N1601, which takes a 100 mm wide board; the end plates are 1.5 mm thick and sit at the ends
-of the 160 mm extrusion, so the connectors on the two short edges pass through them.
+Coordinates are millimetres on a 158 x 124 mm board: x runs along the front edge from the
+input (x = 0) to the output (x = 158), y from the front edge (y = 0) to the back (y = 124).
+Every connector sits on the front edge and faces the front long wall of a Hammond 1444-862
+aluminium chassis (203 x 152 x 51 mm, flat 1 mm walls), so the filter hangs with that wall
+towards the operator, as the AUX-0025's front panel does. The first 24 mm behind the front
+edge are the connector strip; the filter itself is the 100 mm band behind it.
 """
 
 BOARD_LENGTH = 158.0
-BOARD_WIDTH = 100.0
-RAIL_KEEPOUT = 3.0        # the rails take about 2 mm of each long edge; nothing lives there
+BOARD_WIDTH = 124.0
+FRONT = 24.0              # depth of the connector strip; the filter band starts here
+WALL = -3.3               # the chassis wall's inner face, 3.3 mm in front of the board edge
 
 # Footprints: KiCad 7 library names, or the two that the generator draws itself.
 FP = {

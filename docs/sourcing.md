@@ -52,10 +52,10 @@ build adds or changes against the repo, and still has to be found:**
 | AP's values instead of the repo's E24 ones | 412 Ω, 3.40 kΩ, 24.9 Ω (0.6 W), 75.0 Ω (1 W), all 1 % metal film; **390 pF 630 V polypropylene** instead of 2 × 220 pF | 1.4, 1.5 | resistors yes (E96 is standard there); 390 pF: look for WIMA FKP2J003901D00HSSD / JSSD or Kemet PFR |
 | The 20 kHz trim | 2 × 1.00 kΩ 1 % 3 W per leg, 14.0 kΩ, **500 Ω 25-turn trimmer (Bourns 3296W-1-501LF)** | 1.2, 1.3 | trimmer yes; 3 W 1 % resistors: check Vishay RS02B / CPF3 or Chinese 3 W metal film 1 % |
 | The 20:1 pad instead of 9 k / 1 k | 9.53 kΩ and 1.00 kΩ, **0.1 %**, 0.5 W, axial | 1.6 | 0.1 % axial is thin there; 1 % at 50 ppm is the stated fallback |
-| Toggle in the end plate, relay footprint kept for the matrix | DPDT ON-ON panel toggle, 2 × 3 header (the Omron G6A-274P is not bought yet) | 1.7 | yes, toggles are commodity |
+| Toggle in the front wall, relay footprint kept for the matrix | DPDT ON-ON panel toggle, 2 × 3 header (the Omron G6A-274P is not bought yet) | 1.7 | yes, toggles are commodity |
 | BNC instead of XLR | 4 × PCB right-angle BNC with panel nut, **Molex 73100-0105** | 1.8 | yes, and Chinese equivalents; the panel nut is the thing to confirm |
 | 4 mm safety sockets instead of Cliff test jacks | 3 × shrouded 4 mm PCB socket ≥ 20 A, **Cliff FCR7350 R/B/G** | 1.8 | Cliff unlikely; a shrouded Chinese 4 mm PCB socket at ≥ 20 A is acceptable if it is right-angle and the datasheet gives the rating |
-| Closed extruded case instead of the open 1444 chassis | **Hammond 1455N1601** | 1.9 | no; Reichelt, Mouser, Bürklin, RS, Conrad |
+| All connectors in one long wall | **Hammond 1444-862** chassis + **1434-86** bottom plate, 10 mm M3 spacers | 1.9 | no; Digi-Key, Mouser, Reichelt |
 | The board itself | four layers, ≤ 100 × 100 mm, five pieces | 1.10 | that is the shop |
 
 Nothing in the repo's BOM beyond the four pre-order lines above carries over unchanged: the
@@ -127,7 +127,7 @@ not worth a second shop.
 
 | | |
 |---|---|
-| Hard | DPDT, ON-ON (two stable positions, no centre-off), panel mount for a 2 mm aluminium end plate, solder lugs, rated ≥ 1 A (the current is microamps; the rating is for contact quality) |
+| Hard | DPDT, ON-ON (two stable positions, no centre-off), panel mount for a 1 mm aluminium wall, solder lugs, rated ≥ 1 A (the current is microamps; the rating is for contact quality) |
 | First choice | any miniature toggle of that kind (APEM 5000 series, C&K 7201, Knitter MTA 206, or the shop's house brand). Record price and the panel hole diameter |
 | Plus | one 2 × 3 pin header 2.54 mm per board, commodity |
 | Not now | the **Omron G6A-274P-ST-US DC12** relay keeps its footprint on the board but is not bought until the matrix controller exists; if a shop has it cheaply, note the price for later |
@@ -140,26 +140,25 @@ BNCs (C591726) with jam nuts (C305927). The lines below are kept for the alterna
 
 | Part | Qty | Hard | First choice | Alternatives / notes |
 |---|---|---|---|---|
-| BNC jack, PCB right angle | 10 | 50 Ω, right angle, through-hole, bulkhead nut so it can be fixed in the end plate | **Molex 73100-0105** (Digi-Key 1.95 €, 22 000 in stock) | Amphenol RF 31-5431 (4.97 €), TE 5227161-3 (4.68 €; the TE 1-1337543-0 is obsolete). **Confirm the chosen one's datasheet shows a threaded front and a panel nut** - the document relies on the jack being bolted to the end plate |
+| BNC jack, PCB right angle | 10 | 50 Ω, right angle, through-hole, bulkhead nut so it can be fixed in the wall | **Molex 73100-0105** (Digi-Key 1.95 €, 22 000 in stock) | Amphenol RF 31-5431 (4.97 €), TE 5227161-3 (4.68 €; the TE 1-1337543-0 is obsolete). **Confirm the chosen one's datasheet shows a threaded front and a panel nut** - the document relies on the jack being bolted to the end plate |
 | 4 mm safety socket, PCB right angle | 7 (3 per board + 1) | shrouded 4 mm, ≥ 20 A, PCB mount, right angle, colours red / black / green | **Cliff FCR7350R / FCR7350B / FCR7350G** (Digi-Key 6.80-6.99 € each) | Electro-PJP 3263-PCB (25 A), Hirschmann/SKS only as panel mount (PKI 10 A, then wired to the board - acceptable). The 7 € apiece is the biggest single line in the BOM; a cheaper shrouded PCB socket at ≥ 20 A is welcome |
 
 ### 1.9 Enclosure - 2 pieces, plus the drawing
 
 | | |
 |---|---|
-| Hard | extruded aluminium with PCB guide rails and two removable end plates; **inside length ≥ 120 mm, rail-to-rail width accepting a 100 mm board**, inside height ≥ 40 mm |
-| First choice | **Hammond 1455N1601** (160 × 103 × 53 mm). Digi-Key 30.51 €, Bürklin 27.66 €, RS 24.92 €, Conrad lists 1455N1601BK as 534408. Reichelt not checked |
-| Must be confirmed from the drawing | **the width between the rails** and the **rail slot width** of the 1455N series. Secondary sources say it takes a 100 mm Eurocard; Hammond's own PDF drawing (hammfg.com, "1455N1601" → drawing) is the authority. If the rails take less than 100 mm, the board goes down to the slot width or up to the 1455Q/1455P (125 mm wide) |
-| Fallback | Hammond 1590D die-cast (188 × 120 × 58 mm, 25 €), board on standoffs, connectors through the walls |
+| Hard | aluminium, flat walls (no die-cast draft), one long wall at least 180 × 45 mm free of screw bosses for the connector row, room for a 158 × 124 mm board on spacers, inside height ≥ 45 mm |
+| Chosen | **Hammond 1444-862** chassis (203.2 × 152.4 × 50.8 mm, 1.02 mm aluminium, inside 201 × 150 × 48.8) with the **1434-86** bottom plate; drawing checked on hammfg.com on 1 November 2026. Digi-Key: chassis 19.99 €, plate 10.87 € |
+| Not chosen | Hammond 1455N1601 (extruded, 100 mm rails: connectors only on the short end plates); Hammond 1590D die-cast (2-3° wall draft and lid-screw bosses in the middle of each long wall, both in the way of a connector row) |
 
 ### 1.10 The PCB
 
-Not a shop item here; for completeness: JLCPCB, four layers, 1.6 mm, ≤ 100 × 100 mm, five
+Not a shop item here; for completeness: JLCPCB, four layers, 1.6 mm, 158 × 124 mm, five
 pieces, ENIG not required. Quote the price with shipping to Germany at the time of ordering.
 
 ## 2. Questions only a browser can settle
 
-1. **Hammond 1455N rail width**, see 1.9.
+1. ~~Hammond 1455N rail width~~ - no longer needed, the box is the 1444-862.
 2. **Vishay CPF3 working voltage**, see 1.2.
 3. **WIMA tolerance grades by the piece**: does Reichelt (or Bürklin, TME, or the JLCPCB shop)
    sell FKP2 in ±2.5 % (code H) or ±1 % (code E) at 390 pF and 4.7 nF, 400 V or 630 V? The
@@ -191,7 +190,6 @@ Copy, fill, and paste back into this file (or into a comment on the pull request
 | 1.8 BNC ×10 | | | | | | | |
 | 1.8 4 mm sockets ×7 | | | | | | | |
 | 1.9 enclosure ×2 | | | | | | | |
-| 2.1 1455N rail width | | | | | | | |
 | 2.2 CPF3 voltage | | | | | | | |
 | 2.6 BNC leads ×2 | | | | | | | |
 

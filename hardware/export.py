@@ -62,11 +62,11 @@ def ascii_only(text):
 # footprint origin is pad 1 for axial and radial parts, so the centre is taken from the courtyard
 # (the part's outline) instead. Rotation offsets per reference, in degrees, added to KiCad's
 # rotation when JLCPCB's preview shows a part turned the wrong way. Set from JLCPCB's 3D preview of
-# 1 November 2026: its XLR models face the other way from KiCad's footprints, its header and
-# 3296W trimmer models are turned a quarter. The trimmer and the header are symmetric in their
-# pins, so a half turn too many would still fit the holes; the XLRs only fit one way, which the
-# holes enforce whatever this file says.
-ROTATION_OFFSET = {'J4': 180, 'J5': 180, 'J8': 90, 'J9': 90, 'RV1': 90, 'RV2': 90}
+# 1 November 2026: its header and 3296W trimmer models are turned a quarter against KiCad's; its
+# NC3FAAH2 model a quarter the other way and its NC3MAAH model a half turn. The headers and the
+# trimmers are symmetric in their pins, so a half turn too many still fits the holes; the XLRs
+# only fit one way, which the holes enforce whatever this file says.
+ROTATION_OFFSET = {'J4': 270, 'J5': 180, 'J8': 90, 'J9': 90, 'RV1': 90, 'RV2': 90}
 
 
 def part_centre(fp):
