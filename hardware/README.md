@@ -66,6 +66,31 @@ plate just has a clearance hole for the Ø11 barrel).
    footprint waits for the matrix controller.
 6. After the order: the five boards arrive, two assembled. Nothing else is needed from JLCPCB.
 
+### What JLCPCB's BOM tool quoted on 1 November 2026
+
+For an assembly of five boards (quantities include JLCPCB's attrition allowance), in euros:
+
+| Line | Qty | Total | Per piece | Status |
+|---|---|---|---|---|
+| TE 5227161-7 BNC (C591726) | 20 | 99.63 | 4.98 | in stock |
+| Cliff FCR7350R / B / G (C6041087 / C6555263 / C6041085) | 5 each | 58.13 / 58.13 / 50.32 | 11.6 / 11.6 / 10.1 | **shortage: pre-order**, plus the connector inspection fee per type |
+| WIMA 220 pF 630 V ±2.5 % (C5742108) | 30 | 7.19 | 0.24 | shortage: pre-order |
+| WIMA 4.7 nF 250 V (C20412818) | 25 | 10.70 | 0.43 | shortage: pre-order |
+| Bourns 3296W-1-501LF (C69564) | 10 | 6.75 | 0.67 | in stock |
+| TE YR1B1K0CC 0.1 % (C1364308) | 10 | 3.57 | 0.36 | in stock |
+| UNI-ROYAL 1 kΩ 3 W (C58750) | 21 | 1.04 | 0.05 | in stock |
+| UNI-ROYAL 10 kΩ 1 W (C58714) | 21 | 0.51 | 0.02 | in stock |
+| 75 Ω 1 W (C160685) | 11 | 0.47 | 0.04 | in stock |
+| 14 k, 412, 3.4 k, 24.9 (C127223, C3558411, C3517441, C3542579) | 11-15 each | 0.15 / 0.06 / 0.17 / 0.36 | 0.01-0.02 | in stock |
+| 1N4148 (C258182), headers (C65114, C492401) | 10 / 5 / 5 | 0.26 / 0.20 / 0.08 | | in stock |
+| Würth 7447471102 coils | 20 | about 58 | 2.9 | unmatched by design: "Vorbestellen" → global sourcing |
+
+About 356 € of parts for five assembled boards, 71 € per board, of which the three Cliff sockets
+are 33 € and the four BNCs 20 €. The Cliff sockets are the line to take out of the assembly:
+pre-order at 11 € each plus the inspection fee, against 6.80 € at Digi-Key for a part with one
+pin and four pegs to solder. Assembling two boards instead of five brings the parts to about
+140 € plus the coils.
+
 ## What is not on the board
 
 | Qty for two boards | Part | Where |
