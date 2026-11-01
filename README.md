@@ -1,83 +1,85 @@
-# VERSION 2
+# AES17 class-D measurement filter
 
-Differences to V1:
+A passive low-pass that sits between a class-D amplifier and an audio analyzer, so that the
+amplifier's switching residue never reaches the analyzer's input stage. It is the circuit of
+the Audio Precision AUX-0025, on a 100 × 158 mm board that slides into a Hammond 1455N1601
+case, with the 20 kHz knee trimmable, a 20:1 pad switched by a toggle or a relay, 4 mm safety
+sockets and BNC in, BNC out. Designed for a QuantAsylum QA403 and the
+[Klirr](https://github.com/ToxSox/klirr) measurement software, usable with anything that has a
+100 kΩ input.
 
-* Space inductors out more to address excess HD3 found by @sarieri on ASR
-* Change attenuator network to be independent (nearly) of the input impedance of the ADC.  This adds some switching complexity, but allows use of 1W parts continuously at 140Vrms
-* Use 4-layer board to simplify layout - Ground pour is layer 2, signals are 1 & 3, with some escape traces on 4
-* Replace some oversized resistors with smaller 0.25W versions and improve tolerances
-* Add ground jack
-* Add mounting holes to GND net - use plastic standoffs and screws if you don't want your board GND connected to the case by the screws (it will be connected anyway by the XLR sockets)
-* Update to KiCad 8
-* Use Mouser for BOM (done except for 4mm connectors, which Mouser doesn't have good ones of)
-* Reduce baord width to 175mm
-* Recommend Hammond 1444-862 case
+**Status: designed, simulated, generated, not yet built.** The Gerbers and the JLCPCB files are
+in `hardware/fab/`, the first order has not been placed. Everything below the simulation line
+is therefore a claim, not a measurement; the bring-up list in the design review says what will
+be measured first.
 
-Possible future changes:
+![the board](hardware/aes17-filter-top.png)
 
-* Switch to shielded coilcraft inductors - the issue is these have 10% tolerance instead of 5%
-* Reduce Vrms goal to 60 - this is 900W into 4ohms - would allow use of smaller and cheaper parts
-* Create a version with most parts SMD - this would probably not be safe into a short circuit but could be orderable through JLC
-* Use LCSC for BOM to make prefab with JLC easier
+## Where this comes from
 
-# Goals
+This repository is a fork of Matt Clark's
+[aes17_filter_25](https://github.com/mattclarkdotnet/aes17_filter_25) (V2, May 2024), itself a
+DIY copy of the AUX-0025, released under the CERN-OHL-W 2.0. The V2 KiCad project, Gerbers,
+case cut-outs and dissipation spreadsheet were removed from this tree because they no longer
+describe this board; they are intact in the history, tagged **`v2-mattclark`**. The licence
+stays the CERN-OHL-W 2.0 (`LICENSE.txt`), and the source location of this derived design is
+https://github.com/ToxSox/aes17_filter.
 
-The goal is to make a cheap DIY passive filter for use in class D amp measurements, much like the AP AUX-0025.  The AP AUX-0025 specs as read off the [AP website](https://www.ap.com/analyzers-accessories/accessories/aux-family-switching-amplifier-measurement-filters/) are:
-* Rejection > 50dB, 250 kHz to 20 MHz
-* Frequency response +-0.05dB, 20Hz-20kHz
-* Max input voltage 400V P-P (140Vrms)
-* THD < -110dB
+What changed against V2, and why, is argued at length in
+[docs/design-review.md](docs/design-review.md). In short:
 
-I also wanted the ability to pad down the output for high power measurements.  The resulting board looks like this:
+| | V2 (mattclarkdotnet) | this fork | why |
+|---|---|---|---|
+| Input resistor | 500 Ω 5 W fixed | AP's network: 1 kΩ 3 W ‖ 14 kΩ ‖ (1 kΩ 3 W + 500 Ω trimmer) | the trimmer sets the 20 kHz knee; V2 sits at +0.10 dB and spreads to 0.21 dB with 5 % coils, trimmed boards land at ±0.03 dB whatever the parts |
+| Filter values | E24 approximations (330 Ω + 440 pF, 68 Ω, 3.3 kΩ, 22 Ω) | the AUX-0025's own (412 Ω + 2 × 220 pF, 75 Ω, 3.40 kΩ, 24.9 Ω), all E96 | 1-2 dB more in the stop band, nothing to lose |
+| Pad | 9 kΩ / 1 kΩ, two poles per leg, hand-wired toggle | 2 × 10 kΩ / 1 kΩ (about 21.8:1), one pole per leg on a 2 × 3 header, DPDT toggle today, Omron G6A relay footprint for later, pad at rest | the QA403 clips at 40 Vrms and loses 20 dB of floor above its +18 dBV range; 20:1 keeps a 2 kW amplifier below both |
+| Connectors | XLR in and out, banana test points | three 4 mm safety sockets and a BNC pair in, a BNC pair out, all through the case's end plates | the analyzer has BNCs; the bench's relay matrix has BNCs |
+| Board | 175 × 90 mm, four layers | 100 × 158 mm, four layers, generated from a data file | fits the 1455N1601's rails, spans its length |
+| Rating | "140 Vrms continuous" | 85 Vrms at 20 kHz with 5 W parts, as a curve | at 20 kHz the shunt capacitors draw current through the input resistors: 13 W at 140 V |
+| Assembly | hand-built | JLCPCB, through-hole parts included, nothing hand-selected | the trimmer absorbs the tolerances |
 
-![3D board model](./board_3d.png)
+## What is in the tree
 
-# Results
+| Path | What |
+|---|---|
+| [docs/design-review.md](docs/design-review.md) | the review of the V2 design against the AUX-0025 and the QA403, the simulation, the pad decision, the build decisions, the bill of materials, bring-up |
+| [docs/sourcing.md](docs/sourcing.md) | the shopping list with hard specifications, substitutes and open questions |
+| [sim/aes17_sim.py](sim/aes17_sim.py) | the AC analysis that produced every number in the review (numpy only) |
+| [hardware/](hardware/) | `design.py` (parts and nets as data), `make_pcb.py` (places, routes and checks the board with KiCad's `pcbnew`), `export.py` (Gerbers, BOM, placement), the schematic, the end-plate drilling, and [hardware/README.md](hardware/README.md) with the ordering steps |
+| [hardware/fab/](hardware/fab/) | `aes17-filter-gerbers.zip`, `aes17-filter-bom.csv`, `aes17-filter-cpl.csv` for JLCPCB; `aes17-filter-parts.csv` with notes |
 
-- [x] Rejection > 50dB, _230_ kHz to 20 MHz
-- [x] Frequency response +-0.05dB, 20Hz-20kHz
-- [x] Max input voltage 400V P-P (140Vrms)
-- [x] THD = _-130dB_
+## Simulated performance
 
-The simulated FR with a 100k load is on target, with -51mdBV to +51mdBV varitation from 20Hz to 20kHz, and 50dB rejection or more from 230kHz up.  The 100mdBV variation is maintained across a wide range of loads from 15k to 450k.  Measured THD is more like -130dB, so will not add to measured distortion of amplifiers, but may impact extreme resolution DAC measurements.
+One leg against ground, 100 kΩ load, relative to 1 kHz; the script prints the full tables.
 
-![Screenshot of simulated frequency response](./freq_load100k.png)
+| | V2 as published | this fork, trimmed |
+|---|---|---|
+| Passband 20 Hz - 20 kHz | −0.00 / +0.10 dB nominal, up to 0.21 dB spread with ±5 % coils | within ±0.03 dB after trimming, whatever the coils and capacitors |
+| −3 dB | 58 kHz | 58 kHz |
+| 250 kHz | −53.6 dB | −52.5 dB (two 220 pF instead of 390 pF) |
+| 500 kHz | −57.5 dB | −58.4 dB |
+| 1 MHz | −69 dB | −70 dB |
+| Insertion loss | −0.05 dB | −0.05 dB |
+| Source noise at the analyzer | −124 dBV direct | −124 dBV direct, −122 dBV through the pad |
+| Input resistor at 63 Vrms, 20 kHz | 2.7 W | 1.4 W in each of two |
 
+A real box will land a few decibels short of the stop-band figures: one V1 build measured 45 dB
+at 248 kHz against 55 simulated, and the 1 mH coils' self-resonance (1.3 MHz) takes 10-20 dB off
+above 2 MHz, where the filter is 80 dB down anyway.
 
+## Ordering and building
 
-# Design discussion
+[hardware/README.md](hardware/README.md): upload the three files in `hardware/fab/` to JLCPCB,
+five boards, two assembled, Economic. Every BOM line has an LCSC number; five lines are
+pre-order parts (the Würth coils, both WIMA capacitors, the Cliff sockets), and the Cliff sockets
+are cheaper bought at Digi-Key and soldered by hand. Not on the board: four BNC jam nuts, a DPDT
+toggle, the Hammond case, two BNC leads. Then drill the end plates after
+`hardware/aes17-filter-endplates.png`, trim both legs through an amplifier until 20 kHz equals
+1 kHz, measure the pad ratio, and the filter is a probe profile in Klirr.
 
-See the design on [CircuitLab](https://www.circuitlab.com/editor/#?id=9zaq989z472b). It is inspired by the AUX-0025 but differs in a few ways.  The component values are more standard, and are reused across the design to reduce the number of different components needed.  Inductor tolerances are 5% instead of 2.5%, but resistors are all 1% and the 220p capacitors are 2.5%.  The matching to the AUX-0025 response curve is very close.
+## Licence
 
-A set of pad-down resistors allows for convenient high voltage measurements, by default giving -20dB of gain.
-
-The load impedance should be >50kOhm for best performance, but a 10kOhm load is still +-0.1dB 20Hz-20kHz, albeit with 0.4dBV of insertion loss.
-
-Pin 1 on each XLR socket is connected to a ground pour on layer 2 of the PCB, as are the XLR chassis grounding pins.  The board should be mounted in an all metal case.
-
-A brief short circuit, even with a high voltage applied, should be OK. The 500R/3W input resistors can take a steady state 75Vrms indefinitely ($75V^2/1000R=5.6W$), although the inductors will clearly saturate unless a reasonable load is connected to limit the current to 800mA. The 140Vrms requirement into more reasonable loads is met by the voltage ratings of the capacitors. In the case of C1 and C2 this provides a rated 500Vpp between signal rails.
-
-# Build tips
-
-You will need to add your own switch to the build for the voltage divider. If not using this then jumper the connections. The BOM doesn't include the pin headers for the pad-down resistor switch connections, presumably if you are building this then you have those already.
-
-If you want to use different components then you will need to ensure you model them from scratch, e.g. if changing the inductors you will need to model the changed series resistance.  
-
-Case choice is up to you, as cost and availability varies a lot by location, but it must be all metal with all parts connected electrically.  A Hammond 1444-862 is a good choice!
-
-# BOM
-
-* R1,R2 500ohm 5W 1% [https://au.mouser.com/ProductDetail/Vishay-Draloric/PAC500005000FAC000?qs=sGAEpiMZZMtlubZbdhIBINC8EtgKGA%2F6i50rchkXbHU%3D] 25x6.4mm
-* R3,R4 330ohm 0.25W 1% [https://au.mouser.com/ProductDetail/TE-Connectivity-Holsworthy/LR0204F330R?qs=sGAEpiMZZMtlubZbdhIBIBiJIqAHDdPFB0JYbliHBqI%3D] 3.5x2mm
-* R5,R6 68ohm 1W 1% [https://au.mouser.com/ProductDetail/Vishay-Dale/CMF6568R000FKR6?qs=sGAEpiMZZMtlubZbdhIBIOM2%252B0H92tq20Jgq%252BUaQb4k%3D] 14.5x4.5mm
-* R7,R8 3.3k 0.25W 1% [https://au.mouser.com/ProductDetail/KOA-Speer/MF1-4DCT52R3301F?qs=2ayCeu1TP5leCJLPVwsFCg%3D%3D] 3.5x2mm
-* R9,R10 22ohm 0.25W 1% [https://au.mouser.com/ProductDetail/TE-Connectivity-Holsworthy/LR1F22R?qs=sGAEpiMZZMtlubZbdhIBIFho3SHfDXStNhO7PeBAY30%3D] 6.2x2.3mm
-* R11,R12 2k7 1W 1% [https://au.mouser.com/ProductDetail/YAGEO/MFR1WSFTF52-2K7?qs=xZ%2FP%252Ba9zWqZMHNDyFGZwSA%3D%3D] 9x3.3mm
-* R13,R14 1k8 1W 1% [https://au.mouser.com/ProductDetail/YAGEO/MFR1WSFTF52-1K8?qs=xZ%2FP%252Ba9zWqYtbloc%2Fjj38w%3D%3D] 9x3.3mm
-* C1,C2,C3,C4,C5,C6 220p 250VDC 2.5% [https://au.mouser.com/ProductDetail/WIMA/FKP2J002201D00HSSD?qs=WI052HLiD5hzJhR9QL5EAQ%3D%3D] 7.2x4.5mm, 5mm pin
-* C7,C8,C9,C10 4.7n 250VDC 5% [https://au.mouser.com/ProductDetail/WIMA/FKP2F014701I00JA00?qs=WI052HLiD5hCY8ty427gtg%3D%3D] 7.2x6.5mm, 5mm pin
-* L1,L2,L3,L4 1u 1ohm 800mA [https://au.mouser.com/ProductDetail/Wurth-Elektronik/7687480102?qs=sGAEpiMZZMv126LJFLh8ywQ8%252ByAE4SZkiWIazUoK6Rs%3D] 10.5mm dia, 5mm pin
-* J1 XLR female NC3FAAH2 [https://au.mouser.com/ProductDetail/Neutrik/NC3FAAH2?qs=jCymNF74TgW4A7eq9uxuLg%3D%3D]
-* J2 XLR male NC3MAAH [https://au.mouser.com/ProductDetail/Neutrik/NC3MAAH?qs=jCymNF74TgXgh2x3smwFTg%3D%3D]
-* J3,J4,J5 test connectors (https://au.element14.com/cliff-electronic-components/fcr7350r/socket-pcb-4mm-r-a-s16n-pc-red/dp/1854508)
-
+CERN Open Hardware Licence Version 2 - Weakly Reciprocal, as the original. Copyright of the
+original design Matt Clark 2023-2024; the changes described above and in the design review were
+made in November 2026 in this repository. If you build or change it, the licence asks that you
+keep these notices and make your changes available under the same terms.

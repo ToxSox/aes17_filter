@@ -1,5 +1,7 @@
-kicad/aes17_filter_25-backups
-kicad/fp_info_cache
+__pycache__/
+hardware/drc.txt
+hardware/fab/gerbers/
+hardware/*.kicad_prl
+hardware/*-backups/
 .DS_Store
 *.lck
-kicad/fp-info-cache
