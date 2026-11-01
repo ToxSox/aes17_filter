@@ -52,8 +52,8 @@ X_R5 = 74.5           # 75R 1W, pitch 15.24 -> pad 2 at 89.74
 X_L3 = 96.0           # pads 96 / 101
 X_R7 = 96.0           # 3.4k across L3, pads 96 / 106.16
 X_R9 = 107.0          # 24.9, pads 107 / 117.16
-X_R11 = 119.5         # 10k 1W, pitch 15.24 -> pads 119.5 / 134.74
-X_R13 = 130.7         # 1k 0.1 %, pads 130.7 / 140.86
+X_R11 = 109.5         # 10k 1W, pitch 15.24 -> pads 109.5 / 124.74 (the XLR body starts at x = 130)
+X_R13 = 124.0         # 1k 0.1 %, pads 124 / 134.16
 X_C1, X_C7, X_C9 = 62.0, 76.0, 102.0   # the shunt capacitors, standing in a row at y +- 25
 PLACE = {}
 
@@ -79,23 +79,25 @@ def place_leg(names, y, flip):
     PLACE[names['R9']] = (X_R9, y, 0)
     PLACE[names['R11']] = (X_R11, y - 6.0 * s, 0)
     PLACE[names['R12']] = (X_R11, y + 6.0 * s, 0)
-    PLACE[names['R13']] = (X_R13, y + 14.0 * s, 0)
+    PLACE[names['R13']] = (X_R13, y + 18.0 * s, 0)
 
 
 place_leg(design.NAMES_P, Y_P, flip=False)
 place_leg(design.NAMES_N, Y_N, flip=True)
 
 PLACE.update({
-    # input end plate: BNC +, red, green, black, BNC -  (top to bottom); the sockets' fronts
-    # protrude through the plate, their signal pins sit 12 and 14 mm inside the board
-    'J4': (12.0, 14.0, 0), 'J1': (14.0, 32.0, 0), 'J3': (14.0, 50.0, 0), 'J2': (14.0, 68.0, 0), 'J5': (12.0, 86.0, 0),
-    # output end plate: BNC + and BNC -, the toggle goes between them in the plate
-    'J6': (L - 12.0, 20.0, 180), 'J7': (L - 12.0, 80.0, 180),
+    # input end plate, top to bottom: female XLR (flange rear face 3.2 mm inside the board edge,
+    # pin 1 another 8.89 behind it), red and black 4 mm at 19.05 mm pitch (a dual banana plug),
+    # green common. The Cliff sockets' fronts protrude through the plate, pins 14 mm inside.
+    'J4': (12.09, 20.0, 90), 'J1': (14.0, 50.0, 0), 'J2': (14.0, 69.05, 0), 'J3': (14.0, 88.0, 0),
+    # output end plate: male XLR (pin row 3.81 behind the flange rear face at 154.8), the toggle in
+    # the plate at y = 43, then BNC + and BNC - for the QA403
+    'J5': (L - 0.5 - 2.7 - 3.81, 16.19, 270), 'J6': (L - 12.0, 70.0, 180), 'J7': (L - 12.0, 88.0, 180),
     # pad switch header (rows: 1-3-5 at y = 47.46 with pin 1 at the right, 2-4-6 at y = 50),
     # relay and coil connector in the middle band
     'J8': (144.54, 47.46, 270), 'K1': (118.0, 46.19, 0), 'J9': (108.0, 48.73, 0), 'D1': (112.0, 50.0, 270),
     # mounting holes, for a box without rails; on the centre line where nothing else is
-    'H1': (44.0, 50.0, 0), 'H2': (90.0, 50.0, 0), 'H3': (153.5, 38.0, 0), 'H4': (153.5, 62.0, 0),
+    'H1': (30.0, 50.0, 0), 'H2': (50.0, 50.0, 0), 'H3': (90.0, 50.0, 0), 'H4': (153.5, 42.0, 0),
 })
 
 # ----------------------------------------------------------------------------------------------
@@ -231,12 +233,10 @@ def leg_routes(n, y0, s):
     def Y(dy):
         return y0 + dy * s
     nets = design.NETS_P if s > 0 else design.NETS_N
-    jin, jbnc = ('J1', 'J4') if s > 0 else ('J2', 'J5')
     return [
         # the input bus: a vertical at X_IN_BUS joins the socket, the BNC and the three resistors
-        (nets['IN'], F, W_IN, [(jin, 1), (X_IN_BUS, Y(15.0)), (X_IN_BUS, Y(-5.0)), (n['R1a'], 1)]),
+        (nets['IN'], F, W_IN, [(X_IN_BUS, Y(15.0)), (X_IN_BUS, Y(-5.0)), (n['R1a'], 1)]),
         (nets['IN'], F, W_IN, [(X_IN_BUS, Y(5.0)), (n['R1b'], 1)]),
-        (nets['IN'], F, W_IN, [(jbnc, 1), (X_IN_BUS, Y(-3.0))]),
         (nets['IN'], F, W_IN, [(X_IN_BUS, Y(13.0)), (n['R1c'], 1)]),
         # node A: a vertical at X_A_BUS from the 412 ohm up top down to the 220 pF
         (nets['A'], F, W_SIG, [(n['R1a'], 2), (X_A_BUS, Y(-5.0)), (X_A_BUS, Y(-9.0)), (n['R3'], 1)]),
@@ -262,11 +262,12 @@ def leg_routes(n, y0, s):
         (nets['E'], F, W_SIG, [(n['R7'], 2), (X_R7 + 10.16, Y(-4.0)), (X_R9, Y(-4.0)), (n['R9'], 1)]),
         (nets['E'], F, W_SIG, [(n['R9'], 1), (X_C9, Y(0.0)), (n['C9'], 1)]),
         # F: filter output into the pad's first resistor; the switch end is routed below
-        (nets['F'], F, W_SIG, [(n['R9'], 2), (X_R9 + 10.16, Y(-6.0)), (n['R11'], 1)]),
+        (nets['F'], F, W_SIG, [(n['R9'], 2), (X_R9 + 10.16, Y(-6.0)), (n['R11'], 1)]),   # runs under the 10 k's body
         # M: between the two 9.53 k
-        (nets['M'], F, W_SIG, [(n['R11'], 2), (X_R11 + 15.24, Y(0.0)), (X_R11, Y(0.0)), (n['R12'], 1)]),
+        # M: between the two 10 k, on the back, past the 24.9 ohm and the F net
+        (nets['M'], B, W_SIG, [(n['R11'], 2), (X_R11 + 15.24, Y(-3.0)), (104.5, Y(-3.0)), (104.5, Y(6.0)), (n['R12'], 1)]),
         # PAD tap: second 9.53 k into the 1 k; the switch end is routed below
-        (nets['PAD'], F, W_SIG, [(n['R12'], 2), (X_R11 + 15.24, Y(10.0)), (X_R13, Y(10.0)), (n['R13'], 1)]),
+        (nets['PAD'], F, W_SIG, [(n['R12'], 2), (X_R11 + 15.24, Y(18.0)), (n['R13'], 1)]),
     ]
 
 
@@ -275,20 +276,31 @@ def leg_routes(n, y0, s):
 # header: pins 1-3-5 (+ leg) at y = 47.46, x = 144.54 / 142.00 / 139.46 = PAD / OUT / F;
 # pins 2-4-6 (- leg) at y = 50.
 X_F_RUN = 147.5       # the F nets come down the east side on the inner layer
+INPUT_ROUTES = [
+    # XLR pin 2 (+) and the red socket onto the positive leg's bus; pin 3 (-) and the black socket
+    # down to the negative leg's bus, the long run on the back
+    ('IN_P', F, W_IN, [('J4', 2), (22.0, 20.64), (22.0, 12.0), (X_IN_BUS, 12.0)]),
+    ('IN_P', F, W_IN, [('J1', 1), (23.0, 50.0), (23.0, 32.0), (X_IN_BUS, 32.0)]),
+    ('IN_N', B, W_IN, [('J4', 3), (24.5, 24.45), (24.5, 69.05), ('J2', 1)]),
+    ('IN_N', F, W_IN, [('J2', 1), (X_IN_BUS, 69.05)]),
+]
+
 MIDDLE_ROUTES = [
     # --- positive leg ---
-    ('F_P', I2, W_SIG, [('R7', 2), (X_R9 + 10.16, 36.0), (X_F_RUN, 36.0), (X_F_RUN, 42.0), (139.46, 42.0), ('J8', 5)]),
+    ('F_P', I2, W_SIG, [('R7', 2), (X_R9 + 10.16, 39.5), (X_F_RUN, 39.5), (X_F_RUN, 42.0), (139.46, 42.0), ('J8', 5)]),
     ('F_P', I2, W_SIG, [('K1', 8), (135.78, 42.0), (139.46, 42.0)]),
-    ('OUT_P', B, W_SIG, [('J6', 1), (143.0, 20.0), (143.0, 40.0), (125.62, 40.0), ('K1', 4)]),
+    ('OUT_P', B, W_SIG, [('J5', 2), (146.3, 23.81), (146.3, 40.0), (125.62, 40.0), ('K1', 4)]),
     ('OUT_P', B, W_SIG, [(142.0, 40.0), ('J8', 3)]),
-    ('PAD_P', F, W_SIG, [('R10', 1), (130.7, 34.0), ('K1', 6)]),
+    ('OUT_P', B, W_SIG, [('J6', 1), (148.5, 70.0), (148.5, 44.0), (146.3, 44.0), (146.3, 40.0)]),
+    ('PAD_P', F, W_SIG, [('R10', 1), (130.7, 35.0), ('K1', 6)]),
     ('PAD_P', F, W_SIG, [(130.7, 38.0), (144.54, 38.0), ('J8', 1)]),
     # --- negative leg ---
-    ('F_N', I2, W_SIG, [('R17', 2), (X_R9 + 10.16, 64.0), (X_F_RUN, 64.0), (X_F_RUN, 55.5), (139.46, 55.5), ('J8', 6)]),
+    ('F_N', I2, W_SIG, [('R17', 2), (X_R9 + 10.16, 60.5), (143.5, 60.5), (143.5, 55.5), (139.46, 55.5), ('J8', 6)]),
     ('F_N', I2, W_SIG, [('K1', 9), (135.78, 55.5), (139.46, 55.5)]),
-    ('OUT_N', B, W_SIG, [('J7', 1), (143.0, 80.0), (143.0, 60.0), (125.62, 60.0), ('K1', 13)]),
+    ('OUT_N', B, W_SIG, [('J7', 1), (143.0, 88.0), (143.0, 60.0), (125.62, 60.0), ('K1', 13)]),
     ('OUT_N', B, W_SIG, [(142.0, 60.0), ('J8', 4)]),
-    ('PAD_N', F, W_SIG, [('R20', 1), (130.7, 66.0), ('K1', 11)]),
+    ('OUT_N', I2, W_SIG, [('J5', 3), (156.5, 20.0), (156.5, 79.5), (144.0, 79.5), (144.0, 88.0), ('J7', 1)]),
+    ('PAD_N', F, W_SIG, [('R20', 1), (130.7, 65.0), ('K1', 11)]),
     ('PAD_N', F, W_SIG, [(130.7, 62.0), (144.54, 62.0), ('J8', 2)]),
     # --- coil ---
     ('COIL+', F, W_SIG, [('J9', 1), (113.0, 48.73), (113.0, 46.19), ('K1', 1)]),
@@ -307,7 +319,7 @@ def resolve(fps, point):
 
 
 def add_tracks(board, fps, netinfo):
-    routes = leg_routes(design.NAMES_P, Y_P, +1) + leg_routes(design.NAMES_N, Y_N, -1) + MIDDLE_ROUTES
+    routes = leg_routes(design.NAMES_P, Y_P, +1) + leg_routes(design.NAMES_N, Y_N, -1) + INPUT_ROUTES + MIDDLE_ROUTES
     layer_id = {F: pcbnew.F_Cu, B: pcbnew.B_Cu, I2: pcbnew.In2_Cu}
     for net, layer, width, points in routes:
         pts = [resolve(fps, p) for p in points]
@@ -352,11 +364,12 @@ def add_text(board, text, x, y, size=1.2, layer=pcbnew.F_SilkS, angle=0, bold=Fa
 
 
 def add_silk(board):
-    add_text(board, 'klirr AES17 filter', 67.0, 48.8, 1.3, bold=True)
-    add_text(board, 'github.com/ToxSox/aes17_filter', 67.0, 51.2, 0.9)
-    add_text(board, 'IN +', 24.0, 32.0, 1.2); add_text(board, 'GND', 24.0, 50.0, 1.2); add_text(board, 'IN -', 24.0, 68.0, 1.2)
-    add_text(board, 'IN + (bus)', 24.0, 14.0, 1.0); add_text(board, 'IN - (bus)', 24.0, 86.0, 1.0)
-    add_text(board, 'OUT + to QA403 L+', 138.0, 14.0, 1.0); add_text(board, 'OUT - to QA403 L-', 138.0, 86.0, 1.0)
+    add_text(board, 'klirr AES17 filter', 75.0, 48.8, 1.3, bold=True)
+    add_text(board, 'github.com/ToxSox/aes17_filter', 75.0, 51.2, 0.9)
+    add_text(board, 'IN +', 24.0, 50.0, 1.2); add_text(board, 'IN -', 24.0, 69.05, 1.2); add_text(board, 'GND', 24.0, 88.0, 1.2)
+    add_text(board, 'IN XLR: 2 = +, 3 = -', 30.0, 8.0, 0.9)
+    add_text(board, 'OUT XLR: 2 = +, 3 = -', 138.0, 8.0, 0.9)
+    add_text(board, 'OUT + QA403 L+', 134.0, 72.0, 0.9); add_text(board, 'OUT - QA403 L-', 134.0, 92.0, 0.9)
     add_text(board, '1-3-5: PAD+ OUT+ DIR+', 151.0, 44.0, 0.8); add_text(board, '2-4-6: PAD- OUT- DIR-', 151.0, 53.5, 0.8)
     add_text(board, 'K1 not fitted: toggle on J8', 127.0, 58.0, 0.8)
     add_text(board, 'positive leg', 86.0, 24.0, 0.9); add_text(board, 'negative leg', 86.0, 76.0, 0.9)

@@ -8,8 +8,9 @@ that design against what a bench with a QuantAsylum QA403 and the [Klirr](https:
 measurement software needs, with the numbers to argue with, and says what this fork changes. It was
 written before anything was ordered; the status of the build is in the [README](../README.md).
 
-Decided: **single-channel boards**, two built from the five-board minimum order. **Input on 4 mm
-safety sockets with a BNC pair in parallel; output on a BNC pair** straight into the QA403.
+Decided: **single-channel boards**, two built from the five-board minimum order. **The
+AUX-0025's connectors**, so that one set of cables serves both filters: a female XLR and a dual
+banana pair in, a male XLR out, plus a BNC pair out for the QA403.
 **The topology and the impedance level stay as they are** - the design is a faithful copy of the
 AUX-0025 and nothing found below beats it for the money. What changes: the **20 kHz knee gets a
 trim**, the **pad becomes 20:1**, switched by a toggle today and a relay once the matrix drives
@@ -334,16 +335,20 @@ whole board goes through assembly, and the hand work is: drill the end plates, w
 turn two trimmers, measure the pad ratio. Of the five boards, two are assembled; JLCPCB lets
 the assembly count differ from the board count.
 
-**Connectors:** input on two 4 mm safety sockets (Cliff FCR7350, 24 A, red / black - the
-amplifier's terminals, no load current flows here) **and** two PCB BNC jacks in parallel with
-them for the lead from the matrix bus; a third socket, green, is ground, for the amplifier's
-chassis or the analyzer's Audio Common when hum asks for it. Output on two PCB BNC jacks (TE
-5227161-7, a right-angle jack with a 1/2-28 bulkhead thread and nut, + and −) to the QA403's L+
-and L− through two short equal BNC leads. The BNC shells
+**Connectors:** the AUX-0025's, so the same cables test either filter. Input: a female XLR
+(Neutrik NC3FAAH2, horizontal PCB mount; pin 2 is +, pin 3 is −, pin 1 and the shell contact
+are ground, exactly AP's pin-out) and, beside it, red and black 4 mm safety sockets (Cliff
+FCR7350, 24 A) at AP's 19.05 mm spacing so a dual banana plug fits, with a green common socket -
+AP's "common terminal". Output: a male XLR (Neutrik NC3MAAH, pin 2 +, pin 3 −, pin 1 shield to
+the filter's ground) as on the AUX-0025, **and** a pair of PCB BNC jacks (TE 5227161-7, right
+angle, 1/2-28 bulkhead thread and nut) in parallel with it, so the QA403 connects with two
+short equal BNC leads and no adapter. The XLR is rated 50 V by its standard and used to 140 Vrms
+by AP; its exposed plug pins carry the amplifier voltage when the cable is pulled from the
+filter under power, which the shrouded 4 mm sockets do not - the reason both are there. The BNC shells
 are the board's ground, which is the analyzer's Audio Common; that is the one ground the filter
 has, and the box is bonded to it. Two equal BNC leads of 20-30 cm connect it to the analyzer:
 they keep the capacitive load under AP's 360 pF limit (RG58 is 100 pF/m) and let the filter sit
-flat on the bench.
+flat on the bench. An AUX-0025 in the same place takes an XLR-female-to-two-BNC lead instead.
 
 **Board:** four layers, 1.6 mm, **100 × 158 mm**: 100 mm because that is what the box's rails
 take, 158 because the connectors on the two short edges pass through the end plates of a 160 mm
@@ -387,10 +392,13 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 1 | 1 × 2 pin header 2.54 mm | relay coil | C492401 | | $0.02 |
 | 1 | 1N4148 DO-35 | flyback | C258182 | | $0.03 |
 | 0 | Omron G6A-274P-ST-US DC12 | K1, footprint only | C129439 | in stock at $2.74 when the matrix needs it | - |
-| 4 | TE 5227161-7, BNC right-angle PCB jack, 1/2-28 bulkhead | J4-J7 | C591726 | in stock (433); low-profile, axis 6.91 mm above the board; the Amphenol 31-5431 has the same footprint and 1.7 mm more height | $6.34 |
-| 4 | TE 1-329632-2 jam nut, 1/2-28 | for the BNCs | C305927 | the -7 ships without nut; no lock washer at LCSC | $0.51 |
-| 3 | Cliff FCR7350 R / B / G, 4 mm safety socket, PCB | J1-J3 | C6041087 / C6555263 / C6041085 | pre-order at $11-12 each at LCSC; 6.80 € at Digi-Key - buy there and solder the three by hand if the JLCPCB price stands | $11 |
+| 1 | Neutrik NC3FAAH2, female XLR, horizontal PCB | J4, input | C368522 | in stock at LCSC; AP's input connector | $0.84-1.80 |
+| 1 | Neutrik NC3MAAH, male XLR, horizontal PCB | J5, output | C368463 | in stock at LCSC; AP's output connector | $0.79-1.80 |
+| 2 | TE 5227161-7, BNC right-angle PCB jack, 1/2-28 bulkhead | J6, J7, output for the QA403 | C591726 | in stock (433); low-profile, axis 6.91 mm above the board; the Amphenol 31-5431 has the same footprint and 1.7 mm more height | $6.34 |
+| 2 | TE 1-329632-2 jam nut, 1/2-28 | for the BNCs | C305927 | the -7 ships without nut; no lock washer at LCSC | $0.51 |
+| 3 | Cliff FCR7350 R / B / G, 4 mm safety socket, PCB | J1-J3, at 19.05 mm for a dual banana | C6041087 / C6555263 / C6041085 | pre-order at $11-12 each at LCSC; 6.80 € at Digi-Key - buy there and solder the three by hand if the JLCPCB price stands | $11 |
 | 1 | DPDT toggle ON-ON, panel mount, 1/4 in bushing | pad switch, in the output end plate | - | wired to J8 | 3 € |
+| 8 | M3 screws and nuts | the two XLR flanges | - | | 0.5 € |
 | 1 | Hammond 1455N1601 | box | - | 100 mm rails confirmed from the drawing | 30 € |
 | | four-layer PCB 100 × 158 mm, five pieces, two assembled | | | JLCPCB | see README |
 

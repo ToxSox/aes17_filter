@@ -30,9 +30,11 @@ it, layer 4 the few crossings. Both legs are mirror images about the centre line
 KiCad 7 reports no errors and no unconnected nets; the warnings it does report are silkscreen
 over pads and the footprints not being from a library table.
 
-The input end plate carries, top to bottom seen from inside: BNC IN + (from the matrix bus),
-red 4 mm IN +, green 4 mm GND, black 4 mm IN −, BNC IN −. The output plate carries BNC OUT +,
-the pad toggle, BNC OUT −. The connectors' fronts stick out through the plates: the BNCs are
+The connectors are the AUX-0025's, so the same cables fit both: the input end plate carries a
+female XLR (pin 2 +, pin 3 −, pin 1 and shell ground) and, next to it, red and black 4 mm
+sockets at 19.05 mm for a dual banana plug and a green common; the output plate carries a male
+XLR (pin 2 +, pin 3 −) and, for the QA403, a BNC pair, with the pad toggle between them. The
+connectors' fronts stick out through the plates: the XLRs are screwed to the plate, the BNCs
 held by their nuts, the Cliff sockets by the board alone (they have no panel retention; the
 plate just has a clearance hole for the Ø11 barrel).
 
@@ -72,7 +74,7 @@ For an assembly of five boards (quantities include JLCPCB's attrition allowance)
 
 | Line | Qty | Total | Per piece | Status |
 |---|---|---|---|---|
-| TE 5227161-7 BNC (C591726) | 20 | 99.63 | 4.98 | in stock |
+| TE 5227161-7 BNC (C591726) | 20 | 99.63 | 4.98 | in stock; the board now has two per channel, not four |
 | Cliff FCR7350R / B / G (C6041087 / C6555263 / C6041085) | 5 each | 58.13 / 58.13 / 50.32 | 11.6 / 11.6 / 10.1 | **shortage: pre-order**, plus the connector inspection fee per type |
 | WIMA 220 pF 630 V ±2.5 % (C5742108) | 30 | 7.19 | 0.24 | shortage: pre-order |
 | WIMA 4.7 nF 250 V (C20412818) | 25 | 10.70 | 0.43 | shortage: pre-order |
@@ -95,7 +97,10 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 
 | Qty for two boards | Part | Where |
 |---|---|---|
-| 8 | TE 1-329632-2 jam nut, 1/2-28, for the BNCs (the -7 ships without) | LCSC C305927, $0.51, or any 1/2-28 UNEF nut |
+| 4 | TE 1-329632-2 jam nut, 1/2-28, for the BNCs (the -7 ships without) | LCSC C305927, $0.51, or any 1/2-28 UNEF nut |
+| 8 | M3 × 8 screws and nuts for the XLR flanges | any |
+| 1 | a cable from the amplifier's terminals to a male XLR plug (pin 2 +, pin 3 −), or dual banana leads - the same cable then feeds an AUX-0025 | self-made |
+| 2 | an XLR-female-to-two-BNC-male lead if the QA403 is to be fed from the XLR output instead of the BNCs | self-made or bought |
 | 2 | DPDT toggle, ON-ON, panel mount, 1/4 in bushing, solder lugs | any; APEM 5000, C&K 7201, Knitter MTA 206 |
 | 2 | Hammond 1455N1601 (or 1455N1601BK black) | Reichelt, Mouser, Digi-Key, RS, Conrad |
 | 4 | BNC lead, male to male, 50 Ω, 20-30 cm, two equal per board | any |
@@ -134,17 +139,22 @@ See `aes17-filter-endplates.png`; the table below is printed by `make_endplates.
 
 | Plate | Hole | Ø mm | x from left, seen from inside | y above the bottom edge |
 |---|---|---|---|---|
-| input | BNC IN + | 12.9 | 15.6 | 14.9 |
-| input | 4 mm IN + (red) | 11.5 | 33.6 | 14.3 |
-| input | 4 mm GND (green) | 11.5 | 51.6 | 14.3 |
-| input | 4 mm IN − (black) | 11.5 | 69.6 | 14.3 |
-| input | BNC IN − | 12.9 | 87.6 | 14.9 |
-| output | BNC OUT + | 12.9 | 81.6 | 14.9 |
-| output | BNC OUT − | 12.9 | 21.6 | 14.9 |
+| input | XLR IN (female), Neutrik NC3FAAH2 | 22.5 | 22.2 | 20.5 |
+| input | its two M3 screws | 3.2 | 32.1 / 12.3 | 30.4 / 10.6 |
+| input | 4 mm IN + (red) | 11.5 | 51.6 | 14.3 |
+| input | 4 mm IN − (black) | 11.5 | 70.6 | 14.3 |
+| input | 4 mm GND (green) | 11.5 | 89.6 | 14.3 |
+| output | XLR OUT (male), Neutrik NC3MAAH | 22.5 | 81.6 | 20.5 |
+| output | its two M3 screws | 3.2 | 71.7 / 91.5 | 30.4 / 10.6 |
+| output | BNC OUT + | 12.9 | 31.6 | 14.9 |
+| output | BNC OUT − | 12.9 | 13.6 | 14.9 |
 | output | pad toggle, 1/4 in bushing | 6.4 | 51.6 | 34.0 |
 
 The y values assume the board's top surface 8.0 mm above the plate's bottom edge (lowest rail,
 6.4 mm floor to slot plus the 1.6 mm board); the BNC axis is 6.9 mm and the Cliff socket axis
-6.3 mm above the board. The TE drawing gives the BNC's panel cut-out as Ø12.83 with a D-flat
-5.54 mm from the centre; a round Ø12.9 hole works with the nut tightened, the flat only stops
-rotation. Cliff does not specify a panel hole for the S16N-PC; Ø11.5 clears its Ø11.0 barrel.
+6.3 mm above the board. **The XLR axis height of 12.5 mm is read off Neutrik's front view, not a
+dimensioned value: hold a connector against the board before drilling.** The TE drawing gives
+the BNC's panel cut-out as Ø12.83 with a D-flat 5.54 mm from the centre; a round Ø12.9 hole works
+with the nut tightened, the flat only stops rotation. Cliff does not specify a panel hole for the
+S16N-PC; Ø11.5 clears its Ø11.0 barrel. Neutrik asks for a hole of at least Ø22 and two Ø3.2
+screw holes 19.8 mm apart on the diagonal.

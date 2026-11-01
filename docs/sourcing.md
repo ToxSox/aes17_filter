@@ -134,6 +134,10 @@ not worth a second shop.
 
 ### 1.8 Connectors
 
+Settled on 1 November 2026: the connector set is the AUX-0025's. Input Neutrik NC3FAAH2 (LCSC
+C368522) plus the three Cliff sockets, output Neutrik NC3MAAH (C368463) plus two TE 5227161-7
+BNCs (C591726) with jam nuts (C305927). The lines below are kept for the alternatives.
+
 | Part | Qty | Hard | First choice | Alternatives / notes |
 |---|---|---|---|---|
 | BNC jack, PCB right angle | 10 | 50 Ω, right angle, through-hole, bulkhead nut so it can be fixed in the end plate | **Molex 73100-0105** (Digi-Key 1.95 €, 22 000 in stock) | Amphenol RF 31-5431 (4.97 €), TE 5227161-3 (4.68 €; the TE 1-1337543-0 is obsolete). **Confirm the chosen one's datasheet shows a threaded front and a panel nut** - the document relies on the jack being bolted to the end plate |

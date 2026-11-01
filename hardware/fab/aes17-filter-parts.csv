@@ -35,12 +35,12 @@ R17,24.9R,24.9R,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3542579,1 % m
 R18,10.0k 1W,UNI-ROYAL MFR01SF1002A10,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C58714,"1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)",yes
 R19,10.0k 1W,UNI-ROYAL MFR01SF1002A10,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C58714,"1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)",yes
 R20,1.00k 0.1%,TE YR1B1K0CC,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1364308,"0.1 %, 15 ppm, 0.25 W (TE YR1B1K0CC)",yes
-J1,IN +,Cliff FCR7350R,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087,"Cliff FCR7350R red, amplifier +; pre-order at LCSC, cheaper from Digi-Key/Farnell",yes
+J4,IN XLR,Neutrik NC3FAAH2,Jack_XLR_Neutrik_NC3FAAH2_Horizontal,C368522,"Neutrik NC3FAAH2, pin 2 = +, pin 3 = -, pin 1 and G = ground",yes
+J1,IN +,Cliff FCR7350R,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087,"Cliff FCR7350R red, amplifier +; with J2 at 19.05 mm for a dual banana plug; pre-order at LCSC, cheaper from Digi-Key",yes
 J2,IN -,Cliff FCR7350B,Banana_Cliff_FCR7350B_S16N-PC_Horizontal,C6555263,"Cliff FCR7350B black, amplifier -",yes
-J3,GND,Cliff FCR7350G,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085,"Cliff FCR7350G green, chassis / Audio Common",yes
-J4,IN + BNC,TE 5227161-7,BNC_TE_5227161_Horizontal,C591726,"TE 5227161-7 right-angle BNC, 1/2-28 bulkhead; nut 1-329632-2 (C305927) separately",yes
-J5,IN - BNC,TE 5227161-7,BNC_TE_5227161_Horizontal,C591726,"TE 5227161-7, from the matrix bus",yes
-J6,OUT +,TE 5227161-7,BNC_TE_5227161_Horizontal,C591726,"TE 5227161-7, to QA403 L+",yes
+J3,GND,Cliff FCR7350G,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085,"Cliff FCR7350G green, common / chassis",yes
+J5,OUT XLR,Neutrik NC3MAAH,Jack_XLR_Neutrik_NC3MAAH_Horizontal,C368463,"Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground",yes
+J6,OUT +,TE 5227161-7,BNC_TE_5227161_Horizontal,C591726,"TE 5227161-7, to QA403 L+; nut 1-329632-2 (C305927) separately",yes
 J7,OUT -,TE 5227161-7,BNC_TE_5227161_Horizontal,C591726,"TE 5227161-7, to QA403 L-",yes
 J8,PAD SW,pin header 2x3 2.54 mm,PinHeader_2x03_P2.54mm_Vertical,C65114,"2 x 3 header; toggle pole A on pins 1-3-5 (+ leg), pole B on 2-4-6 (- leg); 3 and 4 are the commons",yes
 K1,G6A-274P-ST-US DC12,Omron G6A-274P-ST-US DC12,Relay_DPDT_Omron_G6A-274P,C129439,"DO NOT PLACE until the matrix drives it; NC = pad, NO = direct",NO - footprint only

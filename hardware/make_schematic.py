@@ -46,7 +46,7 @@ def gnd(d, p):
 with schemdraw.Drawing(show=False) as d:
     d.config(fontsize=9)
     # ---- input --------------------------------------------------------------------------
-    dot(d, (0, 0), 'IN +   J1 (red 4 mm) and J4 (BNC) in parallel', loc='left', open_=True)
+    dot(d, (0, 0), 'IN +   J4 XLR pin 2 and J1 (red 4 mm) in parallel', loc='left', open_=True)
     line(d, (0, 0), (1, 0)); dot(d, (1, 0))
     line(d, (1, 2), (1, -2))
     R(d, (1, 2), (6, 2), 'R1  1.00k 3W')
@@ -81,11 +81,11 @@ with schemdraw.Drawing(show=False) as d:
     line(d, (25.5, -2.5), (28, -2.5)); dot(d, (28, -2.5), 'PAD   J8-1  /  K1-6 (NC, relay at rest)', loc='bottom', open_=True)
     dot(d, (30, -1.25), None, open_=True)
     d += elm.Line().at((30, -1.25)).to((28.25, -2.4)).linewidth(2)     # the blade, drawn in the PAD position
-    line(d, (30, -1.25), (32, -1.25)); dot(d, (32, -1.25), 'OUT +   J8-3 / K1-4 (COM)   to J6 (BNC) and QA403 L+', loc='right', open_=True)
+    line(d, (30, -1.25), (32, -1.25)); dot(d, (32, -1.25), 'OUT +   J8-3 / K1-4 (COM)   to J5 XLR pin 2 and J6 (BNC)', loc='right', open_=True)
     # ---- notes ---------------------------------------------------------------------------
     d += elm.Label().at((0, -7.2)).label(
-        'Negative leg, IN - (J2 black / J5 BNC) to OUT - (J7 BNC): identical; R11-R20, RV2, C5-C8, L3, L4; its switch is J8 pins 6 / 4 / 2 and relay pole B pins 9 / 13 / 11.\n'
-        'J3 (green 4 mm), every BNC shell, the ground plane and the box: GND = the QA403\'s Audio Common.\n'
+        'Negative leg, IN - (J4 XLR pin 3 / J2 black) to OUT - (J5 XLR pin 3 / J7 BNC): identical; R11-R20, RV2, C5-C10, L3, L4; its switch is J8 pins 6 / 4 / 2 and relay pole B pins 9 / 13 / 11.\n'
+        'XLR pin 1 and shell, J3 (green 4 mm), every BNC shell, the ground plane and the box: GND = the QA403\'s Audio Common. Connectors as on the AP AUX-0025.\n'
         'K1 (Omron G6A-274P-ST-US DC12) is a footprint only until the matrix controller drives it; coil on J9 (1 = +12 V), D1 1N4148 across the coil, cathode (band) to J9-1.\n'
         'With K1 at rest or a toggle in the PAD position the analyzer sees 1/20 of the amplifier; DIRECT is the full voltage, limited to 40 Vrms by the QA403.',
         halign='left', fontsize=8)

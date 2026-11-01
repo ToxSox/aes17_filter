@@ -30,11 +30,13 @@ FP = {
     'BANANA_B': 'Connector:Banana_Cliff_FCR7350B_S16N-PC_Horizontal',
     'BANANA_G': 'Connector:Banana_Cliff_FCR7350G_S16N-PC_Horizontal',
     'BNC':      'klirr:BNC_TE_5227161_Horizontal',             # drawn by the generator; also fits Amphenol 31-5431
+    'XLR_F':    'Connector_Audio:Jack_XLR_Neutrik_NC3FAAH2_Horizontal',
+    'XLR_M':    'Connector_Audio:Jack_XLR_Neutrik_NC3MAAH_Horizontal',
     'RELAY':    'klirr:Relay_DPDT_Omron_G6A-274P',             # drawn by the generator
     'HDR_2x3':  'Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical',
     'HDR_1x2':  'Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical',
     'DIODE':    'Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal',
-    'HOLE':     'MountingHole:MountingHole_3.2mm_M3_Pad_Via',
+    'HOLE':     'MountingHole:MountingHole_3.2mm_M3',
 }
 
 # ref, value, footprint key, LCSC part (empty = to be assigned at ordering), note for the BOM.
@@ -83,14 +85,15 @@ NAMES_N = dict(R1a='R11', R1b='R12', R1c='R13', RV1='RV2', C1='C5', R3='R14', C3
                R5='R15', L3='L4', R7='R16', C9='C8', R9='R17', R11='R18', R12='R19', R13='R20')
 
 PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
-    # connectors, input end (x = 0): three 4 mm sockets and two BNCs
-    ('J1', 'IN +',  'BANANA_R', 'C6041087', 'Cliff FCR7350R red, amplifier +; pre-order at LCSC, cheaper from Digi-Key/Farnell', [(1, 'IN_P')]),
+    # connectors, input end (x = 0), the AUX-0025's set: female XLR (pin 2 +, pin 3 -, pin 1 and
+    # shell ground) and a dual-banana pair at 19.05 mm (AP's 3/4 in), plus a common terminal
+    ('J4', 'IN XLR', 'XLR_F',   'C368522', 'Neutrik NC3FAAH2, pin 2 = +, pin 3 = -, pin 1 and G = ground', [(1, 'GND'), (2, 'IN_P'), (3, 'IN_N'), ('G', 'GND')]),
+    ('J1', 'IN +',  'BANANA_R', 'C6041087', 'Cliff FCR7350R red, amplifier +; with J2 at 19.05 mm for a dual banana plug; pre-order at LCSC, cheaper from Digi-Key', [(1, 'IN_P')]),
     ('J2', 'IN -',  'BANANA_B', 'C6555263', 'Cliff FCR7350B black, amplifier -',         [(1, 'IN_N')]),
-    ('J3', 'GND',   'BANANA_G', 'C6041085', 'Cliff FCR7350G green, chassis / Audio Common', [(1, 'GND')]),
-    ('J4', 'IN + BNC', 'BNC',   'C591726', 'TE 5227161-7 right-angle BNC, 1/2-28 bulkhead; nut 1-329632-2 (C305927) separately', [(1, 'IN_P'), (2, 'GND')]),
-    ('J5', 'IN - BNC', 'BNC',   'C591726', 'TE 5227161-7, from the matrix bus',          [(1, 'IN_N'), (2, 'GND')]),
-    # connectors, output end (x = 158): two BNCs to the QA403
-    ('J6', 'OUT +', 'BNC',      'C591726', 'TE 5227161-7, to QA403 L+',                  [(1, 'OUT_P'), (2, 'GND')]),
+    ('J3', 'GND',   'BANANA_G', 'C6041085', 'Cliff FCR7350G green, common / chassis',    [(1, 'GND')]),
+    # connectors, output end (x = 158): the AUX-0025's male XLR, and a BNC pair for the QA403
+    ('J5', 'OUT XLR', 'XLR_M',  'C368463', 'Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground', [(1, 'GND'), (2, 'OUT_P'), (3, 'OUT_N'), ('G', 'GND')]),
+    ('J6', 'OUT +', 'BNC',      'C591726', 'TE 5227161-7, to QA403 L+; nut 1-329632-2 (C305927) separately', [(1, 'OUT_P'), (2, 'GND')]),
     ('J7', 'OUT -', 'BNC',      'C591726', 'TE 5227161-7, to QA403 L-',                  [(1, 'OUT_N'), (2, 'GND')]),
     # the pad switch: header for the toggle, relay footprint on the same nets
     # KiCad numbers a 2 x 3 header 1-2 / 3-4 / 5-6 across the rows, so pins 1-3-5 are one row of
@@ -102,10 +105,10 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     ('J9', 'COIL', 'HDR_1x2',   'C492401', 'relay coil, 12 V from the matrix controller', [(1, 'COIL+'), (2, 'COIL-')]),
     ('D1', '1N4148', 'DIODE',   'C258182', 'flyback across the coil; pin 1 is the cathode (band) and goes to COIL+', [(1, 'COIL+'), (2, 'COIL-')]),
     # mounting holes, on GND, for a box without rails
-    ('H1', 'M3', 'HOLE', '', '', [(1, 'GND')]),
-    ('H2', 'M3', 'HOLE', '', '', [(1, 'GND')]),
-    ('H3', 'M3', 'HOLE', '', '', [(1, 'GND')]),
-    ('H4', 'M3', 'HOLE', '', '', [(1, 'GND')]),
+    ('H1', 'M3', 'HOLE', '', 'plain hole, no pad', []),
+    ('H2', 'M3', 'HOLE', '', 'plain hole, no pad', []),
+    ('H3', 'M3', 'HOLE', '', 'plain hole, no pad', []),
+    ('H4', 'M3', 'HOLE', '', 'plain hole, no pad', []),
 ]
 
 DO_NOT_PLACE = {'K1'}
@@ -120,7 +123,7 @@ MPN = {
     'C3': 'WIMA FKP2F014701I00JA00', 'C4': 'WIMA FKP2F014701I00JA00', 'C7': 'WIMA FKP2F014701I00JA00', 'C8': 'WIMA FKP2F014701I00JA00',
     'RV1': 'Bourns 3296W-1-501LF', 'RV2': 'Bourns 3296W-1-501LF',
     'J1': 'Cliff FCR7350R', 'J2': 'Cliff FCR7350B', 'J3': 'Cliff FCR7350G',
-    'J4': 'TE 5227161-7', 'J5': 'TE 5227161-7', 'J6': 'TE 5227161-7', 'J7': 'TE 5227161-7',
+    'J4': 'Neutrik NC3FAAH2', 'J5': 'Neutrik NC3MAAH', 'J6': 'TE 5227161-7', 'J7': 'TE 5227161-7',
     'J8': 'pin header 2x3 2.54 mm', 'J9': 'pin header 1x2 2.54 mm',
     'K1': 'Omron G6A-274P-ST-US DC12', 'D1': '1N4148',
 }
