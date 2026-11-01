@@ -287,9 +287,10 @@ thing to build on the software side.
 them exists in E96: 412 Ω, 390 pF, 75.0 Ω, 3.40 kΩ, 24.9 Ω. They sit 1-2 dB better in the shelf
 and 0.03 dB flatter at 20 kHz. The input network as AP has it, with a wider pot: **1.00 kΩ 3 W ‖
 14.0 kΩ ‖ (1.00 kΩ 3 W + 500 Ω multi-turn trimmer)**, which spans 483-575 Ω. AP's 200 Ω pot
-spans 483-525 Ω and is enough for AP's own 2.5 % parts; with 5 % inductors and 5 % capacitors
-straight from the reel, the Monte Carlo below needs 494-532 Ω, and with 10 % inductors
-480-542 Ω, so the 500 Ω pot covers every case with room. The network spreads 6 W of rating over
+spans 483-525 Ω and is enough for AP's own 2.5 % parts; the shielded Würth WE-TIS coil that is
+fitted here is ±10 % with 2.1 Ω of winding resistance, and with it and 5 % capacitors straight
+from the reel the Monte Carlo below needs 484-540 Ω; the unshielded ±5 % fallback coil needs
+494-534 Ω, and even ±20 % coils would need 454-562 Ω. The 500 Ω pot covers every case with room. The network spreads 6 W of rating over
 two resistors, and the trimmer carries at most half the current (0.25 W at 63 V and 20 kHz; a
 Bourns 3296W is rated 0.5 W).
 
@@ -315,17 +316,20 @@ series, and the nearest connector pin is 50 mm away. Both legs are laid out as m
 every coil in the same orientation.
 
 **Assembly.** The board is meant to be **assembled by JLCPCB, through-hole parts included**,
-and nothing is hand-selected. The Monte Carlo that decides this: 200 boards with inductors
-anywhere within ±5 % and capacitors anywhere within ±5 %, each leg then trimmed with R1 alone.
+and nothing is hand-selected. The Monte Carlo that decides this: 200 boards with the coils
+anywhere within their tolerance and the capacitors anywhere within ±5 %, each leg then trimmed
+with R1 alone. The coil as fitted is the shielded Würth WE-TIS 7447471102, ±10 % with 2.1 Ω
+of winding resistance; the unshielded ±5 % WE-TI 7447480102 is the fallback.
 
 | Parts as delivered | Untrimmed, worst leg | Trimmed, worst leg | R1 range the trim needed |
 |---|---|---|---|
-| L ±5 %, C ±5 % (reel parts, no selection) | 0.16 dB | **0.027 dB** | 494-532 Ω |
-| L ±5 %, C ±2.5 % | 0.14 dB | 0.026 dB | 498-528 Ω |
-| L ±10 %, C ±5 % (shielded-inductor option) | 0.22 dB | 0.029 dB | 480-542 Ω |
+| **WE-TIS 7447471102, ±10 %, 2.1 Ω; C ±5 %** (the board as ordered) | 0.21 dB | **0.029 dB** | 484-540 Ω |
+| WE-TI 7447480102, ±5 %, 1.0 Ω; C ±5 % (fallback coil) | 0.17 dB | 0.027 dB | 494-534 Ω |
+| any coil ±20 %, 1.5 Ω; C ±5 % | 0.3 dB | 0.032 dB | 454-562 Ω |
 
 The trimmed residual is the same whatever the parts, and it is the shape of the curve, not the
-tolerance, that sets it. Selecting parts by hand would move the 0.027 to about 0.025. So the
+tolerance, that sets it: the extra 1.1 Ω of the shielded coil's winding and its wider tolerance
+cost 0.002 dB after trimming. Selecting parts by hand would move the 0.029 to about 0.025. So the
 whole board goes through assembly, and the hand work is: drill the end plates, wire the toggle,
 turn two trimmers, measure the pad ratio. Of the five boards, two are assembled; JLCPCB lets
 the assembly count differ from the board count.
