@@ -21,7 +21,7 @@ This repository is a fork of Matt Clark's
 [aes17_filter_25](https://github.com/mattclarkdotnet/aes17_filter_25) (V2, May 2024), itself a
 DIY copy of the AUX-0025, released under the CERN-OHL-W 2.0. The V2 KiCad project, Gerbers,
 case cut-outs and dissipation spreadsheet were removed from this tree because they no longer
-describe this board; they are intact in the history, tagged **`v2-mattclark`**. The licence
+describe this board; they are intact in the history, on the branch **`v2-mattclark`** (the GitHub proxy of this session refused to push a tag, so it is a branch). The licence
 stays the CERN-OHL-W 2.0 (`LICENSE.txt`), and the source location of this derived design is
 https://github.com/ToxSox/aes17_filter.
 
