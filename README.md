@@ -69,13 +69,41 @@ A real box will land a few decibels short of the stop-band figures: one V1 build
 at 248 kHz against 55 simulated, and the 1 mH coils' self-resonance (1.3 MHz) takes 10-20 dB off
 above 2 MHz, where the filter is 80 dB down anyway.
 
+## Bill of materials, per board
+
+The generated list is `hardware/fab/aes17-filter-bom.csv`; this is the same in words. Prices
+are LCSC or JLCPCB's global-sourcing quote on 1 November 2026, single quantity.
+
+| Qty | Part | For | Source | ≈ |
+|---|---|---|---|---|
+| 4 | **Würth WE-TIS 7447471102**, 1 mH ±10 %, shielded, 2.1 Ω, 0.46 A | L1-L4 | JLCPCB global sourcing (not in LCSC's catalogue): quoted from Digi-Key 3.01 € (339 in stock, 8-14 business days), RS 2.74 € at five, Element14 2.97 €, Mouser 3.37 €. Fallback on the same footprint: unshielded Würth 7447480102, C1331132, pre-order. The trimmer absorbs the ±10 %: trimmed boards land within 0.029 dB and need R1 between 484 and 540 Ω, well inside the network's 483-575 Ω | 2.9 € |
+| 4 | UNI-ROYAL MFR03SF1001A10, 1.00 kΩ 1 % 3 W 50 ppm | input network | C58750 | $0.06 |
+| 2 | 14.0 kΩ 1 % 0.25 W | input network | C127223 | $0.01 |
+| 2 | Bourns 3296W-1-501LF, 500 Ω 25-turn trimmer | 20 kHz knee | C69564 | $0.97 |
+| 6 | WIMA FKP2J002201D00HSSD, 220 pF 630 V ±2.5 % | C1, C5, and the bypass pairs C2+C9, C6+C10 (440 pF) | C5742108, pre-order | $0.23 |
+| 4 | WIMA FKP2F014701I00JA00, 4.7 nF 250 V ±5 % | C3, C4, C7, C8 | C20412818, pre-order | $0.41 |
+| 2 | 412 Ω 1 % 0.25 W, Yageo MFR-25FTE52-412R | bypass across L1 | C3558411 | $0.01 |
+| 2 | 75.0 Ω 1 % 1 W, CCO MF1W | between the stages | C160685 | $0.05 |
+| 2 | 3.40 kΩ 1 % 0.25 W, Yageo MFR-25FBF52-3K4 | across L3 | C3517441 | $0.02 |
+| 2 | 24.9 Ω 1 % 0.25 W, Yageo MFR-25FBF52-24R9 | output | C3542579 | $0.03 |
+| 4 | UNI-ROYAL MFR01SF1002A10, 10.0 kΩ 1 % 1 W | pad, upper arms (2 × 10 kΩ over 1 kΩ, about 21.8:1) | C58714 (Yageo MFR1WSFTE52-10K, C172916, as alternative) | $0.05 |
+| 2 | TE YR1B1K0CC, 1.00 kΩ 0.1 % | pad, lower arm | C1364308 | $0.50 |
+| 1 | 2 × 3 pin header 2.54 mm | pad switch | C65114 | $0.05 |
+| 1 | 1 × 2 pin header 2.54 mm | relay coil | C492401 | $0.02 |
+| 1 | 1N4148 DO-35 | flyback | C258182 | $0.03 |
+| 0 | Omron G6A-274P-ST-US DC12 | K1, footprint only, for the relay matrix later | C129439 | - |
+| 4 | TE 5227161-7, right-angle BNC jack, 1/2-28 bulkhead | J4-J7 | C591726, in stock | $6.34 |
+| 3 | Cliff FCR7350 R / B / G, 4 mm safety sockets | J1-J3 | C6041087 / C6555263 / C6041085, pre-order at $11-12, or 6.80 € at Digi-Key and soldered by hand | 7 € |
+
+Not on the board, per board: four TE 1-329632-2 jam nuts (C305927), one DPDT ON-ON toggle with
+a 1/4 in bushing, one Hammond 1455N1601, two equal BNC leads.
+
 ## Ordering and building
 
 [hardware/README.md](hardware/README.md): upload the three files in `hardware/fab/` to JLCPCB,
-five boards, two assembled, Economic. Every BOM line has an LCSC number; five lines are
-pre-order parts (the Würth coils, both WIMA capacitors, the Cliff sockets), and the Cliff sockets
-are cheaper bought at Digi-Key and soldered by hand. Not on the board: four BNC jam nuts, a DPDT
-toggle, the Hammond case, two BNC leads. Then drill the end plates after
+five boards, two assembled, Economic. Every BOM line but the coils has an LCSC number; the coils
+are requested as a global-sourcing part, four lines are pre-order parts (both WIMA capacitors,
+the Cliff sockets), and the Cliff sockets are cheaper bought at Digi-Key and soldered by hand. Then drill the end plates after
 `hardware/aes17-filter-endplates.png`, trim both legs through an amplifier until 20 kHz equals
 1 kHz, measure the pad ratio, and the filter is a probe profile in Klirr.
 
