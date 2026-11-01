@@ -58,11 +58,11 @@ def leg(prefix, names, nets):
         # 390 pF is not stocked at LCSC; two 220 pF in parallel (440 pF, as the repo has it) are
         (names['C34'], '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
         (names['C34b'], '220p',     'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
-        (names['L1'],  '1mH',       'L_1mH',    'C1331132', 'Würth 7447480102 (or 7687480102)', [(1, n['A']), (2, n['B'])]),
+        (names['L1'],  '1mH',       'L_1mH',    'C1331132', 'Würth 7447480102 (or 7687480102); shielded drop-in: Würth WE-TIS 7447471102, ±10 %, 5 mm pitch, not at LCSC', [(1, n['A']), (2, n['B'])]),
         (names['C7'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['B']), (2, 'GND')]),
         # second stage
         (names['R5'],  '75.0R 1W',  'R_1W',     'C160685', '1 %, 1 W metal film (CCO MF1W-75R)', [(1, n['B']), (2, n['D'])]),
-        (names['L3'],  '1mH',       'L_1mH',    'C1331132', 'Würth 7447480102 (or 7687480102)', [(1, n['D']), (2, n['E'])]),
+        (names['L3'],  '1mH',       'L_1mH',    'C1331132', 'Würth 7447480102 (or 7687480102); shielded drop-in: Würth WE-TIS 7447471102, ±10 %, 5 mm pitch, not at LCSC', [(1, n['D']), (2, n['E'])]),
         (names['R7'],  '3.40k',     'R_0W6',    'C3517441', '1 % metal film 0.25 W (Yageo MFR-25FBF52-3K4)', [(1, n['D']), (2, n['E'])]),
         (names['C9'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['E']), (2, 'GND')]),
         (names['R9'],  '24.9R',     'R_0W6',    'C3542579', '1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9)', [(1, n['E']), (2, n['F'])]),

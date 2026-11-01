@@ -367,7 +367,7 @@ an AUX-0025 (Axiometrix shop, October 2026).
 
 | Qty | Part | For | LCSC | Note | ≈ |
 |---|---|---|---|---|---|
-| 4 | Würth 7447480102, 1 mH ±5 % | L1-L4 | C1331132 | pre-order, minimum 4; the 120 V rating is enough | $2.48 |
+| 4 | Würth 7447480102, 1 mH ±5 % | L1-L4 | C1331132 | pre-order, minimum 4; the 120 V rating is enough. Shielded drop-in: Würth WE-TIS 7447471102 (±10 %, 5 mm pitch, Digi-Key 2.21 €), see the section on the author's planned changes | $2.48 |
 | 4 | UNI-ROYAL MFR03SF1001A10, 1.00 kΩ 1 % 3 W 50 ppm | input network | C58750 | in stock; Vishay RS02B1K000FE12 (C3397612) is the AP part at $3.71 | $0.06 |
 | 2 | 14.0 kΩ 1 % 0.25 W | input network | C127223 | | $0.01 |
 | 2 | Bourns 3296W-1-501LF, 500 Ω 25-turn | 20 kHz knee | C69564 | in stock | $0.97 |
@@ -440,6 +440,52 @@ filter was designed for; they are tracked there.
   show the amplifier and not the filter. Everything else (THD+N, SNR, power) is unaffected.
 - **Per-step probe choice.** Direct for the audio block, 20:1 for the sweeps, in one run. Once
   the relay is populated and the matrix drives it, this is the normal case.
+
+## The original author's three planned changes
+
+The V2 README lists three "possible future changes". Each was checked against this fork's design
+with the same simulation and the same price lists.
+
+**Shielded Coilcraft inductors, held back by their ±10 % tolerance.** The tolerance was the
+only argument against them, and the trimmer removes it: trimmed per leg, ±10 % coils land
+within 0.028 dB (±5 % coils: 0.029 dB) and need R1 between 478 and 548 Ω, inside the network's
+483 to 575 Ω; even ±20 % coils trim to 0.032 dB with R1 between 454 and 562 Ω. Their higher DCR
+(1.7 to 2.1 Ω against 1.0 Ω) moves nothing the trimmer does not take out, and the stop band is
+unchanged. What shielding buys is exactly what the V1 builders complained about: a drum core
+picks up the stray field of a transformer or a load bank and the result moves when the box
+moves. So this change is **worth making, and costs nothing once the trimmer exists**. The parts:
+the Coilcraft RFS1317-105KL (radial, ±10 %, 1.02 Ω, 0.68 A) is not at LCSC; the Bourns
+SRR1280-102K (SMD 12.5 mm, ±10 %, 1.7 Ω, 0.68 A, JLCPCB C2041786, extended, about $1) needs
+SMD pads and brings SMT assembly fees onto a through-hole board; the **Würth WE-TIS 7447471102**
+(radial, shielded, ±10 %, 2.1 Ω typical, 0.46 A rated, 0.68 A saturation, SRF 1.1 MHz, 120 V,
+Ø11 × 11.5 mm, **5 mm pitch, Ø1.2 mm holes**) is a drop-in for the footprint on this board and
+was in stock at Digi-Key at 2.21 €. It is not in LCSC's catalogue; JLCPCB's global sourcing may
+find it, otherwise the four coils are bought at Digi-Key and soldered by hand, eight joints. The
+coil line in `design.py` names it as the alternative.
+
+**A 60 Vrms goal instead of 140, to allow smaller and cheaper parts.** The parts that the
+voltage rating sets are few and cheap: the two 3 W input resistors per leg ($0.06 each) would
+become 2 W parts, the 630 V capacitors 400 V ones (the 630 V WIMA at ±2.5 % is the one actually
+stocked), the 1 W pad resistors 0.5 W. Under a dollar per board, and the limit this board has
+is not the voltage anyway but the dissipation at 20 kHz: 2.45 W per leg at 60 V, 2.72 W at
+63 V, 4.9 W at 85 V, against the 6 W of the two 3 W resistors; a shorted output at 63 V is 8 W
+per leg, so brief in either design. Reducing the goal would give up the 85 V (1800 W into 4 Ω)
+that the 3 W pair allows for the price of two resistors. **Not worth making**; the honest rating
+curve in the "Dissipation" section is what this item was really about.
+
+**A mostly SMD version, orderable through JLCPCB, probably not safe into a short.** The board
+is orderable through JLCPCB as it is: every part is through-hole and JLCPCB hand-solders them at
+$3.58 per order plus $0.0164 per joint, about $5.60 for this board's 120 joints. An SMD version
+would replace that with SMT setup ($8.18), a stencil ($1.53) and a feeder fee of $3.07 per
+extended part (about ten here), so for two to five boards it costs **more**, and the connectors
+stay through-hole whatever happens, so the hand-soldering line stays too. What SMD would give:
+0.1 % resistors for the pad in stock (Yageo RT0603BRD079K53L, 8 000 pieces), C0G capacitors with
+nothing to measure, shielded coils as above, and a smaller board that the box has no use for.
+What it would take: the 3 W input resistors become 2512 parts of 1 to 2 W, so the 20 kHz rating
+falls to 50 or 60 V and a shorted output destroys them - the author's own caveat. **Not for this
+run.** For a batch of twenty or more, a board with SMD passives and through-hole connectors would
+be cheaper per piece and is a reasonable second revision; the data module and generator are
+written so that it is a change of footprints, not a redesign.
 
 ## What was not changed, and why
 

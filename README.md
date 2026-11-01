@@ -26,7 +26,9 @@ stays the CERN-OHL-W 2.0 (`LICENSE.txt`), and the source location of this derive
 https://github.com/ToxSox/aes17_filter.
 
 What changed against V2, and why, is argued at length in
-[docs/design-review.md](docs/design-review.md). In short:
+[docs/design-review.md](docs/design-review.md), which also takes up the three changes the V2
+README had planned (shielded coils: yes, the trimmer makes their tolerance irrelevant; a 60 V
+goal: no gain; an SMD version: dearer for small runs). In short:
 
 | | V2 (mattclarkdotnet) | this fork | why |
 |---|---|---|---|
