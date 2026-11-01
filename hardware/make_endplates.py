@@ -24,7 +24,6 @@ BOARD_TOP = 8.0                         # board top surface above the plate's bo
                                         # sits in the lowest rail (6.4 mm floor-to-slot + 1.6 mm board);
                                         # one rail up adds the rail pitch - measure the box before drilling
 CLIFF_AXIS = 6.30                       # Cliff S16N-PC axis above the board (5.5 + 0.8 stand-offs)
-BNC_AXIS = make_pcb.BNC['axis_height']  # TE 5227161-7: 6.91
 XLR_AXIS = 12.5                         # Neutrik A-series horizontal PCB: the flange reaches 12.5 mm below the
                                         # axis and sits on the board, so the axis is about 12.5 mm up. Not a
                                         # dimensioned value on Neutrik's sheet: check against the part before drilling
@@ -35,7 +34,7 @@ TOGGLE_HEIGHT = 26.0                    # the toggle's bushing above the board; 
 # (ref, label, axis height, hole diameter, offset of the axis across the board from the footprint origin)
 INPUT = [('J4', 'XLR IN (female)', XLR_AXIS, XLR_HOLE, 0.62), ('J1', '4 mm IN + (red)', CLIFF_AXIS, 11.5, 0.0),
          ('J2', '4 mm IN - (black)', CLIFF_AXIS, 11.5, 0.0), ('J3', '4 mm GND (green)', CLIFF_AXIS, 11.5, 0.0)]
-OUTPUT = [('J5', 'XLR OUT (male)', XLR_AXIS, XLR_HOLE, 3.81), ('J6', 'BNC OUT +', BNC_AXIS, 12.9, 0.0), ('J7', 'BNC OUT -', BNC_AXIS, 12.9, 0.0)]
+OUTPUT = [('J5', 'XLR OUT (male)', XLR_AXIS, XLR_HOLE, 3.81)]
 TOGGLE = ('SW', 'pad toggle (1/4 in bushing)', TOGGLE_HEIGHT, 6.4, 50.0)
 
 

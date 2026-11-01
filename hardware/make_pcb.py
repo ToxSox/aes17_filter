@@ -90,9 +90,8 @@ PLACE.update({
     # pin 1 another 8.89 behind it), red and black 4 mm at 19.05 mm pitch (a dual banana plug),
     # green common. The Cliff sockets' fronts protrude through the plate, pins 14 mm inside.
     'J4': (12.09, 20.0, 90), 'J1': (14.0, 50.0, 0), 'J2': (14.0, 69.05, 0), 'J3': (14.0, 88.0, 0),
-    # output end plate: male XLR (pin row 3.81 behind the flange rear face at 154.8), the toggle in
-    # the plate at y = 43, then BNC + and BNC - for the QA403
-    'J5': (L - 0.5 - 2.7 - 3.81, 16.19, 270), 'J6': (L - 12.0, 70.0, 180), 'J7': (L - 12.0, 88.0, 180),
+    # output end plate: male XLR (pin row 3.81 behind the flange rear face at 154.8) and the toggle
+    'J5': (L - 0.5 - 2.7 - 3.81, 16.19, 270),
     # pad switch header (rows: 1-3-5 at y = 47.46 with pin 1 at the right, 2-4-6 at y = 50),
     # relay and coil connector in the middle band
     'J8': (144.54, 47.46, 270), 'K1': (118.0, 46.19, 0), 'J9': (108.0, 48.73, 0), 'D1': (112.0, 50.0, 270),
@@ -207,7 +206,7 @@ def load_footprint(board, key):
     name = design.FP[key]
     lib, fpname = name.split(':')
     if lib == 'klirr':
-        return {'BNC_TE_5227161_Horizontal': fp_bnc, 'Relay_DPDT_Omron_G6A-274P': fp_relay_g6a, 'L_Radial_D11.5mm_P5.00mm': fp_radial_coil}[fpname](board)
+        return {'Relay_DPDT_Omron_G6A-274P': fp_relay_g6a, 'L_Radial_D11.5mm_P5.00mm': fp_radial_coil}[fpname](board)
     fp = pcbnew.FootprintLoad(os.path.join(LIB, lib + '.pretty'), fpname)
     if fp is None:
         raise SystemExit(f'footprint not found: {name}')
@@ -291,15 +290,14 @@ MIDDLE_ROUTES = [
     ('F_P', I2, W_SIG, [('K1', 8), (135.78, 42.0), (139.46, 42.0)]),
     ('OUT_P', B, W_SIG, [('J5', 2), (146.3, 23.81), (146.3, 40.0), (125.62, 40.0), ('K1', 4)]),
     ('OUT_P', B, W_SIG, [(142.0, 40.0), ('J8', 3)]),
-    ('OUT_P', B, W_SIG, [('J6', 1), (148.5, 70.0), (148.5, 44.0), (146.3, 44.0), (146.3, 40.0)]),
     ('PAD_P', F, W_SIG, [('R10', 1), (130.7, 35.0), ('K1', 6)]),
     ('PAD_P', F, W_SIG, [(130.7, 38.0), (144.54, 38.0), ('J8', 1)]),
     # --- negative leg ---
     ('F_N', I2, W_SIG, [('R17', 2), (X_R9 + 10.16, 60.5), (143.5, 60.5), (143.5, 55.5), (139.46, 55.5), ('J8', 6)]),
     ('F_N', I2, W_SIG, [('K1', 9), (135.78, 55.5), (139.46, 55.5)]),
-    ('OUT_N', B, W_SIG, [('J7', 1), (143.0, 88.0), (143.0, 60.0), (125.62, 60.0), ('K1', 13)]),
+    ('OUT_N', B, W_SIG, [(125.62, 60.0), ('K1', 13)]),
     ('OUT_N', B, W_SIG, [(142.0, 60.0), ('J8', 4)]),
-    ('OUT_N', I2, W_SIG, [('J5', 3), (156.5, 20.0), (156.5, 79.5), (144.0, 79.5), (144.0, 88.0), ('J7', 1)]),
+    ('OUT_N', B, W_SIG, [('J5', 3), (156.5, 20.0), (156.5, 60.0), (125.62, 60.0)]),
     ('PAD_N', F, W_SIG, [('R20', 1), (130.7, 65.0), ('K1', 11)]),
     ('PAD_N', F, W_SIG, [(130.7, 62.0), (144.54, 62.0), ('J8', 2)]),
     # --- coil ---
@@ -369,7 +367,7 @@ def add_silk(board):
     add_text(board, 'IN +', 24.0, 50.0, 1.2); add_text(board, 'IN -', 24.0, 69.05, 1.2); add_text(board, 'GND', 24.0, 88.0, 1.2)
     add_text(board, 'IN XLR: 2 = +, 3 = -', 30.0, 8.0, 0.9)
     add_text(board, 'OUT XLR: 2 = +, 3 = -', 138.0, 8.0, 0.9)
-    add_text(board, 'OUT + QA403 L+', 134.0, 72.0, 0.9); add_text(board, 'OUT - QA403 L-', 134.0, 92.0, 0.9)
+    add_text(board, 'QA403: XLR to 2 x BNC lead', 140.0, 70.0, 0.9)
     add_text(board, '1-3-5: PAD+ OUT+ DIR+', 151.0, 44.0, 0.8); add_text(board, '2-4-6: PAD- OUT- DIR-', 151.0, 53.5, 0.8)
     add_text(board, 'K1 not fitted: toggle on J8', 127.0, 58.0, 0.8)
     add_text(board, 'positive leg', 86.0, 24.0, 0.9); add_text(board, 'negative leg', 86.0, 76.0, 0.9)

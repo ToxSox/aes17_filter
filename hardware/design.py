@@ -29,7 +29,6 @@ FP = {
     'BANANA_R': 'Connector:Banana_Cliff_FCR7350R_S16N-PC_Horizontal',
     'BANANA_B': 'Connector:Banana_Cliff_FCR7350B_S16N-PC_Horizontal',
     'BANANA_G': 'Connector:Banana_Cliff_FCR7350G_S16N-PC_Horizontal',
-    'BNC':      'klirr:BNC_TE_5227161_Horizontal',             # drawn by the generator; also fits Amphenol 31-5431
     'XLR_F':    'Connector_Audio:Jack_XLR_Neutrik_NC3FAAH2_Horizontal',
     'XLR_M':    'Connector_Audio:Jack_XLR_Neutrik_NC3MAAH_Horizontal',
     'RELAY':    'klirr:Relay_DPDT_Omron_G6A-274P',             # drawn by the generator
@@ -91,10 +90,8 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     ('J1', 'IN +',  'BANANA_R', 'C6041087', 'Cliff FCR7350R red, amplifier +; with J2 at 19.05 mm for a dual banana plug; pre-order at LCSC, cheaper from Digi-Key', [(1, 'IN_P')]),
     ('J2', 'IN -',  'BANANA_B', 'C6555263', 'Cliff FCR7350B black, amplifier -',         [(1, 'IN_N')]),
     ('J3', 'GND',   'BANANA_G', 'C6041085', 'Cliff FCR7350G green, common / chassis',    [(1, 'GND')]),
-    # connectors, output end (x = 158): the AUX-0025's male XLR, and a BNC pair for the QA403
+    # connectors, output end (x = 158): the AUX-0025's male XLR; the QA403 takes an XLR-to-two-BNC lead
     ('J5', 'OUT XLR', 'XLR_M',  'C368463', 'Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground', [(1, 'GND'), (2, 'OUT_P'), (3, 'OUT_N'), ('G', 'GND')]),
-    ('J6', 'OUT +', 'BNC',      'C591726', 'TE 5227161-7, to QA403 L+; nut 1-329632-2 (C305927) separately', [(1, 'OUT_P'), (2, 'GND')]),
-    ('J7', 'OUT -', 'BNC',      'C591726', 'TE 5227161-7, to QA403 L-',                  [(1, 'OUT_N'), (2, 'GND')]),
     # the pad switch: header for the toggle, relay footprint on the same nets
     # KiCad numbers a 2 x 3 header 1-2 / 3-4 / 5-6 across the rows, so pins 1-3-5 are one row of
     # three and 2-4-6 the other: exactly the two lug columns of a DPDT toggle, common in the middle.
@@ -123,7 +120,7 @@ MPN = {
     'C3': 'WIMA FKP2F014701I00JA00', 'C4': 'WIMA FKP2F014701I00JA00', 'C7': 'WIMA FKP2F014701I00JA00', 'C8': 'WIMA FKP2F014701I00JA00',
     'RV1': 'Bourns 3296W-1-501LF', 'RV2': 'Bourns 3296W-1-501LF',
     'J1': 'Cliff FCR7350R', 'J2': 'Cliff FCR7350B', 'J3': 'Cliff FCR7350G',
-    'J4': 'Neutrik NC3FAAH2', 'J5': 'Neutrik NC3MAAH', 'J6': 'TE 5227161-7', 'J7': 'TE 5227161-7',
+    'J4': 'Neutrik NC3FAAH2', 'J5': 'Neutrik NC3MAAH',
     'J8': 'pin header 2x3 2.54 mm', 'J9': 'pin header 1x2 2.54 mm',
     'K1': 'Omron G6A-274P-ST-US DC12', 'D1': '1N4148',
 }

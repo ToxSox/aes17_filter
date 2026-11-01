@@ -4,8 +4,7 @@ A passive low-pass that sits between a class-D amplifier and an audio analyzer, 
 amplifier's switching residue never reaches the analyzer's input stage. It is the circuit of
 the Audio Precision AUX-0025, on a 100 × 158 mm board that slides into a Hammond 1455N1601
 case, with the 20 kHz knee trimmable, a 20:1 pad switched by a toggle or a relay, and the
-AUX-0025's own connectors: female XLR and dual banana in, male XLR out, plus a BNC pair out for
-a QuantAsylum QA403. Designed for a QuantAsylum QA403 and the
+AUX-0025's own connectors: female XLR and dual banana in, male XLR out. Designed for a QuantAsylum QA403 and the
 [Klirr](https://github.com/ToxSox/klirr) measurement software, usable with anything that has a
 100 kΩ input.
 
@@ -36,7 +35,7 @@ goal: no gain; an SMD version: dearer for small runs). In short:
 | Input resistor | 500 Ω 5 W fixed | AP's network: 1 kΩ 3 W ‖ 14 kΩ ‖ (1 kΩ 3 W + 500 Ω trimmer) | the trimmer sets the 20 kHz knee; V2 sits at +0.10 dB and spreads to 0.21 dB with 5 % coils, trimmed boards land at ±0.03 dB whatever the parts |
 | Filter values | E24 approximations (330 Ω + 440 pF, 68 Ω, 3.3 kΩ, 22 Ω) | the AUX-0025's own (412 Ω + 2 × 220 pF, 75 Ω, 3.40 kΩ, 24.9 Ω), all E96 | 1-2 dB more in the stop band, nothing to lose |
 | Pad | 9 kΩ / 1 kΩ, two poles per leg, hand-wired toggle | 2 × 10 kΩ / 1 kΩ (about 21.8:1), one pole per leg on a 2 × 3 header, DPDT toggle today, Omron G6A relay footprint for later, pad at rest | the QA403 clips at 40 Vrms and loses 20 dB of floor above its +18 dBV range; 20:1 keeps a 2 kW amplifier below both |
-| Connectors | XLR in and out, banana test points | the AUX-0025's: female XLR plus a dual-banana pair and a common in, male XLR out - and a BNC pair out for the QA403; all through the case's end plates | one set of cables tests this filter and an AUX-0025 alike; the QA403 still connects without an adapter |
+| Connectors | XLR in and out, banana test points | the AUX-0025's: female XLR plus a dual-banana pair and a common in, male XLR out, through the case's end plates | one set of cables tests this filter and an AUX-0025 alike; a QA403 hangs on an XLR-to-two-BNC lead |
 | Board | 175 × 90 mm, four layers | 100 × 158 mm, four layers, generated from a data file | fits the 1455N1601's rails, spans its length |
 | Rating | "140 Vrms continuous" | 85 Vrms at 20 kHz with 5 W parts, as a curve | at 20 kHz the shunt capacitors draw current through the input resistors: 13 W at 140 V |
 | Assembly | hand-built | JLCPCB, through-hole parts included, nothing hand-selected | the trimmer absorbs the tolerances |
@@ -95,13 +94,12 @@ are LCSC or JLCPCB's global-sourcing quote on 1 November 2026, single quantity.
 | 0 | Omron G6A-274P-ST-US DC12 | K1, footprint only, for the relay matrix later | C129439 | - |
 | 1 | Neutrik NC3FAAH2, female XLR, horizontal PCB | J4, input (pin 2 +, pin 3 −) | C368522, in stock | $0.84-1.80 |
 | 1 | Neutrik NC3MAAH, male XLR, horizontal PCB | J5, output (pin 2 +, pin 3 −) | C368463, in stock | $0.79-1.80 |
-| 2 | TE 5227161-7, right-angle BNC jack, 1/2-28 bulkhead | J6, J7, output for the QA403 | C591726, in stock | $6.34 |
 | 3 | Cliff FCR7350 R / B / G, 4 mm safety sockets, at 19.05 mm for a dual banana plug | J1-J3 | C6041087 / C6555263 / C6041085, pre-order at $11-12, or 6.80 € at Digi-Key and soldered by hand | 7 € |
 
-Not on the board, per board: two TE 1-329632-2 jam nuts (C305927), eight M3 screws and nuts for
-the XLR flanges, one DPDT ON-ON toggle with a 1/4 in bushing, one Hammond 1455N1601, two equal
-BNC leads; and once for the bench a lead from the amplifier terminals to a male XLR plug (or dual
-banana leads), the same lead an AUX-0025 takes.
+Not on the board, per board: eight M3 screws and nuts for the XLR flanges, one DPDT ON-ON
+toggle with a 1/4 in bushing, one Hammond 1455N1601; and once for the bench a lead from the
+amplifier terminals to a male XLR plug (or dual banana leads) and an XLR-female-to-two-BNC lead
+for the QA403, both of which an AUX-0025 takes as well.
 
 ## Ordering and building
 
