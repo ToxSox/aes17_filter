@@ -26,16 +26,56 @@ flat 1 mm walls, closed by the 1434-86 bottom plate). **Every connector is on th
 edge** and comes through the chassis' front long wall, so the filter hangs with that wall towards
 the operator, as the AUX-0025's front panel does. From the left, seen from the front: the female
 XLR input (pin 2 +, pin 3 −, pin 1 and shell ground), red and black 4 mm sockets at AP's
-19.05 mm for a dual banana plug, the green common, the pad toggle in the wall, the male XLR
-output (pin 2 +, pin 3 −). The QA403 is fed through a self-made lead, XLR female to two BNC
-males. The first 24 mm behind the front edge are the connector strip; the filter is the 100 mm
-band behind it, laid out as before: the two legs mirror images about its centre line, the
-signal on layer 1, ground planes on layers 2 and 3 (layer 3 also carries the two filter-output
-tracks to the switch), the few crossings and the long input and output runs on layer 4. The
-board stands on four M3 spacers on the bottom plate; the XLRs are screwed to the wall, the Cliff
-sockets held by the board alone (they have no panel retention; the wall just has a clearance
-hole for the Ø11 barrel). The DRC in KiCad 7 reports no errors and no unconnected nets; the
-warnings are silkscreen over pads and the footprints not being from a library table.
+19.05 mm for a dual banana plug, the green common, the male XLR output (pin 2 +, pin 3 −), and
+the pad toggle, mounted high in the wall straight above the switch. The QA403 is fed through a
+self-made lead, XLR female to two BNC males. The first 24 mm behind the front edge are the
+connector strip with the switch and the pad block at its right-hand end; the filter is the
+100 mm band behind it, the two legs mirror images about its centre line. Layers 2 and 3 are
+whole ground planes, broken only by the holes; every track is on layer 1 or 4. The board stands
+on five M3 spacers on the bottom plate; the XLRs are screwed to the wall, the Cliff sockets held
+by the board alone (they have no panel retention; the wall just has a clearance hole for the
+Ø11 barrel). The DRC in KiCad 7 reports no errors and no unconnected nets at 0.8 mm clearance;
+the warnings are silkscreen over pads and the footprints not being from a library table.
+
+### Layout rules it follows
+
+The board was gone over once more with the usual rules for audio layout. What they changed:
+
+- **Whole ground planes.** Layers 2 and 3 carry nothing but ground. The earlier layout ran the
+  two filter outputs on layer 3, which cut slots into the plane right under the output tracks
+  on layer 4; those tracks lost their return path exactly where the analyzer's signal ran.
+- **Clearance for the voltage.** Everything from the input up to OUT (in the direct position)
+  carries the amplifier's voltage: 120 V peak at the 85 Vrms rating. IPC-2221B asks 0.8 mm
+  between bare pads at 101-300 V; the board had 0.3 mm and now keeps 0.8 mm everywhere. The
+  male XLR's lands on pins 1 and 2 are 3.0 mm instead of Neutrik's 3.4 mm for the same reason.
+- **The pad and the switch at the output connector.** The two pads now stand side by side right
+  behind the switch, identical copies, so they share a temperature and their ratios track. The
+  toggle sits in the wall straight above K1's footprint, and its six wires drop about 15 mm into
+  K1's contact holes; before, they ran 75 mm through the box to a header in the middle of the
+  board. The separate 2 × 3 header J8 is gone: it hung a stub on the output and is not needed
+  while K1's holes take the wires.
+- **Long runs only at low impedance.** The negative leg ends at the back of the board, so one
+  track has to come forward. It is now the filter output F_N, behind 24.9 Ω, the lowest
+  impedance in the chain, and it runs alone through empty board. Before, the output pair came
+  back to the middle of the board, and in the pad position OUT sits behind 950 Ω, where 1 pF of
+  stray capacitance from the input side is already −50 dB at 500 kHz.
+- **Pairs kept together.** IN+ and IN− run on top of each other (layer 1 over layer 4) from the
+  connectors to where the legs part; OUT+ and OUT− run side by side, 2 mm apart, from K1 to the
+  XLR. Before, the negative input went round the board's left edge and the two outputs ran 10 mm
+  apart.
+- **More distance between the stages.** The second coil of each leg is 38 mm from the first
+  instead of 32 mm. Coupling between two drum cores falls with the cube of the distance, so
+  L1 → L2, the one path that bypasses the filter, is about 4.5 dB weaker on top of the shielding.
+- **One chassis bond, where the cables come in.** H5 is a plated hole on ground in the
+  connector strip, next to the input XLR: with a metal spacer it ties the ground plane to the
+  bottom plate and so to the chassis, and cable shield currents go to the chassis there instead
+  of crossing the filter. The other four holes are plain.
+
+What stayed as it was, because it was right: the two legs mirror images, so each sees the same
+parasitics; the shunt capacitors' grounds meeting in the middle of the board, so the
+differential residue current takes a short path between the legs; polypropylene capacitors and
+metal-film resistors throughout; the hot 3 W input resistors well away from the polypropylene
+capacitors (FKP2 is rated to 100 °C).
 
 ## Ordering at JLCPCB
 
@@ -63,8 +103,8 @@ warnings are silkscreen over pads and the footprints not being from a library ta
    here: the pad's 10 kΩ 1 W resistors (R8, R9, R18, R19) are the UNI-ROYAL MFR01SF1002A10,
    C58714, with the Yageo MFR1WSFTE52-10K, C172916, as the alternative if the first shows no
    stock in the BOM tool; both fit the 15.24 mm footprint.
-5. **Do not place K1.** It is marked "do not place" in the files and is not in the BOM; the
-   footprint waits for the matrix controller.
+5. **Do not place K1.** It is marked "do not place" in the files and is not in the BOM; its
+   holes take the toggle's wires until the matrix controller drives a relay there.
 6. After the order: the five boards arrive, two assembled. Nothing else is needed from JLCPCB.
 
 ### What JLCPCB's BOM tool quoted on 1 November 2026
@@ -83,7 +123,7 @@ For an assembly of five boards (quantities include JLCPCB's attrition allowance)
 | UNI-ROYAL 10 kΩ 1 W (C58714) | 21 | 0.51 | 0.02 | in stock |
 | 75 Ω 1 W (C160685) | 11 | 0.47 | 0.04 | in stock |
 | 14 k, 412, 3.4 k, 24.9 (C127223, C3558411, C3517441, C3542579) | 11-15 each | 0.15 / 0.06 / 0.17 / 0.36 | 0.01-0.02 | in stock |
-| 1N4148 (C258182), headers (C65114, C492401) | 10 / 5 / 5 | 0.26 / 0.20 / 0.08 | | in stock |
+| 1N4148 (C258182), headers (C65114, C492401) | 10 / 5 / 5 | 0.26 / 0.20 / 0.08 | | in stock; the 2 × 3 header C65114 has since left the board |
 | Würth 7447471102 coils | 20 | about 58 | 2.9 | unmatched by design: "Vorbestellen" → global sourcing |
 
 About 356 € of parts for five assembled boards, 71 € per board, of which the three Cliff sockets
@@ -101,9 +141,9 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 | 2 | an XLR-female-to-two-BNC-male lead to the QA403: pin 2 to L+ centre, pin 3 to L− centre, pin 1 to both BNC shells; about 30 cm, both legs equal | self-made (Neutrik NC3FXX, two BNC plugs, two pieces of RG58 or RG174) |
 | 2 | DPDT toggle, ON-ON, panel mount, 1/4 in bushing, solder lugs | any; APEM 5000, C&K 7201, Knitter MTA 206 |
 | 2 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
-| 8 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate | any |
+| 10 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate; the one under H5 metal, with a star washer on the bottom plate | any |
 | 6 | Cliff FCR7350 R, B, G if bought outside JLCPCB | Digi-Key, Farnell |
-| | wire for the toggle: six short pieces to J8 | |
+| | wire for the toggle: six pieces of about 25 mm, 0.25 mm² stranded, into K1's holes | |
 
 ## Building the two boards
 
@@ -114,9 +154,12 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
    its spacers, put the chassis over it, and mark the connector centres through from inside.
 3. Fit the board on the bottom plate, put the chassis over it, screw the XLR flanges to the
    wall, fit the toggle.
-4. Wire the toggle to J8: lugs of pole A to pins 1 (pad), 3 (common), 5 (direct); pole B to
-   2, 4, 6. Check with an ohmmeter that in one position pin 3 reads to pin 1 and 4 to 2, in the
-   other 3 to 5 and 4 to 6.
+4. Wire the toggle into K1's six holes, straight below it. Pole A to the back row, labelled
+   "+ DIR PAD COM": its common lug to COM (K1 pin 4, OUT+), the outer lugs to PAD (pin 6) and
+   DIR (pin 8). Pole B the same to the front row (pins 13, 11, 9). Check with an ohmmeter
+   between the output XLR's pin 2 (then pin 3) and pin 1, inputs open: about 1.0 kΩ in the pad
+   position (the 1 kΩ leg of the pad), about 21 kΩ in the direct one (the whole pad, seen from
+   its top). Mark the positions on the front.
 5. Trim and measure the ratios as in the bring-up list of
    [docs/design-review.md](../docs/design-review.md): both trimmers through an amplifier until
    20 kHz equals 1 kHz, then the pad ratio at 1 kHz, into Klirr's probe profiles.
@@ -143,13 +186,13 @@ bottom edge (which rests on the 1434-86 bottom plate).
 | 4 mm IN + (red) | 11.5 | 67.6 | 17.9 |
 | 4 mm IN − (black), 19.05 mm from the red one | 11.5 | 86.6 | 17.9 |
 | 4 mm GND (green) | 11.5 | 107.6 | 17.9 |
-| pad toggle, 1/4 in bushing | 6.4 | 134.6 | 24.1 |
-| XLR OUT (male), Neutrik NC3MAAH | 22.5 | 162.6 | 24.1 |
-| its two M3 screws, upper left and lower right | 3.2 | 152.7 / 172.5 | 34.0 / 14.2 |
+| XLR OUT (male), Neutrik NC3MAAH | 22.5 | 134.6 | 24.1 |
+| its two M3 screws, upper left and lower right | 3.2 | 124.7 / 144.5 | 34.0 / 14.2 |
+| pad toggle, 1/4 in bushing | 6.4 | 158.6 | 35.6 |
 
 The heights assume the board on **10 mm M3 spacers** on the bottom plate, so its top surface is
 11.6 mm above the wall's bottom edge; the Cliff socket axis is 6.3 mm above the board, the XLR
-axis 12.5 mm. **The XLR axis height is read off Neutrik's front view, not a dimensioned value:
+axis 12.5 mm, the toggle's 24 mm (high enough to clear a relay fitted below it later). **The XLR axis height is read off Neutrik's front view, not a dimensioned value:
 fit the board on its spacers, hold the undrilled wall against the connector fronts and mark
 through before drilling.** The board's front edge sits 3.3 mm behind the wall's inner face, so
 the XLR flanges and the shoulders of the 4 mm sockets lie against the wall. Cliff does not

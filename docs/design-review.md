@@ -244,35 +244,32 @@ and the analyzer's 100 kΩ is about 20.8:1, and Klirr measures it anyway. Loadin
 is 20 kΩ, 0.25 dB of insertion loss that the measured ratio absorbs. At 140 V the 19 kΩ
 dissipates 1 W; at 63 V, 0.2 W.
 
-The switch is a **DPDT toggle in the front wall, wired to a 2 × 3 header on the board** - the
-original's arrangement - with the footprint of a DPDT signal relay (Omron G6A-274P) sitting on
-the same six nets, **unpopulated**. A toggle because today nothing exists to
+The switch is a **DPDT toggle in the front wall, wired into the footprint of a DPDT signal relay
+(Omron G6A-274P)** that sits on the board, **unpopulated**, straight below it. (An earlier
+version had a separate 2 × 3 header for the toggle, as the original had; it hung a stub on the
+output, and the relay's holes take the same six wires.) A toggle because today nothing exists to
 drive a relay: the QA403 cannot (its front expansion connector carries I2S and I2C for digital
 accessories and a 3.2 V supply good for 20 mA, no switchable lines, and QuantAsylum documents
 no software control of those pins), and a relay switched by a toggle through a wall adapter is
 a toggle with extra steps. When the matrix controller exists, the relay is soldered in, the
-toggle's wires come off the header, and the position is set by Klirr before every step; until
+toggle's wires come out of its holes, and the position is set by Klirr before every step; until
 then the two positions are two probe profiles in Klirr, named by what the operator sees, and its
 gain check between steps catches a switch that did not move.
 
 One pole per leg is enough: the pad hangs on the filter output permanently (20 kΩ, a quarter
 of a decibel that the measured ratio absorbs) and the switch only chooses whether the BNC sees
 the filter output or the 1 kΩ tap. So the whole board needs one DPDT - one pole for each leg -
-and the header carries exactly that. KiCad numbers a 2 × 3 header across the rows, so the pins
-1-3-5 are one row of three and 2-4-6 the other, which is the lug layout of a DPDT toggle, common
-in the middle:
+and the relay's footprint has exactly that, in two rows of three contact holes, common first:
 
-| Header pin | Row | Net | Toggle lug |
+| K1 pin | Row | Net | Toggle lug |
 |---|---|---|---|
-| 1 | + leg | pad tap, + leg | pole A, "pad" |
-| 3 | + leg | **output BNC +** | pole A, common |
-| 5 | + leg | filter output, + leg (direct) | pole A, "direct" |
-| 2 | − leg | pad tap, − leg | pole B, "pad" |
-| 4 | − leg | **output BNC −** | pole B, common |
-| 6 | − leg | filter output, − leg (direct) | pole B, "direct" |
-
-The relay footprint sits on the same six nets: pins 4 and 13 (the commons) on the BNCs, 6 and
-11 (normally closed) on the pad taps, 8 and 9 (normally open) on the filter outputs. **At rest
+| 4 | back, + leg | **output XLR pin 2** | pole A, common |
+| 6 | back, + leg | pad tap, + leg (normally closed) | pole A, "pad" |
+| 8 | back, + leg | filter output, + leg (direct, normally open) | pole A, "direct" |
+| 13 | front, − leg | **output XLR pin 3** | pole B, common |
+| 11 | front, − leg | pad tap, − leg (normally closed) | pole B, "pad" |
+| 9 | front, − leg | filter output, − leg (direct, normally open) | pole B, "direct" |
+ **At rest
 the relay selects the pad**: with the matrix controller off or unplugged the analyzer sees a
 twentieth of the amplifier, which is the safe default. The repo's header is laid out
 differently (two poles per leg, and its second pole's common on pin 6 with the two "direct" pins
@@ -352,10 +349,17 @@ has, and the box is bonded to it. The XLR-to-two-BNC lead to the analyzer should
 two BNC legs should be the same length.
 
 **Board:** four layers, 1.6 mm, **158 × 124 mm**, every connector on the front long edge. The
-first 24 mm behind that edge are the connector strip, the filter is the 100 mm band behind it.
-Layers 2 and 3 are ground planes (layer 3 also carries the two filter-output tracks to the
-switch); signal on top, the crossings and the long input and output runs on the bottom. Four M3
-holes on the band's centre line for spacers on the bottom plate. No Zeners, no fuses.
+first 24 mm behind that edge are the connector strip, with the switch at its right-hand end and
+the two pads right behind it; the filter is the 100 mm band behind the strip. Layers 2 and 3 are
+whole ground planes with nothing routed on them; signal on top, the crossings, the negative
+pole's switch nets and its long output run on the bottom. 0.8 mm clearance throughout (IPC-2221B
+for bare pads at 101-300 V; the input carries 120 V peak at the 85 Vrms rating). Four plain M3
+holes on the band's centre line for spacers on the bottom plate, and a fifth, plated and on
+ground, in the connector strip: the one bond between the ground plane and the chassis, where the
+cables come in. No Zeners, no fuses. The layout rules behind the arrangement - whole planes,
+pairs kept together, long runs only at low impedance, the pad and switch at the output
+connector, 38 mm between the coils of a leg - are listed with their reasons in
+[hardware/README.md](../hardware/README.md#layout-rules-it-follows).
 The design files are generated, not drawn: [hardware/](../hardware/) holds the data module,
 the generator that places and routes the board with KiCad's Python module, the Gerbers, the
 JLCPCB bill of materials and placement file, and the ordering notes.
@@ -364,7 +368,8 @@ JLCPCB bill of materials and placement file, and the ordering notes.
 20 €) with its 1434-86 bottom plate (about 11 €) - the box the original V2 recommended. **All
 connectors come through its front long wall**, so the filter hangs with that wall towards the
 operator, as the AUX-0025's front panel does: from the left the XLR input, the red and black
-4 mm sockets at 19.05 mm, the green common, the pad toggle, the XLR output. Its walls are
+4 mm sockets at 19.05 mm, the green common, the XLR output, and the pad toggle, mounted high
+above the switch. Its walls are
 straight, unlike a die-cast box's 2-3° draft and its lid-screw bosses in the middle of the long
 walls, which both stood in the way of a connector row. The board stands on 10 mm spacers on the
 bottom plate, its front edge 3.3 mm behind the wall so the XLR flanges and the sockets'
@@ -393,17 +398,16 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 2 | 24.9 Ω 1 % 0.25 W, Yageo MFR-25FBF52-24R9 | output | C3542579 | | $0.03 |
 | 4 | UNI-ROYAL MFR01SF1002A10, 10.0 kΩ 1 % 1 W 50 ppm | pad, upper arm | C58714 | Yageo MFR1WSFTE52-10K (C172916) is the alternative. 9.53 kΩ in 0.1 % is stocked nowhere through-hole, 1 % 9.53 kΩ neither; 2 × 10 kΩ over 1 kΩ gives 21.8:1 into the analyzer, and Klirr measures it. 1 W because the pair dissipates 0.84 W at 140 V | $0.05 |
 | 2 | TE YR1B1K0CC, 1.00 kΩ 0.1 % 15 ppm | pad, lower arm | C1364308 | in stock | $0.50 |
-| 1 | 2 × 3 pin header 2.54 mm | pad switch | C65114 | | $0.05 |
 | 1 | 1 × 2 pin header 2.54 mm | relay coil | C492401 | | $0.02 |
 | 1 | 1N4148 DO-35 | flyback | C258182 | | $0.03 |
 | 0 | Omron G6A-274P-ST-US DC12 | K1, footprint only | C129439 | in stock at $2.74 when the matrix needs it | - |
 | 1 | Neutrik NC3FAAH2, female XLR, horizontal PCB | J4, input | C368522 | in stock at LCSC; AP's input connector | $0.84-1.80 |
 | 1 | Neutrik NC3MAAH, male XLR, horizontal PCB | J5, output | C368463 | in stock at LCSC; AP's output connector; the QA403 hangs on an XLR-to-two-BNC lead | $0.79-1.80 |
 | 3 | Cliff FCR7350 R / B / G, 4 mm safety socket, PCB | J1-J3, at 19.05 mm for a dual banana | C6041087 / C6555263 / C6041085 | pre-order at $11-12 each at LCSC; 6.80 € at Digi-Key - buy there and solder the three by hand if the JLCPCB price stands | $11 |
-| 1 | DPDT toggle ON-ON, panel mount, 1/4 in bushing | pad switch, in the front wall | - | wired to J8 | 3 € |
+| 1 | DPDT toggle ON-ON, panel mount, 1/4 in bushing | pad switch, in the front wall | - | wired into K1's holes | 3 € |
 | 8 | M3 screws and nuts | the two XLR flanges | - | | 0.5 € |
 | 1 | Hammond 1444-862 chassis + 1434-86 bottom plate | box | - | flat 1 mm aluminium walls; all connectors in the front long wall | 31 € |
-| 4 | M3 spacers 10 mm + screws | board on the bottom plate | - | | 1 € |
+| 5 | M3 spacers 10 mm + screws | board on the bottom plate; the one under H5 metal, bonding ground to the chassis | - | | 1 € |
 | | four-layer PCB 158 × 124 mm, five pieces, two assembled | | | JLCPCB | see README |
 
 JLCPCB's assembly terms, from their help pages in October 2026: minimum two boards; Economic
@@ -421,7 +425,7 @@ plugs.
 ## Bring-up, once it exists
 
 1. Nothing to select or pair: the boards come assembled. Check the toggle wiring against the
-   header table with an ohmmeter before power.
+   K1 table with an ohmmeter before power.
 2. Trim, **through an amplifier, not the generator** (the QA403's output is 100 Ω, which would
    move the knee by half a decibel). Any amplifier does - the next device under test, or a
    10 € class-D board; its own response cancels because both analyzer inputs see it. QA403

@@ -33,6 +33,9 @@ CLIFF_AXIS = 6.3    # Cliff S16N-PC: 5.5 mm axis height on 0.8 mm stand-offs
 XLR_HOLE, XLR_SCREW, XLR_SCREW_D = 22.5, 9.9, 3.2   # Neutrik: hole >= 22 mm, two M3 holes 19.8 mm apart on a diagonal
 CLIFF_HOLE = 11.5   # clears the socket's 11.0 mm barrel; Cliff does not specify a panel hole
 TOGGLE_HOLE = 6.4   # 1/4 in bushing
+TOGGLE_AXIS = 24.0  # the toggle sits high, straight above K1's footprint (8.4 mm relay), so that its
+                    # body (about 13 x 8 mm, 13-18 mm deep with the lugs) clears whatever is fitted
+                    # there and its six wires drop about 15 mm into K1's contact holes
 
 HOLES = [
     # label, x along the board, axis above the board, hole diameter, XLR screws?
@@ -40,8 +43,8 @@ HOLES = [
     ('4 mm IN + (red)', make_pcb.AX_RED, CLIFF_AXIS, CLIFF_HOLE, False),
     ('4 mm IN - (black)', make_pcb.AX_BLACK, CLIFF_AXIS, CLIFF_HOLE, False),
     ('4 mm GND (green)', make_pcb.AX_GREEN, CLIFF_AXIS, CLIFF_HOLE, False),
-    ('pad toggle', make_pcb.AX_TOGGLE, XLR_AXIS, TOGGLE_HOLE, False),
     ('XLR OUT (male)', make_pcb.AX_XLR_OUT, XLR_AXIS, XLR_HOLE, True),
+    ('pad toggle', make_pcb.AX_TOGGLE, TOGGLE_AXIS, TOGGLE_HOLE, False),
 ]
 
 

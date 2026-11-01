@@ -3,8 +3,8 @@
 Everything that follows - the PCB generator, the JLCPCB bill of materials, the placement file
 and the schematic drawing - reads this module, so a value changed here changes all of them.
 The circuit is the one in docs/design-review.md: the AUX-0025 values per leg, AP's trimmed
-input network, a 20:1 pad after the output resistor, switched by one pole per leg through a
-2 x 3 header (a DPDT toggle today, the on-board DPDT relay once the matrix drives it).
+input network, a 20:1 pad after the output resistor, switched by one pole per leg: a DPDT toggle
+wired into the relay's footprint today, the on-board DPDT relay once the matrix drives it.
 
 Coordinates are millimetres on a 158 x 124 mm board: x runs along the front edge from the
 input (x = 0) to the output (x = 158), y from the front edge (y = 0) to the back (y = 124).
@@ -34,10 +34,10 @@ FP = {
     'XLR_F':    'Connector_Audio:Jack_XLR_Neutrik_NC3FAAH2_Horizontal',
     'XLR_M':    'Connector_Audio:Jack_XLR_Neutrik_NC3MAAH_Horizontal',
     'RELAY':    'klirr:Relay_DPDT_Omron_G6A-274P',             # drawn by the generator
-    'HDR_2x3':  'Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical',
     'HDR_1x2':  'Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical',
     'DIODE':    'Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal',
     'HOLE':     'MountingHole:MountingHole_3.2mm_M3',
+    'HOLE_GND': 'MountingHole:MountingHole_3.2mm_M3_Pad_Via',
 }
 
 # ref, value, footprint key, LCSC part (empty = to be assigned at ordering), note for the BOM.
@@ -94,20 +94,20 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     ('J3', 'GND',   'BANANA_G', 'C6041085', 'Cliff FCR7350G green, common / chassis',    [(1, 'GND')]),
     # connectors, output end (x = 158): the AUX-0025's male XLR; the QA403 takes an XLR-to-two-BNC lead
     ('J5', 'OUT XLR', 'XLR_M',  'C368463', 'Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground', [(1, 'GND'), (2, 'OUT_P'), (3, 'OUT_N'), ('G', 'GND')]),
-    # the pad switch: header for the toggle, relay footprint on the same nets
-    # KiCad numbers a 2 x 3 header 1-2 / 3-4 / 5-6 across the rows, so pins 1-3-5 are one row of
-    # three and 2-4-6 the other: exactly the two lug columns of a DPDT toggle, common in the middle.
-    ('J8', 'PAD SW', 'HDR_2x3', 'C65114', '2 x 3 header; toggle pole A on pins 1-3-5 (+ leg), pole B on 2-4-6 (- leg); 3 and 4 are the commons',
-        [(1, 'PAD_P'), (3, 'OUT_P'), (5, 'F_P'), (2, 'PAD_N'), (4, 'OUT_N'), (6, 'F_N')]),
-    ('K1', 'G6A-274P-ST-US DC12', 'RELAY', 'C129439', 'DO NOT PLACE until the matrix drives it; NC = pad, NO = direct',
+    # the pad switch: the relay's footprint, whose six contact holes take the toggle's wires until
+    # the relay is fitted - pole A (+ leg) 4 / 6 / 8, pole B (- leg) 13 / 11 / 9, common first.
+    # A separate header on the same nets would only hang a stub on the output.
+    ('K1', 'G6A-274P-ST-US DC12', 'RELAY', 'C129439', 'DO NOT PLACE until the matrix drives it; NC = pad, NO = direct; until then the toggle is wired into its holes',
         [(1, 'COIL+'), (16, 'COIL-'), (4, 'OUT_P'), (6, 'PAD_P'), (8, 'F_P'), (13, 'OUT_N'), (11, 'PAD_N'), (9, 'F_N')]),
     ('J9', 'COIL', 'HDR_1x2',   'C492401', 'relay coil, 12 V from the matrix controller', [(1, 'COIL+'), (2, 'COIL-')]),
     ('D1', '1N4148', 'DIODE',   'C258182', 'flyback across the coil; pin 1 is the cathode (band) and goes to COIL+', [(1, 'COIL+'), (2, 'COIL-')]),
-    # mounting holes, on GND, for a box without rails
+    # mounting holes for M3 stand-offs on the chassis' bottom plate; H5 is plated and bonds the
+    # ground plane to the chassis in the connector strip, the others are plain
     ('H1', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H2', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H3', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H4', 'M3', 'HOLE', '', 'plain hole, no pad', []),
+    ('H5', 'M3 GND', 'HOLE_GND', '', 'plated, on ground: the chassis bond', [(1, 'GND')]),
 ]
 
 DO_NOT_PLACE = {'K1'}
@@ -123,7 +123,7 @@ MPN = {
     'RV1': 'Bourns 3296W-1-501LF', 'RV2': 'Bourns 3296W-1-501LF',
     'J1': 'Cliff FCR7350R', 'J2': 'Cliff FCR7350B', 'J3': 'Cliff FCR7350G',
     'J4': 'Neutrik NC3FAAH2', 'J5': 'Neutrik NC3MAAH',
-    'J8': 'pin header 2x3 2.54 mm', 'J9': 'pin header 1x2 2.54 mm',
+    'J9': 'pin header 1x2 2.54 mm',
     'K1': 'Omron G6A-274P-ST-US DC12', 'D1': '1N4148',
 }
 

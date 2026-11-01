@@ -7,7 +7,7 @@ Everything is placed and routed from the tables below, so the board is reproduci
 repository without a mouse. Coordinates are millimetres, x along the front edge (input end at 0),
 y from the front edge backwards. The filter band was laid out first on a 100 mm deep board; its
 coordinates are kept as they were and moved back by design.FRONT, so 'core' coordinates below
-are written in that 0..100 frame and shifted where they are used.
+are written in that 0..100 frame.
 """
 import os
 import sys
@@ -51,19 +51,20 @@ Y_N = core(83.0)      # the negative leg, mirrored about the band's centre line
 X_IN_BUS = 30.0
 X_R1 = 36.0           # 1k 3W, pitch 20.32 -> pad 2 at 56.32
 X_R1C = 46.16         # 14k, pitch 10.16 -> pad 2 at 56.32
-X_A_BUS = 58.8        # the node-A vertical
-X_RV = 60.5
+X_A_BUS = 58.85       # the node-A vertical, 0.88 mm from the T pads on either side
+X_RV = 60.7
 X_L1 = 64.0           # pads 64 / 69
 X_R3 = 62.0           # 412, pads 62 / 72.16
 X_C34 = 76.5          # first 220p of the bypass pair, pads 76.5 / 81.5
 X_C34B = 84.5         # second 220p, pads 84.5 / 89.5
 X_R5 = 74.5           # 75R 1W, pitch 15.24 -> pad 2 at 89.74
-X_L3 = 96.0           # pads 96 / 101
-X_R7 = 96.0           # 3.4k across L3, pads 96 / 106.16
-X_R9 = 107.0          # 24.9, pads 107 / 117.16
-X_R11 = 109.5         # 10k 1W, pitch 15.24 -> pads 109.5 / 124.74 (the XLR body starts at x = 130)
-X_R13 = 124.0         # 1k 0.1 %, pads 124 / 134.16
-X_C1, X_C7, X_C9 = 62.0, 76.0, 102.0   # the shunt capacitors, standing in a row at y +- 25
+# The second stage sits 38 mm behind the first (coil centre to coil centre): magnetic coupling
+# between drum cores falls with the cube of the distance, and coupling from L1 into L2 is the one
+# path that bypasses the filter (it is what spoilt Matt Clark's V1).
+X_L3 = 102.0          # pads 102 / 107
+X_R7 = 102.0          # 3.4k across L3, pads 102 / 112.16
+X_R9 = 113.0          # 24.9, pads 113 / 123.16
+X_C1, X_C7, X_C9 = 62.0, 76.0, 108.0   # the shunt capacitors, standing in a row at y +- 25
 PLACE = {}
 
 
@@ -86,13 +87,22 @@ def place_leg(names, y, flip):
     PLACE[names['R7']] = (X_R7, y - 9.0 * s, 0)
     PLACE[names['C9']] = (X_C9, y + 25.0 * s, rot_v)
     PLACE[names['R9']] = (X_R9, y, 0)
-    PLACE[names['R11']] = (X_R11, y - 6.0 * s, 0)
-    PLACE[names['R12']] = (X_R11, y + 6.0 * s, 0)
-    PLACE[names['R13']] = (X_R13, y + 18.0 * s, 0)
 
 
 place_leg(design.NAMES_P, Y_P, flip=False)
 place_leg(design.NAMES_N, Y_N, flip=True)
+
+# The two pads stand side by side in one block right behind the switch, as six upright resistors
+# with the 20:1 taps and the direct ends at the top, towards the switch. Both pads are the same
+# copy (not mirror images), so they share one temperature and one geometry and their ratios
+# track. The positive leg's output is next door; the negative leg's output comes forward from the
+# back of the board on its own track, at the 24.9 ohm node, the lowest impedance in the chain.
+PAD_TOP, PAD_COLS = 28.5, (127.0, 132.5, 138.0, 143.5, 149.0, 154.5)
+for (ref_hi, ref_mid, ref_lo), (c_hi, c_mid, c_lo) in (
+        (('R8', 'R9', 'R10'), PAD_COLS[:3]), (('R18', 'R19', 'R20'), PAD_COLS[3:])):
+    PLACE[ref_hi] = (c_hi, PAD_TOP, 270)            # 10 k: direct end on top, the middle node below
+    PLACE[ref_mid] = (c_mid, PAD_TOP + 15.24, 90)   # 10 k: middle node below, tap on top
+    PLACE[ref_lo] = (c_lo, PAD_TOP, 270)            # 1 k 0.1 %: tap on top, ground below
 
 # The connector row on the front edge, all faces towards -y. Each one's front is located from its
 # footprint's fabrication layer (the flange), so that the flange's front face or the socket's
@@ -105,30 +115,28 @@ place_leg(design.NAMES_N, Y_N, flip=True)
 #   Cliff S16N-PC: the barrel faces -x, its shoulder 13.5 in front of the signal pin; turned 270
 #     it faces -y.
 # X positions of the axes along the front: XLR in, red and black at AP's 19.05 mm, green common;
-# then the pad toggle in the wall (wired to J8, not on the board); then the XLR out.
-AX_XLR_IN, AX_RED, AX_BLACK, AX_GREEN, AX_TOGGLE, AX_XLR_OUT = 18.0, 45.0, 64.05, 85.0, 112.0, 140.0
+# then the XLR out; then the pad toggle, which sits in the wall straight above the switch.
+AX_XLR_IN, AX_RED, AX_BLACK, AX_GREEN, AX_XLR_OUT, AX_TOGGLE = 18.0, 45.0, 64.05, 85.0, 112.0, 136.0
+# The switch: K1's footprint, turned half round so that the positive pole's row (F, PAD, OUT,
+# coil +) is the back row, next to the pad block, and the negative pole's row the front one.
+# Without the relay its six contact holes take the toggle's six wires: COM = OUT, NC = PAD,
+# NO = DIRECT, the toggle being 15 mm above them.
+K1_X, K1_Y = 144.78, 15.0
 PLACE.update({
     'J4': (AX_XLR_IN - 3.79, WALL + 15.4, 90),
     'J1': (AX_RED, WALL + 13.5, 270), 'J2': (AX_BLACK, WALL + 13.5, 270), 'J3': (AX_GREEN, WALL + 13.5, 270),
     'J5': (AX_XLR_OUT + 3.81, WALL + 20.48, 180),
-    # pad switch header, relay and coil connector in the middle of the filter band
-    'J8': (144.54, core(47.46), 270), 'K1': (118.0, core(46.19), 0), 'J9': (108.0, core(48.73), 0), 'D1': (112.0, core(50.0), 270),
-    # M3 holes for stand-offs on the chassis' bottom plate, on the band's centre line
-    'H1': (30.0, core(50.0), 0), 'H2': (50.0, core(50.0), 0), 'H3': (90.0, core(50.0), 0), 'H4': (151.5, core(50.0), 0),
+    'K1': (K1_X, K1_Y, 180), 'J9': (150.0, K1_Y, 0), 'D1': (154.5, K1_Y, 90),
+    # M3 holes for stand-offs on the chassis' bottom plate: four plain ones on the band's centre
+    # line, and H5, plated and on ground, in the connector strip: the one point where the board's
+    # ground meets the chassis, next to where the cables come in
+    'H1': (14.0, core(50.0), 0), 'H2': (50.0, core(50.0), 0), 'H3': (90.0, core(50.0), 0), 'H4': (151.5, core(50.0), 0),
+    'H5': (34.75, 10.0, 0),
 })
 
 # ----------------------------------------------------------------------------------------------
 # Footprints the library does not have
 # ----------------------------------------------------------------------------------------------
-BNC = dict(   # TE 5227161-x (drawing C-5227161) and Amphenol 31-5431 share this pattern
-    pin_from_front=11.43,     # contact post behind the housing's panel face, mm
-    axis_height=6.91,         # BNC axis above the PCB for the -7/-9 low-profile variants (8.59 for -1/-2/-3/-6)
-    hooks=[(-5.08, 5.08), (-5.08, -5.08)],   # two 2.01 mm mounting hooks, 10.16 apart, 5.08 in front of the posts
-    posts=[(0.0, 2.54), (0.0, -2.54)],       # the ground post is 2.54 beside the contact; both sides are padded
-    body=(14.76, 13.72),      # housing width (y) and length behind the panel face (x)
-)
-
-
 def new_footprint(board, name, descr):
     fp = pcbnew.FOOTPRINT(board)
     fp.SetFPID(pcbnew.LIB_ID('klirr', name))
@@ -159,28 +167,6 @@ def add_fp_line(fp, x1, y1, x2, y2, layer=pcbnew.F_SilkS, width=0.12):
     s.SetLayer(layer)
     s.SetWidth(mm(width))
     fp.Add(s)
-
-
-def fp_bnc(board):
-    fp = new_footprint(board, 'BNC_TE_5227161_Horizontal', 'TE 5227161 / Amphenol 31-5431 right-angle bulkhead BNC jack, panel face at -x')
-    add_tht_pad(fp, 1, 0, 0, 1.2, 2.0)
-    for dx, dy in BNC['hooks']:
-        add_tht_pad(fp, 2, dx, dy, 2.3, 3.4)
-    for dx, dy in BNC['posts']:
-        add_tht_pad(fp, 2, dx, dy, 1.2, 2.0)
-    front = -BNC['pin_from_front']
-    w, length = BNC['body']
-    add_fp_line(fp, front, -w / 2, front + length, -w / 2)
-    add_fp_line(fp, front, w / 2, front + length, w / 2)
-    add_fp_line(fp, front + length, -w / 2, front + length, w / 2)
-    add_fp_line(fp, front, -w / 2, front, w / 2)
-    c0 = front + 0.6     # the courtyard starts just inside the board edge, where the flange sits
-    for (x1, y1, x2, y2) in ((c0, -w / 2 - 0.5, front + length + 0.5, -w / 2 - 0.5),
-                             (c0, w / 2 + 0.5, front + length + 0.5, w / 2 + 0.5),
-                             (c0, -w / 2 - 0.5, c0, w / 2 + 0.5),
-                             (front + length + 0.5, -w / 2 - 0.5, front + length + 0.5, w / 2 + 0.5)):
-        add_fp_line(fp, x1, y1, x2, y2, pcbnew.F_CrtYd, 0.05)
-    return fp
 
 
 def fp_radial_coil(board):
@@ -237,11 +223,13 @@ def load_footprint(board, key):
 # The two legs are routed by one recipe mirrored about the board's centre line.
 # ----------------------------------------------------------------------------------------------
 F, B = 'F.Cu', 'B.Cu'
+# The whole filter, up to and including OUT in the direct position, carries the amplifier's
+# voltage: 120 V peak at the 85 Vrms rating, 200 V peak at the 140 Vrms V2 once claimed. IPC-2221B
+# asks 0.8 mm between bare pads (A6) and 0.4 mm between masked tracks (B4) for 101-300 V, so the
+# board keeps 0.8 mm everywhere; it has the room.
+CLEARANCE = 0.8
 W_SIG = 0.5
 W_IN = 0.8
-
-
-I2 = 'In2.Cu'
 
 
 def leg_routes(n, y0, s):
@@ -252,7 +240,7 @@ def leg_routes(n, y0, s):
     nets = design.NETS_P if s > 0 else design.NETS_N
     return [
         # the input bus: a vertical at X_IN_BUS joins the socket, the BNC and the three resistors
-        (nets['IN'], F, W_IN, [(X_IN_BUS, Y(15.0)), (X_IN_BUS, Y(-5.0)), (n['R1a'], 1)]),
+        (nets['IN'], F, W_IN, [(X_IN_BUS, Y(13.0)), (X_IN_BUS, Y(-5.0)), (n['R1a'], 1)]),
         (nets['IN'], F, W_IN, [(X_IN_BUS, Y(5.0)), (n['R1b'], 1)]),
         (nets['IN'], F, W_IN, [(X_IN_BUS, Y(13.0)), (n['R1c'], 1)]),
         # node A: a vertical at X_A_BUS from the 412 ohm up top down to the 220 pF
@@ -278,71 +266,49 @@ def leg_routes(n, y0, s):
         (nets['E'], F, W_SIG, [(n['L3'], 2), (n['R9'], 1)]),
         (nets['E'], F, W_SIG, [(n['R7'], 2), (X_R7 + 10.16, Y(-4.0)), (X_R9, Y(-4.0)), (n['R9'], 1)]),
         (nets['E'], F, W_SIG, [(n['R9'], 1), (X_C9, Y(0.0)), (n['C9'], 1)]),
-        # F: filter output into the pad's first resistor; the switch end is routed below
-        (nets['F'], F, W_SIG, [(n['R9'], 2), (X_R9 + 10.16, Y(-6.0)), (n['R11'], 1)]),   # runs under the 10 k's body
-        # M: between the two 9.53 k
-        # M: between the two 10 k, on the back, past the 24.9 ohm and the F net
-        (nets['M'], B, W_SIG, [(n['R11'], 2), (X_R11 + 15.24, Y(-3.0)), (104.5, Y(-3.0)), (104.5, Y(6.0)), (n['R12'], 1)]),
-        # PAD tap: second 9.53 k into the 1 k; the switch end is routed below
-        (nets['PAD'], F, W_SIG, [(n['R12'], 2), (X_R11 + 15.24, Y(18.0)), (n['R13'], 1)]),
+        # F, the filter output, and the pad are routed with the switch, below
     ]
 
 
-# relay pins: 4/13 common (OUT), 6/11 normally closed (PAD), 8/9 normally open (F = direct);
-# at x = 125.62, 130.70 and 135.78, rows y = 46.19 (+ leg) and 53.81 (- leg).
-# header: pins 1-3-5 (+ leg) at y = 47.46, x = 144.54 / 142.00 / 139.46 = PAD / OUT / F;
-# pins 2-4-6 (- leg) at y = 50.
-X_F_RUN = 147.5       # the F nets come down the east side on the inner layer
+# The input pair. XLR pin 2 (+) and the red socket run along y = 21 on the top; XLR pin 3 (-) and
+# the black socket along the same line on the bottom, right under it, and both turn down x = 30
+# together, so the pair encloses no area until the positive leg branches off. The negative input
+# then carries on down x = 30 on the bottom to its own leg.
 INPUT_ROUTES = [
-    # XLR pin 2 (+) and the red socket along y = 21 to the top of the positive leg's input bus;
-    # XLR pin 3 (-) and the black socket along y = 23 on the back, down the left edge to the
-    # negative leg's input resistor
     ('IN_P', F, W_IN, [('J4', 2), (24.0, 12.7), (24.0, 21.0), (AX_RED, 21.0), ('J1', 1)]),
     ('IN_P', F, W_IN, [(X_IN_BUS, 21.0), (X_IN_BUS, Y_P - 5.0)]),
-    ('IN_N', B, W_IN, [('J2', 1), (AX_BLACK, 23.0), (5.0, 23.0), (5.0, Y_N - 5.0), ('R12', 1)]),
-    ('IN_N', B, W_IN, [('J4', 3), (18.0, 23.0)]),
+    ('IN_N', B, W_IN, [('J4', 3), (18.02, 21.0), (AX_BLACK, 21.0), ('J2', 1)]),
+    ('IN_N', B, W_IN, [(X_IN_BUS, 21.0), (X_IN_BUS, Y_N - 5.0), ('R12', 1)]),
 ]
 
-
-def shifted(routes):
-    """The routes written in the band's 0..100 frame, with every plain y moved by FRONT."""
-    out = []
-    for net, layer, width, points in routes:
-        out.append((net, layer, width, [p if isinstance(p[0], str) else (p[0], core(p[1])) for p in points]))
-    return out
-
-
-MIDDLE_ROUTES_CORE = [
-    # --- positive leg ---
-    ('F_P', I2, W_SIG, [('R7', 2), (X_R9 + 10.16, 39.5), (X_F_RUN, 39.5), (X_F_RUN, 42.0), (139.46, 42.0), ('J8', 5)]),
-    ('F_P', I2, W_SIG, [('K1', 8), (135.78, 42.0), (139.46, 42.0)]),
-    ('OUT_P', B, W_SIG, [(146.3, 40.0), (125.62, 40.0), ('K1', 4)]),
-    ('OUT_P', B, W_SIG, [(142.0, 40.0), ('J8', 3)]),
-    ('PAD_P', F, W_SIG, [('R10', 1), (130.7, 35.0), ('K1', 6)]),
-    ('PAD_P', F, W_SIG, [(130.7, 38.0), (144.54, 38.0), ('J8', 1)]),
-    # --- negative leg ---
-    ('F_N', I2, W_SIG, [('R17', 2), (X_R9 + 10.16, 60.5), (143.5, 60.5), (143.5, 55.5), (139.46, 55.5), ('J8', 6)]),
-    ('F_N', I2, W_SIG, [('K1', 9), (135.78, 55.5), (139.46, 55.5)]),
-    ('OUT_N', B, W_SIG, [(125.62, 60.0), ('K1', 13)]),
-    ('OUT_N', B, W_SIG, [(142.0, 60.0), ('J8', 4)]),
-    ('OUT_N', B, W_SIG, [(156.5, 60.0), (125.62, 60.0)]),
-    ('PAD_N', F, W_SIG, [('R20', 1), (130.7, 65.0), ('K1', 11)]),
-    ('PAD_N', F, W_SIG, [(130.7, 62.0), (144.54, 62.0), ('J8', 2)]),
-    # --- coil ---
-    ('COIL+', F, W_SIG, [('J9', 1), (113.0, 48.73), (113.0, 46.19), ('K1', 1)]),
-    ('COIL+', F, W_SIG, [('D1', 1), (113.0, 50.0), (113.0, 48.73)]),
-    ('COIL-', F, W_SIG, [('J9', 2), (109.5, 51.27), (109.5, 52.8), (115.0, 52.8), (115.0, 53.81), ('K1', 16)]),
-    ('COIL-', F, W_SIG, [('D1', 2), (115.0, 57.62), (115.0, 53.81)]),
+# The output end, all on the outer layers so that both inner layers stay whole ground planes:
+# the positive pole's nets on the top, the negative pole's on the bottom, each over its own plane.
+#   K1 (turned half round), back row y = 15: F_P 127.0, PAD_P 132.08, OUT_P 137.16, COIL+ 144.78
+#                           front row y = 7.38: F_N, PAD_N, OUT_N, COIL- at the same x
+#   pad block tops y = 28.5: F_P 127, PAD_P 132.5 + 138, F_N 143.5, PAD_N 149 + 154.5
+#   J5: OUT_P pin 2 (108.19, 17.18), OUT_N pin 3 (112.0, 17.18)
+X_F_N = 141.0         # the negative output's run from the back, between the two pads
+MIDDLE_ROUTES = [
+    # positive pole, top layer: straight up from the pad block into the back row
+    ('F_P', F, W_SIG, [('R7', 2), (123.16, PAD_TOP), ('R8', 1), ('K1', 8)]),
+    ('M_P', F, W_SIG, [('R8', 2), ('R9', 1)]),
+    ('PAD_P', F, W_SIG, [('R10', 1), ('R9', 2), (132.5, 17.5), ('K1', 6)]),
+    # negative pole, bottom layer: F_N from the back of the board, PAD_N from its pad, both through
+    # the back row between its pins to the front row, nested so that they never cross
+    ('F_N', B, W_SIG, [('R17', 2), (X_F_N, Y_N), (X_F_N, 22.0), (129.54, 22.0), (129.54, 10.0), ('K1', 9)]),
+    ('F_N', B, W_SIG, [(X_F_N, PAD_TOP), ('R18', 1)]),
+    ('M_N', F, W_SIG, [('R18', 2), ('R19', 1)]),
+    ('PAD_N', F, W_SIG, [('R20', 1), ('R19', 2)]),
+    ('PAD_N', B, W_SIG, [('R19', 2), (149.0, 20.0), (134.62, 20.0), (134.62, 10.0), ('K1', 11)]),
+    # the commons to the XLR: OUT_P on the top between the two rows, OUT_N on the bottom in front of
+    # them, side by side, 2 mm apart and one above the other plane, all the way to the connector
+    ('OUT_P', F, W_SIG, [('K1', 4), (137.16, 11.2), (122.5, 11.2), (122.5, 23.0), (AX_XLR_OUT - 3.81, 23.0), ('J5', 2)]),
+    ('OUT_N', B, W_SIG, [('K1', 13), (137.16, 3.0), (124.5, 3.0), (124.5, 21.0), (AX_XLR_OUT, 21.0), ('J5', 3)]),
+    # relay coil: K1, header and flyback diode in one line
+    ('COIL+', F, W_SIG, [('K1', 1), ('J9', 1), ('D1', 1)]),
+    ('COIL-', F, W_SIG, [('K1', 16), ('D1', 2)]),
+    ('COIL-', B, W_SIG, [('J9', 2), (152.3, 17.54), (152.3, 9.5), ('D1', 2)]),
 ]
-
-OUTPUT_ROUTES = [
-    # the male XLR's pins 2 (+) and 3 (-) at the front, down the right side on the back to the
-    # relay commons and the header's middle pins
-    ('OUT_P', B, W_SIG, [('J5', 2), (AX_XLR_OUT - 3.81, 22.5), (146.3, 22.5), (146.3, core(40.0))]),
-    ('OUT_N', B, W_SIG, [('J5', 3), (AX_XLR_OUT, 20.5), (156.5, 20.5), (156.5, core(60.0))]),
-]
-
-MIDDLE_ROUTES = shifted(MIDDLE_ROUTES_CORE) + OUTPUT_ROUTES
 
 VIAS = []
 
@@ -355,7 +321,7 @@ def resolve(fps, point):
 
 def add_tracks(board, fps, netinfo):
     routes = leg_routes(design.NAMES_P, Y_P, +1) + leg_routes(design.NAMES_N, Y_N, -1) + INPUT_ROUTES + MIDDLE_ROUTES
-    layer_id = {F: pcbnew.F_Cu, B: pcbnew.B_Cu, I2: pcbnew.In2_Cu}
+    layer_id = {F: pcbnew.F_Cu, B: pcbnew.B_Cu}
     for net, layer, width, points in routes:
         pts = [resolve(fps, p) for p in points]
         for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
@@ -374,7 +340,7 @@ def add_tracks(board, fps, netinfo):
 
 def add_zones(board, netinfo):
     inset = 1.5
-    for layer in (pcbnew.In1_Cu, pcbnew.In2_Cu):   # In2 also carries the two F tracks; the pour keeps clear of them
+    for layer in (pcbnew.In1_Cu, pcbnew.In2_Cu):   # nothing else is routed on the inner layers
         z = pcbnew.ZONE(board)
         z.SetLayer(layer); z.SetNet(netinfo['GND'])
         z.SetIsFilled(True)
@@ -399,16 +365,19 @@ def add_text(board, text, x, y, size=1.2, layer=pcbnew.F_SilkS, angle=0, bold=Fa
 
 
 def add_silk(board):
-    add_text(board, 'klirr AES17 filter', 75.0, core(48.8), 1.3, bold=True)
-    add_text(board, 'github.com/ToxSox/aes17_filter', 75.0, core(51.2), 0.9)
+    add_text(board, 'klirr AES17 filter', 124.0, core(48.8), 1.2, bold=True)
+    add_text(board, 'github.com/ToxSox/aes17_filter', 124.0, core(51.2), 0.8)
     add_text(board, 'IN XLR 2+ 3-', AX_XLR_IN, 21.5, 0.9)
     add_text(board, 'IN +', AX_RED, 18.5, 1.1); add_text(board, 'IN -', AX_BLACK, 18.5, 1.1); add_text(board, 'GND', AX_GREEN, 18.5, 1.1)
-    add_text(board, 'toggle in the wall', AX_TOGGLE, 8.0, 0.9)
-    add_text(board, 'OUT XLR 2+ 3- (QA403: XLR to 2 x BNC)', 118.0, 25.0, 0.8)
-    add_text(board, '1-3-5: PAD+ OUT+ DIR+', 151.0, core(44.0), 0.8); add_text(board, '2-4-6: PAD- OUT- DIR-', 151.0, core(53.5), 0.8)
-    add_text(board, 'K1 not fitted: toggle on J8', 127.0, core(58.0), 0.8)
+    add_text(board, 'OUT XLR 2+ 3-', AX_XLR_OUT, 26.0, 0.9)
+    add_text(board, 'chassis', 34.75, 15.0, 0.8)
+    # the switch: toggle wires into K1's holes, back row + pole, front row - pole
+    add_text(board, 'toggle above: + DIR PAD COM', 133.5, 25.0, 0.8)
+    add_text(board, '- DIR PAD COM', 132.0, 1.2, 0.8)
+    add_text(board, 'K1 relay not fitted', 150.0, 1.2, 0.8)
+    add_text(board, 'pad +', 132.5, 46.8, 0.8); add_text(board, 'pad -', 149.0, 46.8, 0.8)
     add_text(board, 'positive leg', 86.0, core(24.0), 0.9); add_text(board, 'negative leg', 86.0, core(76.0), 0.9)
-    add_text(board, 'trim: 20 kHz = 1 kHz', 52.0, core(37.0), 0.8); add_text(board, 'trim: 20 kHz = 1 kHz', 52.0, core(63.0), 0.8)
+    add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(36.0), 0.8); add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(64.0), 0.8)
 
 
 # ----------------------------------------------------------------------------------------------
@@ -423,7 +392,7 @@ def build():
     ds.m_MinClearance = mm(0.2)
     ds.m_CopperEdgeClearance = mm(0.5)
     nc = ds.m_NetSettings.m_DefaultNetClass
-    nc.SetClearance(mm(0.3)); nc.SetTrackWidth(mm(0.5)); nc.SetViaDiameter(mm(0.8)); nc.SetViaDrill(mm(0.4))
+    nc.SetClearance(mm(CLEARANCE)); nc.SetTrackWidth(mm(0.5)); nc.SetViaDiameter(mm(0.8)); nc.SetViaDrill(mm(0.4))
     for lid, name in ((pcbnew.In1_Cu, 'GND1'), (pcbnew.In2_Cu, 'GND2')):
         board.SetLayerName(lid, name)
 
@@ -456,6 +425,10 @@ def build():
         fp.Reference().SetTextSize(VECTOR2I(mm(0.8), mm(0.8)))
         fp.Reference().SetTextThickness(mm(0.15))
         fp.Value().SetVisible(False)
+        if ref in ('R8', 'R9', 'R10', 'R18', 'R19', 'R20'):
+            # the pad block stands upright and close: each name inside its own body
+            fp.Reference().SetPosition(pt(x, PAD_TOP + 7.6))
+            fp.Reference().SetTextAngleDegrees(90)
         board.Add(fp)
         fps[ref] = fp
         # connector drawings that protrude through the end plates: drop what lies off the board
@@ -463,6 +436,12 @@ def build():
             bb = item.GetBoundingBox()
             if item.GetLayer() == pcbnew.F_SilkS and (pcbnew.ToMM(bb.GetRight()) < 0.3 or pcbnew.ToMM(bb.GetLeft()) > L - 0.3):
                 fp.Remove(item)
+        if ref == 'J5':
+            # Neutrik's 3.4 mm lands on pins 1 and 2 leave 0.66 mm to pin 3; 3.0 mm (0.7 mm ring
+            # on the 1.6 mm hole) gives 0.86 mm, inside the 0.8 mm the output needs in the direct position
+            for pad in fp.Pads():
+                if pad.GetNumber() in ('1', '2'):
+                    pad.SetSize(VECTOR2I(mm(3.0), mm(3.0)))
         for pad_number, net in pins:
             found = False
             for pad in fp.Pads():

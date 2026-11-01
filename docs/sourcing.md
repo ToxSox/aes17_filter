@@ -52,7 +52,7 @@ build adds or changes against the repo, and still has to be found:**
 | AP's values instead of the repo's E24 ones | 412 Ω, 3.40 kΩ, 24.9 Ω (0.6 W), 75.0 Ω (1 W), all 1 % metal film; **390 pF 630 V polypropylene** instead of 2 × 220 pF | 1.4, 1.5 | resistors yes (E96 is standard there); 390 pF: look for WIMA FKP2J003901D00HSSD / JSSD or Kemet PFR |
 | The 20 kHz trim | 2 × 1.00 kΩ 1 % 3 W per leg, 14.0 kΩ, **500 Ω 25-turn trimmer (Bourns 3296W-1-501LF)** | 1.2, 1.3 | trimmer yes; 3 W 1 % resistors: check Vishay RS02B / CPF3 or Chinese 3 W metal film 1 % |
 | The 20:1 pad instead of 9 k / 1 k | 9.53 kΩ and 1.00 kΩ, **0.1 %**, 0.5 W, axial | 1.6 | 0.1 % axial is thin there; 1 % at 50 ppm is the stated fallback |
-| Toggle in the front wall, relay footprint kept for the matrix | DPDT ON-ON panel toggle, 2 × 3 header (the Omron G6A-274P is not bought yet) | 1.7 | yes, toggles are commodity |
+| Toggle in the front wall, relay footprint kept for the matrix | DPDT ON-ON panel toggle, wired into the relay's footprint (the Omron G6A-274P is not bought yet) | 1.7 | yes, toggles are commodity |
 | BNC instead of XLR | 4 × PCB right-angle BNC with panel nut, **Molex 73100-0105** | 1.8 | yes, and Chinese equivalents; the panel nut is the thing to confirm |
 | 4 mm safety sockets instead of Cliff test jacks | 3 × shrouded 4 mm PCB socket ≥ 20 A, **Cliff FCR7350 R/B/G** | 1.8 | Cliff unlikely; a shrouded Chinese 4 mm PCB socket at ≥ 20 A is acceptable if it is right-angle and the datasheet gives the rating |
 | All connectors in one long wall | **Hammond 1444-862** chassis + **1434-86** bottom plate, 10 mm M3 spacers | 1.9 | no; Digi-Key, Mouser, Reichelt |
@@ -123,13 +123,12 @@ not worth a second shop.
 | First choice | Vishay Dale CMF55 or PTF56 0.1 %, or Vishay MBB/MBE 0207 0.1 %; TE Connectivity Neohm, Welwyn RC55Y. Record whichever shop has both values in 0.1 % |
 | Fallback | 0.1 % is a convenience, not a necessity - Klirr measures the ratio. If 0.1 % costs over 3 € a piece, take 1 % at ≤ 50 ppm/K and say so |
 
-### 1.7 Pad switch and header - 2 pieces
+### 1.7 Pad switch - 2 pieces
 
 | | |
 |---|---|
 | Hard | DPDT, ON-ON (two stable positions, no centre-off), panel mount for a 1 mm aluminium wall, solder lugs, rated ≥ 1 A (the current is microamps; the rating is for contact quality) |
 | First choice | any miniature toggle of that kind (APEM 5000 series, C&K 7201, Knitter MTA 206, or the shop's house brand). Record price and the panel hole diameter |
-| Plus | one 2 × 3 pin header 2.54 mm per board, commodity |
 | Not now | the **Omron G6A-274P-ST-US DC12** relay keeps its footprint on the board but is not bought until the matrix controller exists; if a shop has it cheaply, note the price for later |
 
 ### 1.8 Connectors

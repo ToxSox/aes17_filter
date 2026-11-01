@@ -16,6 +16,5 @@ Cliff FCR7350R,J1,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087
 Cliff FCR7350B,J2,Banana_Cliff_FCR7350B_S16N-PC_Horizontal,C6555263
 Cliff FCR7350G,J3,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085
 Neutrik NC3MAAH,J5,Jack_XLR_Neutrik_NC3MAAH_Horizontal,C368463
-pin header 2x3 2.54 mm,J8,PinHeader_2x03_P2.54mm_Vertical,C65114
 pin header 1x2 2.54 mm,J9,PinHeader_1x02_P2.54mm_Vertical,C492401
 1N4148,D1,D_DO-35_SOD27_P7.62mm_Horizontal,C258182

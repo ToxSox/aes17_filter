@@ -76,17 +76,17 @@ with schemdraw.Drawing(show=False) as d:
     R(d, (22.5, -2.5), (25.5, -2.5), 'R9  9.53k 0.1%', loc='bottom')
     dot(d, (25.5, -2.5), 'PAD  (20:1 tap)')
     R(d, (25.5, -2.5), (25.5, -5), 'R10  1.00k 0.1%', loc='bottom'); gnd(d, (25.5, -5))
-    # ---- switch: toggle on J8 today, relay K1 later, one pole per leg -------------------
-    line(d, (19.5, 0), (28, 0)); dot(d, (28, 0), 'DIRECT   J8-5  /  K1-8 (NO)', loc='top', open_=True)
-    line(d, (25.5, -2.5), (28, -2.5)); dot(d, (28, -2.5), 'PAD   J8-1  /  K1-6 (NC, relay at rest)', loc='bottom', open_=True)
+    # ---- switch: toggle wired into K1's holes today, relay K1 later, one pole per leg ----
+    line(d, (19.5, 0), (28, 0)); dot(d, (28, 0), 'DIRECT   K1-8 (NO)', loc='top', open_=True)
+    line(d, (25.5, -2.5), (28, -2.5)); dot(d, (28, -2.5), 'PAD   K1-6 (NC, relay at rest)', loc='bottom', open_=True)
     dot(d, (30, -1.25), None, open_=True)
     d += elm.Line().at((30, -1.25)).to((28.25, -2.4)).linewidth(2)     # the blade, drawn in the PAD position
-    line(d, (30, -1.25), (32, -1.25)); dot(d, (32, -1.25), 'OUT +   J8-3 / K1-4 (COM)   to J5 XLR pin 2', loc='right', open_=True)
+    line(d, (30, -1.25), (32, -1.25)); dot(d, (32, -1.25), 'OUT +   K1-4 (COM)   to J5 XLR pin 2', loc='right', open_=True)
     # ---- notes ---------------------------------------------------------------------------
     d += elm.Label().at((0, -7.2)).label(
-        'Negative leg, IN - (J4 XLR pin 3 / J2 black) to OUT - (J5 XLR pin 3): identical; R11-R20, RV2, C5-C10, L3, L4; its switch is J8 pins 6 / 4 / 2 and relay pole B pins 9 / 13 / 11.\n'
+        'Negative leg, IN - (J4 XLR pin 3 / J2 black) to OUT - (J5 XLR pin 3): identical; R11-R20, RV2, C5-C10, L3, L4; its switch is relay pole B, pins 9 / 13 / 11.\n'
         'XLR pin 1 and shell, J3 (green 4 mm), the ground plane and the box: GND = the QA403\'s Audio Common. Connectors as on the AP AUX-0025; the QA403 takes an XLR-to-two-BNC lead.\n'
-        'K1 (Omron G6A-274P-ST-US DC12) is a footprint only until the matrix controller drives it; coil on J9 (1 = +12 V), D1 1N4148 across the coil, cathode (band) to J9-1.\n'
+        'K1 (Omron G6A-274P-ST-US DC12) is a footprint only until the matrix controller drives it; until then a DPDT toggle is wired into its six contact holes. Coil on J9 (1 = +12 V), D1 1N4148 across the coil, cathode (band) to J9-1.\n'
         'With K1 at rest or a toggle in the PAD position the analyzer sees 1/20 of the amplifier; DIRECT is the full voltage, limited to 40 Vrms by the QA403.',
         halign='left', fontsize=8)
 
