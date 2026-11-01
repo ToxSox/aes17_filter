@@ -13,6 +13,7 @@ Run make_pcb.py first; this only reads the .kicad_pcb and design.py.
 """
 import csv
 import os
+import unicodedata
 import subprocess
 import sys
 import zipfile
@@ -49,6 +50,14 @@ def gerbers():
     return out, sorted(os.listdir(tmp))
 
 
+def ascii_only(text):
+    """JLCPCB's BOM import reads the file as a single-byte encoding and turns every non-ASCII
+    character into garbage ("W眉rth"), so the BOM carries plain ASCII only."""
+    text = text.replace('Ω', 'R').replace('±', '+-').replace('µ', 'u').replace('×', 'x')
+    text = unicodedata.normalize('NFKD', text)
+    return ''.join(c for c in text if ord(c) < 128)
+
+
 def bom_and_cpl():
     board = pcbnew.LoadBoard(PCB)
     fps = {fp.GetReference(): fp for fp in board.GetFootprints()}
@@ -72,7 +81,7 @@ def bom_and_cpl():
         w = csv.writer(f)
         w.writerow(['Comment', 'Designator', 'Footprint', 'LCSC Part #'])
         for (value, footprint, lcsc), refs in bom_rows.items():
-            w.writerow([value, ','.join(refs), footprint, lcsc])
+            w.writerow([ascii_only(value), ','.join(refs), footprint, lcsc])
     with open(os.path.join(FAB, 'aes17-filter-cpl.csv'), 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['Designator', 'Mid X', 'Mid Y', 'Layer', 'Rotation'])

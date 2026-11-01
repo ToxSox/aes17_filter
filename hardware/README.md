@@ -46,14 +46,14 @@ the plate just has a clearance hole for the Ø11 barrel).
 2. **Assembly.** Tick assembly, **two boards**, top side only, Economic. Upload
    `fab/aes17-filter-bom.csv` and `fab/aes17-filter-cpl.csv`. All parts are through-hole;
    JLCPCB hand-solders those ($3.58 per order plus $0.0164 per joint, one extra day).
-3. **Parts review.** In the parts page every line with an LCSC number resolves on its own. **The
-   coils L1-L4 have no LCSC number on purpose**: the Würth WE-TIS 7447471102 is not in LCSC's
-   catalogue, so for that line choose "Global Sourcing Parts" (or request the part by number in
-   the parts manager before uploading) and let JLCPCB quote it. On 1 November 2026 their quote
-   came back from four distributors: Digi-Key 3.01 € (339 in stock, 8-14 business days), RS
-   2.74 € at five, Element14 2.97 €, Mouser 3.37 € - so about 29 € for the ten coils. If sourcing
-   ever fails, assign the Würth 7447480102, C1331132, pre-order, which fits the same footprint
-   and loses only the shielding. Four more lines are **pre-order** (both WIMA capacitors, the Cliff sockets): JLCPCB
+3. **Parts review.** In the parts page every line with an LCSC number resolves on its own,
+   including the coils: the Würth WE-TIS 7447471102 is JLCPCB part **C1331105** (not in LCSC's
+   own shop, which is why the first search missed it; JLCPCB lists it as ±20 %, the datasheet
+   says ±10 %, and the trimmer covers either). It is a pre-order part like the WIMA capacitors;
+   JLCPCB's global-sourcing quote of 1 November 2026, should it be needed instead, was Digi-Key
+   3.01 € (339 in stock, 8-14 business days), RS 2.74 € at five, Element14 2.97 €, Mouser 3.37 €.
+   The unshielded Würth 7447480102, C1331132, fits the same footprint and is the fallback. The
+   BOM file is plain ASCII on purpose: JLCPCB's import reads "Würth" as "W眉rth". Four more lines are **pre-order** (both WIMA capacitors, the Cliff sockets): JLCPCB
    buys them after payment, quotes the final price within 48 hours, and they take nine to
    twenty business days to arrive; connectors carry a $20 inspection fee per type, so the three
    Cliff colours cost $60 in inspection alone. The cheaper route for the Cliff sockets is to

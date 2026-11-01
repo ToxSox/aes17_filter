@@ -76,7 +76,7 @@ are LCSC or JLCPCB's global-sourcing quote on 1 November 2026, single quantity.
 
 | Qty | Part | For | Source | ≈ |
 |---|---|---|---|---|
-| 4 | **Würth WE-TIS 7447471102**, 1 mH ±10 %, shielded, 2.1 Ω, 0.46 A | L1-L4 | JLCPCB global sourcing (not in LCSC's catalogue): quoted from Digi-Key 3.01 € (339 in stock, 8-14 business days), RS 2.74 € at five, Element14 2.97 €, Mouser 3.37 €. Fallback on the same footprint: unshielded Würth 7447480102, C1331132, pre-order. The trimmer absorbs the ±10 %: trimmed boards land within 0.029 dB and need R1 between 484 and 540 Ω, well inside the network's 483-575 Ω | 2.9 € |
+| 4 | **Würth WE-TIS 7447471102**, 1 mH ±10 %, shielded, 2.1 Ω, 0.46 A | L1-L4 | JLCPCB C1331105 (a JLCPCB part, not in LCSC's own shop), pre-order; JLCPCB lists it as ±20 %, the datasheet says ±10 %. Global sourcing quoted it at 2.74-3.37 € from Digi-Key, RS, Element14 and Mouser if ever needed. Fallback on the same footprint: unshielded Würth 7447480102, C1331132. The trimmer absorbs the tolerance: trimmed boards land within 0.029 dB (0.032 dB even at ±20 %) and need R1 between 484 and 540 Ω, well inside the network's 483-575 Ω | 2.9 € |
 | 4 | UNI-ROYAL MFR03SF1001A10, 1.00 kΩ 1 % 3 W 50 ppm | input network | C58750 | $0.06 |
 | 2 | 14.0 kΩ 1 % 0.25 W | input network | C127223 | $0.01 |
 | 2 | Bourns 3296W-1-501LF, 500 Ω 25-turn trimmer | 20 kHz knee | C69564 | $0.97 |
