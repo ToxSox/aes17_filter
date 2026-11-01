@@ -71,7 +71,8 @@ Also still open: every question in section 2.
 | | |
 |---|---|
 | Hard | 1000 µH, **±5 % or better**, rated current ≥ 0.5 A, DCR ≤ 1.5 Ω, radial through-hole, 5 mm pin pitch (so it fits the one footprint), self-resonance ≥ 1 MHz |
-| First choice | **Würth 7687480102** (WE-TI HV, 400 V DC rating). Digi-Key: 285 in stock, 1.61 €. Confirm at Mouser and Reichelt; buy where ten are in stock |
+| First choice | **Würth WE-TIS 7447471102**, shielded, ±10 %, 2.1 Ω, 0.46 A / 0.68 A, SRF 1.1 MHz, 120 V, Ø11 × 11.5 mm, 5 mm pitch. Not at LCSC; JLCPCB global sourcing quoted it on 1 November 2026: Digi-Key 3.01 € (339 in stock, 8-14 business days), RS 2.74 € at five (25 in stock), Element14 2.97 € (58), Mouser 3.37 € (139). The ±10 % is absorbed by the trimmer (see the design document) |
+| Fallback | **Würth 7687480102** (WE-TI HV, 400 V DC rating, unshielded ±5 %). Digi-Key: 285 in stock, 1.61 € |
 | Same coil, lower voltage rating | Würth 7447480102 (WE-TI, 120 V DC). Digi-Key: 0 in stock, back order to 26 May 2027; **JLCPCB/LCSC C1331132, pre-order, 2.14 €, minimum 4**. The 120 V rating is enough for this filter (the inductor never sees more than about 20 V), so this part is fully acceptable; at 2.14 € it is the fallback if the HV part is not in stock at 1.61 € |
 | Other ±5 % radials, acceptable | Fastron 09P-102J-50 (±5 %, 2.6 Ω, 280 mA - DCR and current are below the hard line, only if nothing else exists), Hammond 1537R (±5 %, 0.83 Ω, 1.25 A, but Ø15 × 32 mm - fits only with a footprint change), TDK B78148S1105J000 (±5 %, 130 mA - too little current, reject) |
 | Not acceptable as a straight swap | anything ±10 % or ±20 % (Bourns RLB1314-102KL, Würth WE-TIS 7447471102 / 744731102, Coilcraft RFS1317-105KL, Bourns SRR1280-102K, TDK B82477) - unless **twenty** are bought to select five matched pairs from, which is a legitimate plan if the price is low; then note it as such |

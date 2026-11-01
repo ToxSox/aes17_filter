@@ -48,7 +48,7 @@ X_L1 = 64.0           # pads 64 / 69
 X_R3 = 62.0           # 412, pads 62 / 72.16
 X_C34 = 76.5          # first 220p of the bypass pair, pads 76.5 / 81.5
 X_C34B = 84.5         # second 220p, pads 84.5 / 89.5
-X_R5 = 73.5           # 75R 1W, pitch 15.24 -> pad 2 at 88.74
+X_R5 = 74.5           # 75R 1W, pitch 15.24 -> pad 2 at 89.74
 X_L3 = 96.0           # pads 96 / 101
 X_R7 = 96.0           # 3.4k across L3, pads 96 / 106.16
 X_R9 = 107.0          # 24.9, pads 107 / 117.16
@@ -164,6 +164,23 @@ def fp_bnc(board):
     return fp
 
 
+def fp_radial_coil(board):
+    """Radial drum-core inductor, 5 mm pitch, body up to 11 mm (Würth WE-TIS 7447471102: 11 x 11.5 mm,
+    0.65 mm leads; WE-TI 7447480102: 10.5 mm). Courtyard 11.5 mm."""
+    fp = new_footprint(board, 'L_Radial_D11.5mm_P5.00mm', 'Radial inductor, 5 mm pitch, body up to 11 mm')
+    add_tht_pad(fp, 1, 0, 0, 1.3, 2.6, pcbnew.PAD_SHAPE_RECT)
+    add_tht_pad(fp, 2, 5.0, 0, 1.3, 2.6)
+    cx = 2.5
+    for layer, r, w in ((pcbnew.F_SilkS, 5.6, 0.12), (pcbnew.F_CrtYd, 5.75, 0.05)):
+        c = pcbnew.FP_SHAPE(fp)
+        c.SetShape(pcbnew.SHAPE_T_CIRCLE)
+        c.SetStart0(pt(cx, 0)); c.SetEnd0(pt(cx + r, 0))
+        c.SetStart(pt(cx, 0)); c.SetEnd(pt(cx + r, 0))
+        c.SetLayer(layer); c.SetWidth(mm(w))
+        fp.Add(c)
+    return fp
+
+
 def fp_relay_g6a(board):
     """Omron G6A-274P: eight 1.0 mm holes, two rows 7.62 mm apart, pins 1/4/6/8 at 0/7.62/12.70/17.78
     along the row (a 16-pin DIP with the unused positions left out), pins 16/13/11/9 opposite.
@@ -188,7 +205,7 @@ def load_footprint(board, key):
     name = design.FP[key]
     lib, fpname = name.split(':')
     if lib == 'klirr':
-        return {'BNC_TE_5227161_Horizontal': fp_bnc, 'Relay_DPDT_Omron_G6A-274P': fp_relay_g6a}[fpname](board)
+        return {'BNC_TE_5227161_Horizontal': fp_bnc, 'Relay_DPDT_Omron_G6A-274P': fp_relay_g6a, 'L_Radial_D11.5mm_P5.00mm': fp_radial_coil}[fpname](board)
     fp = pcbnew.FootprintLoad(os.path.join(LIB, lib + '.pretty'), fpname)
     if fp is None:
         raise SystemExit(f'footprint not found: {name}')

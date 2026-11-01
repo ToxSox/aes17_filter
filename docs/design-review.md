@@ -367,7 +367,7 @@ an AUX-0025 (Axiometrix shop, October 2026).
 
 | Qty | Part | For | LCSC | Note | ≈ |
 |---|---|---|---|---|---|
-| 4 | Würth 7447480102, 1 mH ±5 % | L1-L4 | C1331132 | pre-order, minimum 4; the 120 V rating is enough. Shielded drop-in: Würth WE-TIS 7447471102 (±10 %, 5 mm pitch, Digi-Key 2.21 €), see the section on the author's planned changes | $2.48 |
+| 4 | **Würth WE-TIS 7447471102**, 1 mH ±10 %, shielded | L1-L4 | - (global sourcing) | not in LCSC's catalogue; JLCPCB's global sourcing quoted it on 1 November 2026 from Digi-Key (339 in stock, 3.01 € at 1, 2.87 € at 10, 8-14 business days), RS (2.74 € at 5), Element14 (2.97 €) and Mouser (3.37 €). Fallback: Würth 7447480102, C1331132, pre-order, same footprint, unshielded. The trimmer absorbs the ±10 %; see the section on the author's planned changes | 2.9 € |
 | 4 | UNI-ROYAL MFR03SF1001A10, 1.00 kΩ 1 % 3 W 50 ppm | input network | C58750 | in stock; Vishay RS02B1K000FE12 (C3397612) is the AP part at $3.71 | $0.06 |
 | 2 | 14.0 kΩ 1 % 0.25 W | input network | C127223 | | $0.01 |
 | 2 | Bourns 3296W-1-501LF, 500 Ω 25-turn | 20 kHz knee | C69564 | in stock | $0.97 |

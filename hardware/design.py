@@ -24,7 +24,7 @@ FP = {
     'R_0W6':    'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal',
     'C_FKP2_S': 'Capacitor_THT:C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2',   # 220 p, 390 p
     'C_FKP2_L': 'Capacitor_THT:C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2',   # 4.7 n
-    'L_1mH':    'Inductor_THT:L_Radial_D10.5mm_P5.00mm_Abacron_AISR-01',
+    'L_1mH':    'klirr:L_Radial_D11.5mm_P5.00mm',                      # drawn by the generator; takes the 11 mm WE-TIS and the 10.5 mm WE-TI
     'TRIM':     'Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical',
     'BANANA_R': 'Connector:Banana_Cliff_FCR7350R_S16N-PC_Horizontal',
     'BANANA_B': 'Connector:Banana_Cliff_FCR7350B_S16N-PC_Horizontal',
@@ -58,11 +58,11 @@ def leg(prefix, names, nets):
         # 390 pF is not stocked at LCSC; two 220 pF in parallel (440 pF, as the repo has it) are
         (names['C34'], '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
         (names['C34b'], '220p',     'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
-        (names['L1'],  '1mH',       'L_1mH',    'C1331132', 'Würth 7447480102 (or 7687480102); shielded drop-in: Würth WE-TIS 7447471102, ±10 %, 5 mm pitch, not at LCSC', [(1, n['A']), (2, n['B'])]),
+        (names['L1'],  '1mH',       'L_1mH',    '', 'Würth WE-TIS 7447471102, shielded, ±10 %, via JLCPCB global sourcing (no LCSC number); fallback Würth 7447480102 = C1331132', [(1, n['A']), (2, n['B'])]),
         (names['C7'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['B']), (2, 'GND')]),
         # second stage
         (names['R5'],  '75.0R 1W',  'R_1W',     'C160685', '1 %, 1 W metal film (CCO MF1W-75R)', [(1, n['B']), (2, n['D'])]),
-        (names['L3'],  '1mH',       'L_1mH',    'C1331132', 'Würth 7447480102 (or 7687480102); shielded drop-in: Würth WE-TIS 7447471102, ±10 %, 5 mm pitch, not at LCSC', [(1, n['D']), (2, n['E'])]),
+        (names['L3'],  '1mH',       'L_1mH',    '', 'Würth WE-TIS 7447471102, shielded, ±10 %, via JLCPCB global sourcing (no LCSC number); fallback Würth 7447480102 = C1331132', [(1, n['D']), (2, n['E'])]),
         (names['R7'],  '3.40k',     'R_0W6',    'C3517441', '1 % metal film 0.25 W (Yageo MFR-25FBF52-3K4)', [(1, n['D']), (2, n['E'])]),
         (names['C9'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['E']), (2, 'GND')]),
         (names['R9'],  '24.9R',     'R_0W6',    'C3542579', '1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9)', [(1, n['E']), (2, n['F'])]),
@@ -111,7 +111,7 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
 DO_NOT_PLACE = {'K1'}
 
 MPN = {
-    'L1': 'Würth 7447480102', 'L2': 'Würth 7447480102', 'L3': 'Würth 7447480102', 'L4': 'Würth 7447480102',
+    'L1': 'Würth 7447471102', 'L2': 'Würth 7447471102', 'L3': 'Würth 7447471102', 'L4': 'Würth 7447471102',
     'R1': 'UNI-ROYAL MFR03SF1001A10', 'R2': 'UNI-ROYAL MFR03SF1001A10', 'R11': 'UNI-ROYAL MFR03SF1001A10', 'R12': 'UNI-ROYAL MFR03SF1001A10',
     'R8': 'UNI-ROYAL MFR01SF1002A10', 'R9': 'UNI-ROYAL MFR01SF1002A10', 'R18': 'UNI-ROYAL MFR01SF1002A10', 'R19': 'UNI-ROYAL MFR01SF1002A10',
     'R10': 'TE YR1B1K0CC', 'R20': 'TE YR1B1K0CC',
