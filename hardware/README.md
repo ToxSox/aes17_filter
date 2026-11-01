@@ -154,9 +154,9 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
    its spacers, put the chassis over it, and mark the connector centres through from inside.
 3. Fit the board on the bottom plate, put the chassis over it, screw the XLR flanges to the
    wall, fit the toggle.
-4. Wire the toggle into K1's six holes, straight below it. Pole A to the back row, labelled
-   "+ DIR PAD COM": its common lug to COM (K1 pin 4, OUT+), the outer lugs to PAD (pin 6) and
-   DIR (pin 8). Pole B the same to the front row (pins 13, 11, 9). Check with an ohmmeter
+4. Wire the toggle into K1's six holes, straight below it. Pole A to the back row, whose holes are
+   labelled +COM, +PAD, +DIR: its common lug to +COM (K1 pin 4, OUT+), the outer lugs to +PAD
+   (pin 6) and +DIR (pin 8). Pole B the same to the front row, -COM, -PAD, -DIR (pins 13, 11, 9). Check with an ohmmeter
    between the output XLR's pin 2 (then pin 3) and pin 1, inputs open: about 1.0 kΩ in the pad
    position (the 1 kΩ leg of the pad), about 21 kΩ in the direct one (the whole pad, seen from
    its top). Mark the positions on the front.

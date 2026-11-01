@@ -372,9 +372,11 @@ def add_silk(board):
     add_text(board, 'OUT XLR 2+ 3-', AX_XLR_OUT, 26.0, 0.9)
     add_text(board, 'chassis', 34.75, 15.0, 0.8)
     # the switch: toggle wires into K1's holes, back row + pole, front row - pole
-    add_text(board, 'toggle above: + DIR PAD COM', 133.5, 25.0, 0.8)
-    add_text(board, '- DIR PAD COM', 132.0, 1.2, 0.8)
-    add_text(board, 'K1 relay not fitted', 150.0, 1.2, 0.8)
+    # one label at each of K1's contact holes: back row + pole, front row - pole
+    for x, name in ((K1_X - 17.78, 'DIR'), (K1_X - 12.7, 'PAD'), (K1_X - 7.62, 'COM')):
+        add_text(board, '+' + name, x, K1_Y + 3.0, 0.8)
+        add_text(board, '-' + name, x, K1_Y - 7.62 - 3.0, 0.8)
+    add_text(board, 'toggle wires (K1 not fitted)', 133.0, 21.2, 0.8)
     add_text(board, 'pad +', 132.5, 46.8, 0.8); add_text(board, 'pad -', 149.0, 46.8, 0.8)
     add_text(board, 'positive leg', 86.0, core(24.0), 0.9); add_text(board, 'negative leg', 86.0, core(76.0), 0.9)
     add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(36.0), 0.8); add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(64.0), 0.8)
