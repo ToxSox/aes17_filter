@@ -66,7 +66,7 @@ def ascii_only(text):
 # 3296W trimmer models are turned a quarter. The trimmer and the header are symmetric in their
 # pins, so a half turn too many would still fit the holes; the XLRs only fit one way, which the
 # holes enforce whatever this file says.
-ROTATION_OFFSET = {'J4': 180, 'J5': 180, 'J8': 90, 'RV1': 90, 'RV2': 90}
+ROTATION_OFFSET = {'J4': 180, 'J5': 180, 'J8': 90, 'J9': 90, 'RV1': 90, 'RV2': 90}
 
 
 def part_centre(fp):
