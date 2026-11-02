@@ -405,7 +405,7 @@ def add_block(board, lines, x, y, size=1.0, pitch=1.75):
 SHORT_VALUE = {
     '1.00k 3W': '1k 3W', '14.0k': '14k', '500R': '500R', '220p': '220p', '412R': '412R', '1mH': '1mH',
     '4.7n': '4n7', '75.0R 1W': '75R 1W', '3.40k': '3k4', '24.9R': '24R9', '10.0k 0.1%': '10k 0.1%',
-    '1.00k 0.1%': '1k 0.1%', '1N4148': '1N4148',
+    '1.00k 0.1%': '1k 0.1%',
 }
 TITLE, REVISION, DATE, SOURCE = design.TITLE, design.REVISION, design.DATE, design.SOURCE
 

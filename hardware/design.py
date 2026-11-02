@@ -7,7 +7,7 @@ per leg, AP's trimmed
 input network, a 20:1 pad after the output resistor, switched by a 4PDT toggle in the front
 wall, two poles per leg: one connects the pad to the filter output in PAD and takes it off in
 DIRECT, the other picks the pad's tap or the filter output for the output XLR. In DIRECT the
-filter sees nothing but the analyzer, as the AUX-0025 does; there is no relay and no supply.
+filter sees nothing but the analyzer, as the AUX-0025 does.
 
 Coordinates are millimetres on a 158 x 124 mm board: x runs along the front edge from the
 input (x = 0) to the output (x = 158), y from the front edge (y = 0) to the back (y = 124).

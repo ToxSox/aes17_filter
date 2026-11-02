@@ -148,7 +148,6 @@ For an assembly of five boards (quantities include JLCPCB's attrition allowance)
 | UNI-ROYAL 10 kΩ 1 W (C58714) | 21 | 0.51 | 0.02 | in stock; replaced by TE YR1B10KCC 0.1 % (C1364313, about 0.50 € each) |
 | 75 Ω 1 W (C160685) | 11 | 0.47 | 0.04 | in stock |
 | 14 k, 412, 3.4 k, 24.9 (C127223, C3558411, C3517441, C3542579) | 11-15 each | 0.15 / 0.06 / 0.17 / 0.36 | 0.01-0.02 | in stock; the 412 and 3.4 k are now 0.6 W Vishay MRS25 (C1235858, C1366835), not yet quoted |
-| 1N4148 (C258182), headers (C65114, C492401) | 10 / 5 / 5 | 0.26 / 0.20 / 0.08 | | in stock; the 2 × 3 header C65114 has since left the board |
 | Würth 7447471102 coils | 20 | about 58 | 2.9 | "Vorbestellen" → global sourcing; replaced by the unshielded 7447480102 (C1331132, 2.14 €) |
 
 About 356 € of parts for five assembled boards, 71 € per board, of which the three Cliff sockets

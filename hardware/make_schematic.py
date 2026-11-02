@@ -121,7 +121,7 @@ with schemdraw.Drawing(show=False) as d:
     d += elm.Label().at((0, -7.2)).label(
         f"Negative leg, IN - (J4 XLR pin 3 / J2 black) to OUT - (J5 XLR pin 3): identical; R11-R20, RV2, C5-C10, L3, L4; its switch is poles c and d of S1: OUT {w1('OUT_N')}, F {w1('F_N')}, PT {w1('PT_N')}, PAD {w1('PAD_N')}.\n"
         'XLR pin 1 and shell, J3 (green 4 mm), the ground plane and the box: GND = the QA403\'s Audio Common. Connectors as on the AP AUX-0025; the QA403 takes an XLR-to-two-BNC lead.\n'
-        'S1: 4PDT ON-ON toggle in the front wall, non-shorting, gold contacts (APEM 5666CDB or similar), its wires soldered into W1; drawn in the PAD position. No relay, no supply.\n'
+        'S1: 4PDT ON-ON toggle in the front wall, non-shorting, gold contacts (APEM 5666CDB or similar), its wires soldered into W1; drawn in the PAD position.\n'
         'In DIRECT the pad is off the output: the filter sees the analyzer alone, as the AUX-0025 does (about 1.006:1). In PAD the analyzer sees about 1/22 of the amplifier (measure it);\n'
         'DIRECT is the full voltage, DC included: a single-supply bridged amplifier idles at half its supply on both legs, which adds to the peak the QA403 sees.\n'
         f'All values from design.py, sha256 {design_hash()}.',

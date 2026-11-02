@@ -17,7 +17,7 @@ trim**, the **pad becomes 20:1**, switched by a 4PDT toggle that takes it off th
 it, the **inductors are the unshielded ±5 % drum cores** V2 measured, and the **voltage rating
 is stated honestly** as a curve rather than a number. The reasoning follows. (Revised on
 2 November 2026 after a second outside review: the pad's load and leg matching, the rating
-above 70 kHz and the coil; the relay footprint was then dropped for a passive 4PDT toggle.)
+above 70 kHz, the coil, and a pad switch that takes the pad off the output in DIRECT.)
 
 ## What the filter is for, on a QA403
 
@@ -302,8 +302,7 @@ power sweeps worse, not better.
 
 **Decision: two positions, direct and 20:1, on the filter board.** 20:1 rather than the repo's
 10:1 because it keeps a 2 kW / 4 Ω amplifier in the +18 range and gives up nothing at 500 W
-or 1 kW; 20:1 is also what the bench's planned relay matrix had on its bus, so the filter's pad
-*is* the matrix's divider and there is one divider on the bench, not two. Values: **2 × 10.0 kΩ
+or 1 kW. Values: **2 × 10.0 kΩ
 in series and 1.00 kΩ to ground, all three 0.1 % / 15 ppm (TE YR1B, one family)**, per leg -
 the ratio including the filter's 590 Ω and the analyzer's 100 kΩ is about 21.8:1, and it is
 measured in place anyway. 9.53 kΩ in 0.1 % is stocked nowhere through-hole; 10.0 kΩ is. The
@@ -317,13 +316,10 @@ low-frequency rating.
 
 The switch is a **4PDT ON-ON toggle in the front wall**, non-shorting, with **gold contacts**
 (APEM 5666CDB or similar), two poles per leg, its ten wires soldered into W1, a field of ten
-holes straight below it. There is **no relay and no supply** in the box: an earlier draw had
-the footprint of an Omron G6A relay for a later matrix controller, but a 12 V line from a wall
-adapter or a controller would bring a second ground into the measurement ground (the leakage of
-a switch-mode supply's Y capacitor, digital noise) right beside the output, which is not what a
-passive reference filter should carry. Switching by a matrix belongs in a separate attenuator
-behind the filter. Until then the two positions are two probe settings, named by what the
-operator sees, and a gain check between steps catches a switch that did not move.
+holes straight below it. The filter stays passive: nothing in the box needs a supply or a
+control line, so the analyzer's ground is the only ground it has. The two positions are two
+probe settings, named by what the operator sees, and a gain check between steps catches a
+switch that did not move.
 
 Two poles per leg, so that **DIRECT is the bare filter**, as on the AUX-0025 and as in V2:
 
@@ -653,9 +649,8 @@ Whatever runs the QA403 behind this filter should do three things:
   the −0.05 dB insertion loss in DIRECT, are known once per board and could be divided out of the
   frequency response row the way the ratio is divided out of every level; the row would then
   show the amplifier and not the filter. Everything else (THD+N, SNR, power) is unaffected.
-- **Per-step probe choice.** Direct for the audio block, 20:1 for the sweeps, in one run. With
-  the toggle that means a prompt to the operator between steps and a gain check after it; a
-  separate, matrix-driven attenuator behind the filter would make it automatic.
+- **Per-step probe choice.** Direct for the audio block, 20:1 for the sweeps, in one run: a
+  prompt to the operator between steps and a gain check after it.
 
 ## The original author's three planned changes
 
@@ -733,7 +728,6 @@ before anything was ordered. Every number in it was re-simulated here; what it c
 
 | Point | Verdict | What was done |
 |---|---|---|
-| K1's footprint drawn from Omron's bottom view, so mirrored: the polarised coil reversed | **right** - a board bug | first redrawn in top view; then the relay, J9 and D1 were dropped altogether for a passive 4PDT toggle (no supply line into the filter) |
 | `rating()` checked neither R4 nor R6; 85 Vrms claimed above 100 kHz | **right** | both now 0.6 W in the same footprint; `rating()` checks every resistor; the rating is 75 / 55 / 30 Vrms per leg |
 | the DIRECT model left out the pad's 21 kΩ: −0.30 dB, not −0.05 | **right** | the pad now comes off the output in DIRECT (4PDT, two poles per leg): −0.05 dB again, as on the AUX-0025; the simulation models both positions |
 | 1 % upper pad arms: −36 to −39 dB of common mode in PAD, which no probe factor can correct | **right** | all pad resistors 0.1 % / 15 ppm, one family: −52 dB |
@@ -749,5 +743,4 @@ before anything was ordered. Every number in it was re-simulated here; what it c
 | one ground plane, pin 1 on it; not AES48 | **by design** | the shunt capacitors need the analyzer's ground as their reference, as on the AUX-0025; "Ground, and bridged amplifiers" and test 5 cover the loop |
 | hum pickup with 66 mm between the legs | **plausible, unquantified** | test 4 now turns the box in the field |
 | F_N on the bottom past the pad tap | **negligible** | 0.2 pF from F_N into the 950 Ω tap is −90 dB at 20 kHz; the stop-band test in PAD would show more |
-| unfiltered J9, relay not fitted | **gone** | no relay, no J9: switching by a matrix belongs in a separate attenuator |
 | name and source-impedance limits | **right** | stated in the README and the safety section |
