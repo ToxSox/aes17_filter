@@ -53,11 +53,11 @@ LEGEND = [
     (make_pcb.AX_XLR_IN, 5.0, 'IN  2+ 3-'),
     (make_pcb.AX_RED, 5.0, 'IN +'), (make_pcb.AX_BLACK, 5.0, 'IN -'), (make_pcb.AX_GREEN, 5.0, 'GND'),
     ((make_pcb.AX_RED + make_pcb.AX_GREEN) / 2, 45.0,
-     'max per leg: 85 Vrms to 12 kHz, 53 Vrms at 20 kHz, 35 Vrms 30-100 kHz'),
+     'max per leg: 75 Vrms to 15 kHz, 55 Vrms at 20 kHz, 30 Vrms 30 kHz-1 MHz'),
     ((make_pcb.AX_RED + make_pcb.AX_GREEN) / 2, 41.0, 'GND to the amplifier ground; IN - is not ground'),
     (make_pcb.AX_XLR_OUT, 5.0, 'OUT  2+ 3-'),
     (make_pcb.AX_TOGGLE, 45.0, 'PAD 1:21.8  /  DIRECT'),
-    (make_pcb.AX_TOGGLE, 25.0, 'DIRECT: max 40 Vrms\ninto the QA403;\nswitch muted only'),
+    (make_pcb.AX_TOGGLE, 25.0, 'DIRECT: max 40 Vrms,\n56 Vpk incl. DC;\nswitch amp off only'),
 ]
 
 

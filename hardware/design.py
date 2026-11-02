@@ -31,9 +31,10 @@ FP = {
     'R_3W':     'Resistor_THT:R_Axial_DIN0614_L14.3mm_D5.7mm_P20.32mm_Horizontal',
     'R_1W':     'Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal',
     'R_0W6':    'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal',
+    'R_0207_P15': 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P15.24mm_Horizontal',   # the pad's 10 k: 0207 body, 1 W pitch
     'C_FKP2_S': 'Capacitor_THT:C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2',   # 220 p, 390 p
     'C_FKP2_L': 'Capacitor_THT:C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2',   # 4.7 n
-    'L_1mH':    'aes17:L_Radial_D11.5mm_P5.00mm',                      # drawn by the generator; takes the 11 mm WE-TIS and the 10.5 mm WE-TI
+    'L_1mH':    'aes17:L_Radial_D11.5mm_P5.00mm',                      # drawn by the generator; takes the 10.5 mm WE-TI and the 11 mm WE-TIS
     'TRIM':     'Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical',
     'BANANA_R': 'Connector:Banana_Cliff_FCR7350R_S16N-PC_Horizontal',
     'BANANA_B': 'Connector:Banana_Cliff_FCR7350B_S16N-PC_Horizontal',
@@ -65,23 +66,31 @@ def leg(prefix, names, nets):
         (names['RV1'], '500R',      'TRIM',     'C69564', 'Bourns 3296W-1-501LF, 25 turns', [(1, n['T']), (2, n['A']), (3, n['A'])]),
         # first stage
         (names['C1'],  '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %', [(1, n['A']), (2, 'GND')]),
-        (names['R3'],  '412R',      'R_0W6',    'C3558411', '1 % metal film 0.25 W (Yageo MFR-25FTE52-412R)', [(1, n['A']), (2, n['X'])]),
+        # 0.6 W: this resistor carries the stop band. 0.25 W parts reach their rating at about
+        # 30 Vrms per leg at 250-500 kHz, which a filterless class-D output's carrier can be.
+        (names['R3'],  '412R',      'R_0W6',    'C1235858', 'Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C4120FRP00 = C1758271, Yageo MF0207FTE52-412R = C3401155', [(1, n['A']), (2, n['X'])]),
         # 390 pF is not stocked at LCSC; two 220 pF in parallel (440 pF, as the repo has it) are
         (names['C34'], '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
         (names['C34b'], '220p',     'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
-        (names['L1'],  '1mH',       'L_1mH',    'C1331105', 'Wurth WE-TIS 7447471102, shielded; JLCPCB lists it as +-20 % (the datasheet says +-10 %), the trimmer covers either; fallback Wurth 7447480102 = C1331132', [(1, n['A']), (2, n['B'])]),
+        # the unshielded drum core: the largest air gap, so the most linear ferrite coil of this
+        # size, and the coil family V2 measured at -133 dB HD3; the shielded WE-TIS 7447471102
+        # (C1331105, +-20 % at JLCPCB) fits the same footprint but is unmeasured for distortion
+        (names['L1'],  '1mH',       'L_1mH',    'C1331132', 'Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105', [(1, n['A']), (2, n['B'])]),
         (names['C7'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['B']), (2, 'GND')]),
         # second stage
         (names['R5'],  '75.0R 1W',  'R_1W',     'C160685', '1 %, 1 W metal film (CCO MF1W-75R)', [(1, n['B']), (2, n['D'])]),
-        (names['L3'],  '1mH',       'L_1mH',    'C1331105', 'Wurth WE-TIS 7447471102, shielded; JLCPCB lists it as +-20 % (the datasheet says +-10 %), the trimmer covers either; fallback Wurth 7447480102 = C1331132', [(1, n['D']), (2, n['E'])]),
-        (names['R7'],  '3.40k',     'R_0W6',    'C3517441', '1 % metal film 0.25 W (Yageo MFR-25FBF52-3K4)', [(1, n['D']), (2, n['E'])]),
+        (names['L3'],  '1mH',       'L_1mH',    'C1331132', 'Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105', [(1, n['D']), (2, n['E'])]),
+        # 0.6 W: around the second stage's resonance (50-150 kHz) this resistor takes the power
+        (names['R7'],  '3.40k',     'R_0W6',    'C1366835', 'Vishay MRS25000C3401FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C3401FCT00 = C1382495', [(1, n['D']), (2, n['E'])]),
         (names['C9'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['E']), (2, 'GND')]),
         (names['R9'],  '24.9R',     'R_0W6',    'C3542579', '1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9)', [(1, n['E']), (2, n['F'])]),
-        # the pad, always on the filter output; the switch picks the tap or F. 9.53 k in 0.1 % is
-        # not stocked anywhere through-hole, so 2 x 10.0 k 1 % 1 W over 1.00 k 0.1 %: about 21.6:1,
-        # and the ratio is measured in place anyway. 1 W because at 140 V the pair dissipates 0.9 W.
-        (names['R11'], '10.0k 1W',  'R_1W',     'C58714', '1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)', [(1, n['F']), (2, n['M'])]),
-        (names['R12'], '10.0k 1W',  'R_1W',     'C58714', '1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)', [(1, n['M']), (2, n['PAD'])]),
+        # the pad, always on the filter output; the switch picks the tap or F. 2 x 10.0 k over
+        # 1.00 k, all three 0.1 % / 15 ppm from one family: the QA403 subtracts the two legs in its
+        # analogue input stage, so the legs' ratios must match each other, which a measured probe
+        # factor per channel cannot correct (1 % upper arms left -39 dB of common mode in the
+        # difference). 0.25 W each: 0.125 W, half the rating, at 74 Vrms per leg.
+        (names['R11'], '10.0k 0.1%', 'R_0207_P15', 'C1364313', '0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k', [(1, n['F']), (2, n['M'])]),
+        (names['R12'], '10.0k 0.1%', 'R_0207_P15', 'C1364313', '0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k', [(1, n['M']), (2, n['PAD'])]),
         (names['R13'], '1.00k 0.1%', 'R_0W6',   'C1364308', '0.1 %, 15 ppm, 0.25 W (TE YR1B1K0CC)', [(1, n['PAD']), (2, 'GND')]),
     ]
     return parts
@@ -103,10 +112,12 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     # connectors, output end (x = 158): the AUX-0025's male XLR; the QA403 takes an XLR-to-two-BNC lead
     ('J5', 'OUT XLR', 'XLR_M',  'C368463', 'Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground', [(1, 'GND'), (2, 'OUT_P'), (3, 'OUT_N'), ('G', 'GND')]),
     # the pad switch: the relay's footprint, whose six contact holes take the toggle's wires until
-    # the relay is fitted - pole A (+ leg) 4 / 6 / 8, pole B (- leg) 13 / 11 / 9, common first.
+    # the relay is fitted - pole B (+ leg) 13 / 11 / 9, pole A (- leg) 4 / 6 / 8, common first.
+    # Pins as Omron numbers them; the footprint is drawn from the top (Omron's drawing is the
+    # bottom view), and the coil is polarised: pin 1 +, pin 16 -.
     # A separate header on the same nets would only hang a stub on the output.
     ('K1', 'G6A-274P-ST-US DC12', 'RELAY', 'C129439', 'DO NOT PLACE until the matrix drives it; NC = pad, NO = direct; until then the toggle is wired into its holes',
-        [(1, 'COIL+'), (16, 'COIL-'), (4, 'OUT_P'), (6, 'PAD_P'), (8, 'F_P'), (13, 'OUT_N'), (11, 'PAD_N'), (9, 'F_N')]),
+        [(1, 'COIL+'), (16, 'COIL-'), (13, 'OUT_P'), (11, 'PAD_P'), (9, 'F_P'), (4, 'OUT_N'), (6, 'PAD_N'), (8, 'F_N')]),
     ('J9', 'COIL', 'HDR_1x2',   'C492401', 'relay coil, 12 V from the matrix controller', [(1, 'COIL+'), (2, 'COIL-')]),
     ('D1', '1N4148', 'DIODE',   'C258182', 'flyback across the coil; pin 1 is the cathode (band) and goes to COIL+', [(1, 'COIL+'), (2, 'COIL-')]),
     # mounting holes for M3 stand-offs on the chassis' bottom plate; H5 is plated and bonds the
@@ -127,9 +138,11 @@ NOT_ASSEMBLED = ('H', 'TP')     # reference prefixes that are holes and pads, no
 DO_NOT_PLACE = {'K1'}
 
 MPN = {
-    'L1': 'Wurth 7447471102', 'L2': 'Wurth 7447471102', 'L3': 'Wurth 7447471102', 'L4': 'Wurth 7447471102',
+    'L1': 'Wurth 7447480102', 'L2': 'Wurth 7447480102', 'L3': 'Wurth 7447480102', 'L4': 'Wurth 7447480102',
     'R1': 'UNI-ROYAL MFR03SF1001A10', 'R2': 'UNI-ROYAL MFR03SF1001A10', 'R11': 'UNI-ROYAL MFR03SF1001A10', 'R12': 'UNI-ROYAL MFR03SF1001A10',
-    'R8': 'UNI-ROYAL MFR01SF1002A10', 'R9': 'UNI-ROYAL MFR01SF1002A10', 'R18': 'UNI-ROYAL MFR01SF1002A10', 'R19': 'UNI-ROYAL MFR01SF1002A10',
+    'R4': 'Vishay MRS25000C4120FCT00', 'R14': 'Vishay MRS25000C4120FCT00',
+    'R6': 'Vishay MRS25000C3401FCT00', 'R16': 'Vishay MRS25000C3401FCT00',
+    'R8': 'TE YR1B10KCC', 'R9': 'TE YR1B10KCC', 'R18': 'TE YR1B10KCC', 'R19': 'TE YR1B10KCC',
     'R10': 'TE YR1B1K0CC', 'R20': 'TE YR1B1K0CC',
     'C1': 'WIMA FKP2J002201D00HSSD', 'C5': 'WIMA FKP2J002201D00HSSD',
     'C2': 'WIMA FKP2J002201D00HSSD', 'C6': 'WIMA FKP2J002201D00HSSD', 'C9': 'WIMA FKP2J002201D00HSSD', 'C10': 'WIMA FKP2J002201D00HSSD',

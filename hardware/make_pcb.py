@@ -117,8 +117,9 @@ for (ref_hi, ref_mid, ref_lo), (c_hi, c_mid, c_lo) in (
 # X positions of the axes along the front: XLR in, red and black at AP's 19.05 mm, green common;
 # then the XLR out; then the pad toggle, which sits in the wall straight above the switch.
 AX_XLR_IN, AX_RED, AX_BLACK, AX_GREEN, AX_XLR_OUT, AX_TOGGLE = 18.0, 45.0, 64.05, 85.0, 112.0, 136.0
-# The switch: K1's footprint, turned half round so that the positive pole's row (F, PAD, OUT,
-# coil +) is the back row, next to the pad block, and the negative pole's row the front one.
+# The switch: K1's footprint, turned half round so that the positive leg's pole (B: F, PAD, OUT
+# on pins 9, 11, 13, and the coil - on 16) is the back row, next to the pad block, and the
+# negative leg's pole (A: pins 8, 6, 4, and the coil + on 1) the front one.
 # Without the relay its six contact holes take the toggle's six wires: COM = OUT, NC = PAD,
 # NO = DIRECT, the toggle being 15 mm above them.
 K1_X, K1_Y = 144.78, 15.0
@@ -126,7 +127,10 @@ PLACE.update({
     'J4': (AX_XLR_IN - 3.79, WALL + 15.4, 90),
     'J1': (AX_RED, WALL + 13.5, 270), 'J2': (AX_BLACK, WALL + 13.5, 270), 'J3': (AX_GREEN, WALL + 13.5, 270),
     'J5': (AX_XLR_OUT + 3.81, WALL + 20.48, 180),
-    'K1': (K1_X, K1_Y, 180), 'J9': (150.0, K1_Y, 0), 'D1': (154.5, K1_Y, 90),
+    'K1': (K1_X, K1_Y, 180),
+    # J9 turned half round so that its pin 1 (+12 V) is the back one, and D1 turned so that its
+    # cathode sits on the front row with the coil's + pin
+    'J9': (150.0, K1_Y + 2.54, 180), 'D1': (154.5, K1_Y - 7.62, 270),
     # M3 holes for stand-offs on the chassis' bottom plate: four plain ones on the band's centre
     # line, and H5, plated and on ground, in the connector strip: the one point where the board's
     # ground meets the chassis, next to where the cables come in
@@ -171,8 +175,8 @@ def add_fp_line(fp, x1, y1, x2, y2, layer=pcbnew.F_SilkS, width=0.12):
 
 
 def fp_radial_coil(board):
-    """Radial drum-core inductor, 5 mm pitch, body up to 11 mm (Würth WE-TIS 7447471102: 11 x 11.5 mm,
-    0.65 mm leads; WE-TI 7447480102: 10.5 mm). Courtyard 11.5 mm."""
+    """Radial drum-core inductor, 5 mm pitch, body up to 11 mm (Würth WE-TI 7447480102: 10.5 mm, as
+    fitted; the shielded WE-TIS 7447471102: 11 x 11.5 mm, 0.65 mm leads). Courtyard 11.5 mm."""
     fp = new_footprint(board, 'L_Radial_D11.5mm_P5.00mm', 'Radial inductor, 5 mm pitch, body up to 11 mm')
     add_tht_pad(fp, 1, 0, 0, 1.3, 2.6, pcbnew.PAD_SHAPE_RECT)
     add_tht_pad(fp, 2, 5.0, 0, 1.3, 2.6)
@@ -189,16 +193,19 @@ def fp_radial_coil(board):
 
 def fp_relay_g6a(board):
     """Omron G6A-274P: eight 1.0 mm holes, two rows 7.62 mm apart, pins 1/4/6/8 at 0/7.62/12.70/17.78
-    along the row (a 16-pin DIP with the unused positions left out), pins 16/13/11/9 opposite.
+    along one row (a 16-pin DIP with the unused positions left out), pins 16/13/11/9 opposite.
     Body 20.2 x 10.1 mm, 8.4 mm high. Pin 1 is the coil +, 16 the coil -; 4 and 13 are the
-    commons, 6 and 11 the normally closed, 8 and 9 the normally open contacts (Omron data sheet,
-    bottom view)."""
-    fp = new_footprint(board, 'Relay_DPDT_Omron_G6A-274P', 'Omron G6A-274P DPDT signal relay, 8 pins')
+    commons, 6 and 11 the normally closed, 8 and 9 the normally open contacts.
+    Omron draws the terminals in BOTTOM view; a KiCad footprint is drawn from the TOP (component
+    side), so the drawing is mirrored here: seen from the top, 1 -> 8 -> 9 -> 16 runs
+    anticlockwise, as on any DIP. Rev A's first layout had Omron's bottom view as it stands, which
+    put the polarised coil in backwards (and the flyback diode across a reversed supply)."""
+    fp = new_footprint(board, 'Relay_DPDT_Omron_G6A-274P', 'Omron G6A-274P DPDT signal relay, 8 pins, top view')
     row = {1: 0.0, 4: 7.62, 6: 12.70, 8: 17.78}
     for n, x in row.items():
-        add_tht_pad(fp, n, x, 0.0, 1.0, 1.7, pcbnew.PAD_SHAPE_RECT if n == 1 else pcbnew.PAD_SHAPE_CIRCLE)
+        add_tht_pad(fp, n, x, 7.62, 1.0, 1.7, pcbnew.PAD_SHAPE_RECT if n == 1 else pcbnew.PAD_SHAPE_CIRCLE)
     for n, x in {16: 0.0, 13: 7.62, 11: 12.70, 9: 17.78}.items():
-        add_tht_pad(fp, n, x, 7.62, 1.0, 1.7)
+        add_tht_pad(fp, n, x, 0.0, 1.0, 1.7)
     x0, x1 = 17.78 / 2 - 10.1, 17.78 / 2 + 10.1
     y0, y1 = 7.62 / 2 - 5.05, 7.62 / 2 + 5.05
     for (a, b, c, d) in ((x0, y0, x1, y0), (x1, y0, x1, y1), (x1, y1, x0, y1), (x0, y1, x0, y0)):
@@ -225,7 +232,7 @@ def load_footprint(board, key):
 # ----------------------------------------------------------------------------------------------
 F, B = 'F.Cu', 'B.Cu'
 # The whole filter, up to and including OUT in the direct position, carries the amplifier's
-# voltage: 120 V peak at the rating of 85 Vrms per leg, 200 V peak at the 140 Vrms V2 once claimed. IPC-2221B
+# voltage: 120 V peak at 85 Vrms per leg (above the 75 Vrms rating), 200 V peak at the 140 Vrms V2 once claimed. IPC-2221B
 # asks 0.8 mm between bare pads (A6) and 0.4 mm between masked tracks (B4) for 101-300 V, so the
 # board keeps 0.8 mm everywhere; it has the room.
 CLEARANCE = 0.8
@@ -284,31 +291,32 @@ INPUT_ROUTES = [
 
 # The output end, all on the outer layers so that both inner layers stay whole ground planes:
 # the positive pole's nets on the top, the negative pole's on the bottom, each over its own plane.
-#   K1 (turned half round), back row y = 15: F_P 127.0, PAD_P 132.08, OUT_P 137.16, COIL+ 144.78
-#                           front row y = 7.38: F_N, PAD_N, OUT_N, COIL- at the same x
+#   K1 (turned half round), back row y = 15: F_P 127.0 (9), PAD_P 132.08 (11), OUT_P 137.16 (13),
+#                                            COIL- 144.78 (16)
+#                           front row y = 7.38: F_N (8), PAD_N (6), OUT_N (4), COIL+ (1) at the same x
 #   pad block tops y = 28.5: F_P 127, PAD_P 132.5 + 138, F_N 143.5, PAD_N 149 + 154.5
 #   J5: OUT_P pin 2 (108.19, 17.18), OUT_N pin 3 (112.0, 17.18)
 X_F_N = 141.0         # the negative output's run from the back, between the two pads
 MIDDLE_ROUTES = [
     # positive pole, top layer: straight up from the pad block into the back row
-    ('F_P', F, W_SIG, [('R7', 2), (123.16, PAD_TOP), ('R8', 1), ('K1', 8)]),
+    ('F_P', F, W_SIG, [('R7', 2), (123.16, PAD_TOP), ('R8', 1), ('K1', 9)]),
     ('M_P', F, W_SIG, [('R8', 2), ('R9', 1)]),
-    ('PAD_P', F, W_SIG, [('R10', 1), ('R9', 2), (132.5, 17.5), ('K1', 6)]),
+    ('PAD_P', F, W_SIG, [('R10', 1), ('R9', 2), (132.5, 17.5), ('K1', 11)]),
     # negative pole, bottom layer: F_N from the back of the board, PAD_N from its pad, both through
     # the back row between its pins to the front row, nested so that they never cross
-    ('F_N', B, W_SIG, [('R17', 2), (X_F_N, Y_N), (X_F_N, 22.0), (129.54, 22.0), (129.54, 10.0), ('K1', 9)]),
+    ('F_N', B, W_SIG, [('R17', 2), (X_F_N, Y_N), (X_F_N, 22.0), (129.54, 22.0), (129.54, 10.0), ('K1', 8)]),
     ('F_N', B, W_SIG, [(X_F_N, PAD_TOP), ('R18', 1)]),
     ('M_N', F, W_SIG, [('R18', 2), ('R19', 1)]),
     ('PAD_N', F, W_SIG, [('R20', 1), ('R19', 2)]),
-    ('PAD_N', B, W_SIG, [('R19', 2), (149.0, 20.0), (134.62, 20.0), (134.62, 10.0), ('K1', 11)]),
+    ('PAD_N', B, W_SIG, [('R19', 2), (149.0, 20.0), (134.62, 20.0), (134.62, 10.0), ('K1', 6)]),
     # the commons to the XLR: OUT_P on the top between the two rows, OUT_N on the bottom in front of
     # them, side by side, 2 mm apart and one above the other plane, all the way to the connector
-    ('OUT_P', F, W_SIG, [('K1', 4), (137.16, 11.2), (122.5, 11.2), (122.5, 23.0), (AX_XLR_OUT - 3.81, 23.0), ('J5', 2)]),
-    ('OUT_N', B, W_SIG, [('K1', 13), (137.16, 3.0), (124.5, 3.0), (124.5, 21.0), (AX_XLR_OUT, 21.0), ('J5', 3)]),
+    ('OUT_P', F, W_SIG, [('K1', 13), (137.16, 11.2), (122.5, 11.2), (122.5, 23.0), (AX_XLR_OUT - 3.81, 23.0), ('J5', 2)]),
+    ('OUT_N', B, W_SIG, [('K1', 4), (137.16, 3.0), (124.5, 3.0), (124.5, 21.0), (AX_XLR_OUT, 21.0), ('J5', 3)]),
     # relay coil: K1, header and flyback diode in one line
-    ('COIL+', F, W_SIG, [('K1', 1), ('J9', 1), ('D1', 1)]),
-    ('COIL-', F, W_SIG, [('K1', 16), ('D1', 2)]),
-    ('COIL-', B, W_SIG, [('J9', 2), (152.3, 17.54), (152.3, 9.5), ('D1', 2)]),
+    ('COIL-', F, W_SIG, [('K1', 16), ('J9', 2), ('D1', 2)]),
+    ('COIL+', F, W_SIG, [('K1', 1), ('D1', 1)]),
+    ('COIL+', B, W_SIG, [('J9', 1), (152.3, 17.54), (152.3, 9.5), ('D1', 1)]),
 ]
 
 VIAS = []
@@ -407,7 +415,7 @@ def add_block(board, lines, x, y, size=1.0, pitch=1.75):
 # Short values for the silkscreen: "R1 1k 3W", in the R/k/n notation that survives a lost dot.
 SHORT_VALUE = {
     '1.00k 3W': '1k 3W', '14.0k': '14k', '500R': '500R', '220p': '220p', '412R': '412R', '1mH': '1mH',
-    '4.7n': '4n7', '75.0R 1W': '75R 1W', '3.40k': '3k4', '24.9R': '24R9', '10.0k 1W': '10k 1W',
+    '4.7n': '4n7', '75.0R 1W': '75R 1W', '3.40k': '3k4', '24.9R': '24R9', '10.0k 0.1%': '10k 0.1%',
     '1.00k 0.1%': '1k 0.1%', '1N4148': '1N4148',
 }
 TITLE, REVISION, DATE, SOURCE = design.TITLE, design.REVISION, design.DATE, design.SOURCE
@@ -432,16 +440,16 @@ def add_silk(board, fps):
             y = Y_P + 7.2 if abs(pcbnew.ToMM(fp.GetPosition().y) - Y_P) < 1 else Y_N - 7.2
             angle = 0
         if ref == 'D1':
-            x, angle = 156.5, 90               # beside the diode, clear of its 'K'
+            x, angle = 156.5, 90               # beside the diode, clear of its 'K' (at the front end)
+            y += 1.7
         if ref == 'RV1':
             x = 64.36                          # on the side away from R3's pad, as RV2's
         r.SetVisible(False)
         add_text(board, f'{ref} {SHORT_VALUE[values[ref]]}', x, y, 1.0, angle=angle)
     # the pad block: one legend under each pad
-    for x, (hi, lo) in ((132.5, ('R8 R9 10k 1W', 'R10 1k 0.1%')), (149.0, ('R18 R19 10k 1W', 'R20 1k 0.1%'))):
+    for x, (hi, lo) in ((132.5, ('R8 R9 10k 0.1%', 'R10 1k 0.1%')), (149.0, ('R18 R19 10k 0.1%', 'R20 1k 0.1%'))):
         add_text(board, hi, x, 47.2); add_text(board, lo, x, 49.0)
-    for ref in ('R8', 'R9', 'R18', 'R19'):
-        fps[ref].Reference().SetTextSize(VECTOR2I(mm(1.0), mm(1.0)))   # the 1 k bodies are too slim: 0.8
+    # all six pad resistors are 0207 bodies: their names stay at 0.8 mm
     # ---- connectors, switch and coil -----------------------------------------------------------
     add_text(board, 'IN XLR 2+ 3-', AX_XLR_IN, 21.6)
     add_text(board, 'IN +', AX_RED, 18.5, 1.2); add_text(board, 'IN -', AX_BLACK, 18.5, 1.2); add_text(board, 'GND', AX_GREEN, 18.5, 1.2)
@@ -451,7 +459,7 @@ def add_silk(board, fps):
         add_text(board, '+' + name, x, K1_Y + 3.0)
         add_text(board, '-' + name, x, K1_Y - 7.62 - 3.0)
     add_text(board, 'K1: toggle wires (relay not fitted)', 135.0, 21.2)
-    add_text(board, '+12V', 150.0, 12.8)
+    add_text(board, '+12V', 150.0, 19.9)
     add_text(board, 'J9', 147.8, 16.3, angle=90)
     # ---- signal flow, one line per leg along its outer edge -----------------------------------
     for y, sign in ((26.3, '+'), (121.3, '-')):
@@ -493,8 +501,8 @@ def add_silk(board, fps):
     ], 156.5, 53.0)
     add_block(board, [
         'PAD SWITCH: toggle wires into K1',
-        '+ back row:  COM 4  PAD 6  DIR 8',
-        '- front row: COM 13 PAD 11 DIR 9',
+        '+ back row:  COM 13 PAD 11 DIR 9',
+        '- front row: COM 4  PAD 6  DIR 8',
         'later relay G6A-274P DC12:',
         '  at rest = PAD, coil J9 1 = +12V',
         'PAD about 21.8:1 - measure it',
@@ -524,9 +532,10 @@ def add_silk(board, fps):
     add_block(board, [
         'up to 120 V peak on inputs,',
         'both legs, OUT when direct',
-        'per leg: 85 Vrms to 12 kHz,',
-        '53 Vrms at 20 kHz, 35 to 100k',
-        'QA403 max 40 Vrms: use PAD',
+        'per leg: 75 Vrms to 15 kHz,',
+        '55 Vrms at 20 kHz, 30 to 1 MHz',
+        'QA403 max 40 Vrms, 56 Vpk',
+        'incl. DC: use PAD',
     ], 99.5, 89.6)
 
 

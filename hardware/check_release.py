@@ -9,6 +9,9 @@
     and RELEASE.txt names the same one
   - every file listed in RELEASE.txt still has the SHA-256 written there
   - the DRC report has no errors and no unconnected pads
+  - the schematic was drawn from the current design.py (its hash and the positive leg's values)
+  - the relay footprint is the top view of Omron's bottom-view drawing (pins 1-8-9-16 run
+    anticlockwise seen from the top), so the polarised coil goes in the right way round
   - the READMEs give the board size and the chassis the generator uses
 
 Run make_pcb.py and export.py first; this only reads.
@@ -67,6 +70,24 @@ drc = open(os.path.join(FAB, 'aes17-filter-drc.txt')).read()
 m = re.search(r'\*\* Found (\d+) unconnected pads', drc)
 check(drc.count('Severity: error') == 0 and m is not None and m.group(1) == '0',
       'the DRC report has no errors and no unconnected pads')
+
+svg = open(os.path.join(HERE, 'aes17-filter-schematic.svg')).read()
+texts_svg = ' '.join(re.findall(r'<!-- (.*?) -->', svg))
+with open(os.path.join(HERE, 'design.py'), 'rb') as f:
+    dhash = hashlib.sha256(f.read()).hexdigest()[:7]
+values = {ref: value for ref, value, *_ in design.PARTS}
+missing = [ref for ref in design.NAMES_P.values() if ref not in texts_svg or values[ref] not in texts_svg]
+check(f'sha256 {dhash}' in texts_svg and not missing,
+      f'the schematic was drawn from this design.py ({dhash})'
+      + ('' if not missing else f': missing or stale {missing}') + ' - run make_schematic.py')
+
+k1 = next(fp for fp in board.GetFootprints() if fp.GetReference() == 'K1')
+pos = {p.GetNumber(): p.GetPosition() for p in k1.Pads()}
+def turn(a, b, c):
+    """z of (b - a) x (c - b) in board coordinates (y down): negative = anticlockwise as seen."""
+    return (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x)
+check(turn(pos['1'], pos['8'], pos['9']) < 0 and turn(pos['8'], pos['9'], pos['16']) < 0,
+      'K1 is drawn in top view: pins 1, 8, 9, 16 run anticlockwise seen from the top')
 
 size = f'{design.BOARD_LENGTH:g} × {design.BOARD_WIDTH:g} mm'
 for doc in ('../README.md', 'README.md'):

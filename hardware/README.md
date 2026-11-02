@@ -50,7 +50,7 @@ The board was gone over once more with the usual rules for audio layout. What th
   two filter outputs on layer 3, which cut slots into the plane right under the output tracks
   on layer 4; those tracks lost their return path exactly where the analyzer's signal ran.
 - **Clearance for the voltage.** Everything from the input up to OUT (in the direct position)
-  carries the amplifier's voltage: 120 V peak at the rating of 85 Vrms per leg. IPC-2221B asks 0.8 mm
+  carries the amplifier's voltage: laid out for 120 V peak (85 Vrms per leg, above the 75 Vrms rating). IPC-2221B asks 0.8 mm
   between bare pads at 101-300 V; the board had 0.3 mm and now keeps 0.8 mm everywhere. The
   male XLR's lands on pins 1 and 2 are 3.0 mm instead of Neutrik's 3.4 mm for the same reason.
 - **The pad and the switch at the output connector.** The two pads now stand side by side right
@@ -109,12 +109,13 @@ are three constants at the top of `design.py`.
    `fab/aes17-filter-bom.csv` and `fab/aes17-filter-cpl.csv`. All parts are through-hole;
    JLCPCB hand-solders those ($3.58 per order plus $0.0164 per joint, one extra day).
 3. **Parts review.** In the parts page every line with an LCSC number resolves on its own,
-   including the coils: the Würth WE-TIS 7447471102 is JLCPCB part **C1331105** (not in LCSC's
-   own shop, which is why the first search missed it; JLCPCB lists it as ±20 %, the datasheet
-   says ±10 %, and the trimmer covers either). It is a pre-order part like the WIMA capacitors;
-   JLCPCB's global-sourcing quote of 1 November 2026, should it be needed instead, was Digi-Key
-   3.01 € (339 in stock, 8-14 business days), RS 2.74 € at five, Element14 2.97 €, Mouser 3.37 €.
-   The unshielded Würth 7447480102, C1331132, fits the same footprint and is the fallback. The
+   including the coils: the unshielded Würth WE-TI 7447480102, ±5 %, is JLCPCB part
+   **C1331132** (2.14 € on 1 November 2026, pre-order like the WIMA capacitors). The shielded
+   WE-TIS 7447471102, C1331105, fits the same footprint; it was the coil of the first draw of
+   rev A and is now only the comparison for the linearity test (JLCPCB lists it as ±20 %, which
+   the trimmer cannot always reach). The 412 Ω 0.6 W (C1235858, three in stock on 2 November
+   2026) will most likely be pre-order too; Vishay MBB02070C4120FRP00 (C1758271) and Yageo
+   MF0207FTE52-412R (C3401155) are the same part. The
    BOM file is plain ASCII on purpose: JLCPCB's import reads "Würth" as "W眉rth". Four more lines are **pre-order** (both WIMA capacitors, the Cliff sockets): JLCPCB
    buys them after payment, quotes the final price within 48 hours, and they take nine to
    twenty business days to arrive; connectors carry a $20 inspection fee per type, so the three
@@ -122,10 +123,10 @@ are three constants at the top of `design.py`.
    **leave them out of the assembly** (delete J1, J2, J3 from the BOM upload), buy them at
    Digi-Key (6.80 € each against $11-12 pre-order) and solder the three per board yourself - one
    pin and four pegs each.
-4. **Every line has an LCSC number.** Two were found without a stock figure visible from
-   here: the pad's 10 kΩ 1 W resistors (R8, R9, R18, R19) are the UNI-ROYAL MFR01SF1002A10,
-   C58714, with the Yageo MFR1WSFTE52-10K, C172916, as the alternative if the first shows no
-   stock in the BOM tool; both fit the 15.24 mm footprint.
+4. **Every line has an LCSC number.** The pad's upper arms (R8, R9, R18, R19) are TE YR1B10KCC,
+   10.0 kΩ 0.1 % 15 ppm, C1364313 (2 397 in stock on 2 November 2026), the same family as the
+   1.00 kΩ lower arm; a 0207 body on the 15.24 mm pitch. R6/R16 are the Vishay MRS25 3.40 kΩ
+   0.6 W, C1366835 (125 in stock).
 5. **Do not place K1.** It is marked "do not place" in the files and is not in the BOM; its
    holes take the toggle's wires until the matrix controller drives a relay there.
 6. After the order: the five boards arrive, two assembled. Nothing else is needed from JLCPCB.
@@ -143,11 +144,11 @@ For an assembly of five boards (quantities include JLCPCB's attrition allowance)
 | Bourns 3296W-1-501LF (C69564) | 10 | 6.75 | 0.67 | in stock |
 | TE YR1B1K0CC 0.1 % (C1364308) | 10 | 3.57 | 0.36 | in stock |
 | UNI-ROYAL 1 kΩ 3 W (C58750) | 21 | 1.04 | 0.05 | in stock |
-| UNI-ROYAL 10 kΩ 1 W (C58714) | 21 | 0.51 | 0.02 | in stock |
+| UNI-ROYAL 10 kΩ 1 W (C58714) | 21 | 0.51 | 0.02 | in stock; replaced by TE YR1B10KCC 0.1 % (C1364313, about 0.50 € each) |
 | 75 Ω 1 W (C160685) | 11 | 0.47 | 0.04 | in stock |
-| 14 k, 412, 3.4 k, 24.9 (C127223, C3558411, C3517441, C3542579) | 11-15 each | 0.15 / 0.06 / 0.17 / 0.36 | 0.01-0.02 | in stock |
+| 14 k, 412, 3.4 k, 24.9 (C127223, C3558411, C3517441, C3542579) | 11-15 each | 0.15 / 0.06 / 0.17 / 0.36 | 0.01-0.02 | in stock; the 412 and 3.4 k are now 0.6 W Vishay MRS25 (C1235858, C1366835), not yet quoted |
 | 1N4148 (C258182), headers (C65114, C492401) | 10 / 5 / 5 | 0.26 / 0.20 / 0.08 | | in stock; the 2 × 3 header C65114 has since left the board |
-| Würth 7447471102 coils | 20 | about 58 | 2.9 | unmatched by design: "Vorbestellen" → global sourcing |
+| Würth 7447471102 coils | 20 | about 58 | 2.9 | "Vorbestellen" → global sourcing; replaced by the unshielded 7447480102 (C1331132, 2.14 €) |
 
 About 356 € of parts for five assembled boards, 71 € per board, of which the three Cliff sockets
 are 33 € and the four BNCs 20 € (the BNCs have since left the board). The Cliff sockets are the line to take out of the assembly:
@@ -159,10 +160,10 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 
 | Qty for two boards | Part | Where |
 |---|---|---|
-| 8 | M3 × 8 screws and nuts for the XLR flanges | any |
+| 8 | screws for the XLR flanges: M3 × 8 and nuts if the flange holes are through-holes, else 2.9 mm self-tapping (Neutrik's drawing of the NC3FAAH2 / NC3MAAH decides; not checked) | any |
 | 1 | a cable from the amplifier's terminals to a male XLR plug (pin 2 +, pin 3 −), or dual banana leads - the same cable then feeds an AUX-0025 | self-made |
 | 2 | an XLR-female-to-two-BNC-male lead to the QA403: pin 2 to L+ centre, pin 3 to L− centre, pin 1 to both BNC shells; about 30 cm, both legs equal | self-made (Neutrik NC3FXX, two BNC plugs, two pieces of RG58 or RG174) |
-| 2 | DPDT toggle, ON-ON, non-shorting, panel mount, 1/4 in bushing, solder lugs; best with a locking lever and gold contacts | APEM 5000 or C&K 7000 series with those options; a plain Knitter MTA 206 works |
+| 2 | DPDT toggle, ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; best with a locking lever | APEM 5000 or C&K 7000 series with gold contacts; the switch carries microamperes at 100 kΩ, a dry circuit, so standard silver contacts (a plain Knitter MTA 206, for one) are not suitable |
 | 2 | insulating sheet, 0.25 mm polyester or fish paper, cut to the bottom plate around the spacers | any |
 | 2 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
 | 10 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate; the one under H5 metal, with a star washer on the bottom plate | any |
@@ -178,9 +179,11 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
    its spacers, put the chassis over it, and mark the connector centres through from inside.
 3. Fit the board on the bottom plate, put the chassis over it, screw the XLR flanges to the
    wall, fit the toggle.
-4. Wire the toggle into K1's six holes, straight below it. Pole A to the back row, whose holes are
-   labelled +COM, +PAD, +DIR: its common lug to +COM (K1 pin 4, OUT+), the outer lugs to +PAD
-   (pin 6) and +DIR (pin 8). Pole B the same to the front row, -COM, -PAD, -DIR (pins 13, 11, 9). Check with an ohmmeter
+4. Wire the toggle into K1's six holes, straight below it, by their silkscreen labels. One pole to
+   the back row, +COM, +PAD, +DIR: its common lug to +COM (K1 pin 13, OUT+), the outer lugs to
+   +PAD (pin 11) and +DIR (pin 9). The other pole the same to the front row, -COM, -PAD, -DIR
+   (pins 4, 6, 8). The pin numbers are Omron's; the footprint is drawn from the top, Omron's
+   drawing is the bottom view, and the relay's coil is polarised (pin 1 +, pin 16 -). Check with an ohmmeter
    between the output XLR's pin 2 (then pin 3) and pin 1, inputs open: about 1.0 kΩ in the pad
    position (the 1 kΩ leg of the pad), about 21 kΩ in the direct one (the whole pad, seen from
    its top). Mark the positions on the front.
