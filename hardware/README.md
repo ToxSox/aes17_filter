@@ -19,6 +19,8 @@ changed value or part is a changed line and a re-run.
 
 ![top side](aes17-filter-top.png)
 
+![bottom side, seen from below: the crib sheet](aes17-filter-bottom.png)
+
 ## The board
 
 158 × 124 mm, four layers, 1.6 mm, in a **Hammond 1444-862** aluminium chassis (203 × 152 × 51 mm,
@@ -76,6 +78,18 @@ parasitics; the shunt capacitors' grounds meeting in the middle of the board, so
 differential residue current takes a short path between the legs; polypropylene capacitors and
 metal-film resistors throughout; the hot 3 W input resistors well away from the polypropylene
 capacitors (FKP2 is rated to 100 °C).
+
+### Silkscreen
+
+Top: every part with its name and value in the notation that survives a lost dot (R1 1k 3W,
+R7 24R9, C3 4n7, L1 1mH), the pad block with a legend under each pad, each leg's signal flow
+along its outer edge (input network, stage 1, stage 2, pad), a high-voltage warning beside the
+inputs, K1's six holes labelled for the toggle wires, +12V at the coil header, and the title
+"AES17 filter rev A" with date, licence and source location (the CERN-OHL-W asks for the source
+location on the product where practicable). Bottom, readable from below: a crib sheet with the
+connector pin-outs and the QA403 lead, the switch wiring and the relay, the trim procedure and
+the voltage limits. Title, revision and date are three constants at the top of `add_silk()` in
+`make_pcb.py`.
 
 ## Ordering at JLCPCB
 

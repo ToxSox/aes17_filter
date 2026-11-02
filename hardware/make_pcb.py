@@ -356,30 +356,168 @@ def add_zones(board, netinfo):
     filler.Fill(board.Zones())
 
 
-def add_text(board, text, x, y, size=1.2, layer=pcbnew.F_SilkS, angle=0, bold=False):
+def add_text(board, text, x, y, size=1.0, layer=pcbnew.F_SilkS, angle=0, bold=False, left=False):
+    """A silkscreen text centred on (x, y), or starting there with left=True. Text on the bottom
+    layer is mirrored so that it reads from below; a left-aligned one then runs towards -x."""
     t = pcbnew.PCB_TEXT(board)
     t.SetText(text); t.SetPosition(pt(x, y)); t.SetLayer(layer)
-    t.SetTextSize(VECTOR2I(mm(size), mm(size))); t.SetTextThickness(mm(size * 0.15))
+    t.SetTextSize(VECTOR2I(mm(size), mm(size))); t.SetTextThickness(mm(max(0.15, size * 0.15)))
     t.SetTextAngleDegrees(angle); t.SetBold(bold)
+    if layer == pcbnew.B_SilkS:
+        t.SetMirrored(True)
+    if left:
+        t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
     board.Add(t)
 
 
-def add_silk(board):
-    add_text(board, 'klirr AES17 filter', 124.0, core(48.8), 1.2, bold=True)
-    add_text(board, 'github.com/ToxSox/aes17_filter', 124.0, core(51.2), 0.8)
-    add_text(board, 'IN XLR 2+ 3-', AX_XLR_IN, 21.5, 0.9)
-    add_text(board, 'IN +', AX_RED, 18.5, 1.1); add_text(board, 'IN -', AX_BLACK, 18.5, 1.1); add_text(board, 'GND', AX_GREEN, 18.5, 1.1)
-    add_text(board, 'OUT XLR 2+ 3-', AX_XLR_OUT, 26.0, 0.9)
-    add_text(board, 'chassis', 34.75, 15.0, 0.8)
-    # the switch: toggle wires into K1's holes, back row + pole, front row - pole
-    # one label at each of K1's contact holes: back row + pole, front row - pole
+def add_line(board, x1, y1, x2, y2, layer=pcbnew.F_SilkS, width=0.15):
+    s = pcbnew.PCB_SHAPE(board)
+    s.SetShape(pcbnew.SHAPE_T_SEGMENT)
+    s.SetStart(pt(x1, y1)); s.SetEnd(pt(x2, y2))
+    s.SetLayer(layer); s.SetWidth(mm(width))
+    board.Add(s)
+
+
+def add_arrow(board, x1, x2, y):
+    """A left-to-right arrow on the top silkscreen, for the signal flow."""
+    add_line(board, x1, y, x2, y)
+    add_line(board, x2 - 0.9, y - 0.5, x2, y)
+    add_line(board, x2 - 0.9, y + 0.5, x2, y)
+
+
+def add_warning(board, x, y, side=4.0, layer=pcbnew.F_SilkS):
+    """A warning triangle with an exclamation mark, centred on (x, y)."""
+    h = side * 0.866
+    top, left, right = (x, y - h / 2), (x - side / 2, y + h / 2), (x + side / 2, y + h / 2)
+    for a, b in ((top, left), (left, right), (right, top)):
+        add_line(board, *a, *b, layer, width=0.25)
+    add_line(board, x, y - h / 2 + 1.0, x, y + h / 2 - 1.3, layer, width=0.35)
+    add_line(board, x, y + h / 2 - 0.75, x, y + h / 2 - 0.55, layer, width=0.35)
+
+
+def add_block(board, lines, x, y, size=1.0, pitch=1.75):
+    """Lines of bottom-side text, left-aligned as read from below; (x, y) is the first line's
+    start, which seen from the top is the block's right-hand edge."""
+    for i, line in enumerate(lines):
+        if line:
+            add_text(board, line, x, y + i * pitch * size, size, pcbnew.B_SilkS, left=True)
+
+
+# Short values for the silkscreen: "R1 1k 3W", in the R/k/n notation that survives a lost dot.
+SHORT_VALUE = {
+    '1.00k 3W': '1k 3W', '14.0k': '14k', '500R': '500R', '220p': '220p', '412R': '412R', '1mH': '1mH',
+    '4.7n': '4n7', '75.0R 1W': '75R 1W', '3.40k': '3k4', '24.9R': '24R9', '10.0k 1W': '10k 1W',
+    '1.00k 0.1%': '1k 0.1%', '1N4148': '1N4148',
+}
+TITLE, REVISION, DATE = 'AES17 filter', 'rev A', '2026-11'
+SOURCE = 'github.com/ToxSox/aes17_filter'
+
+
+def add_silk(board, fps):
+    F_SILK = pcbnew.F_SilkS
+    values = {ref: value for ref, value, *_ in design.PARTS}
+    # ---- every part: reference and value in one label where its reference stood ---------------
+    for ref, fp in fps.items():
+        r = fp.Reference()
+        if ref.startswith('H') or ref.startswith('J') or ref == 'K1':
+            if ref.startswith('H') or ref in ('J9', 'K1'):
+                r.SetVisible(False)            # holes need no names; J9 and K1 get their own labels
+            continue
+        if ref in ('R8', 'R9', 'R10', 'R18', 'R19', 'R20'):
+            continue                           # the pad block: names in the bodies, values below
+        x, y = pcbnew.ToMM(r.GetPosition().x), pcbnew.ToMM(r.GetPosition().y)
+        angle = r.GetDrawRotation().AsDegrees() % 180     # as drawn on the board, kept readable
+        if ref.startswith('L'):                # the coils' names sat on their pads: put them beside
+            x = pcbnew.ToMM(fp.GetPosition().x) + 2.5
+            y = Y_P + 7.2 if abs(pcbnew.ToMM(fp.GetPosition().y) - Y_P) < 1 else Y_N - 7.2
+            angle = 0
+        if ref == 'D1':
+            x, angle = 156.5, 90               # beside the diode, clear of its 'K'
+        if ref == 'RV1':
+            x = 64.36                          # on the side away from R3's pad, as RV2's
+        r.SetVisible(False)
+        add_text(board, f'{ref} {SHORT_VALUE[values[ref]]}', x, y, 1.0, angle=angle)
+    # the pad block: one legend under each pad
+    for x, (hi, lo) in ((132.5, ('R8 R9 10k 1W', 'R10 1k 0.1%')), (149.0, ('R18 R19 10k 1W', 'R20 1k 0.1%'))):
+        add_text(board, hi, x, 47.2); add_text(board, lo, x, 49.0)
+    for ref in ('R8', 'R9', 'R18', 'R19'):
+        fps[ref].Reference().SetTextSize(VECTOR2I(mm(1.0), mm(1.0)))   # the 1 k bodies are too slim: 0.8
+    # ---- connectors, switch and coil -----------------------------------------------------------
+    add_text(board, 'IN XLR 2+ 3-', AX_XLR_IN, 21.6)
+    add_text(board, 'IN +', AX_RED, 18.5, 1.2); add_text(board, 'IN -', AX_BLACK, 18.5, 1.2); add_text(board, 'GND', AX_GREEN, 18.5, 1.2)
+    add_text(board, 'OUT XLR 2+ 3-', AX_XLR_OUT, 21.6)
+    add_text(board, 'chassis', 34.75, 15.0)
     for x, name in ((K1_X - 17.78, 'DIR'), (K1_X - 12.7, 'PAD'), (K1_X - 7.62, 'COM')):
-        add_text(board, '+' + name, x, K1_Y + 3.0, 0.8)
-        add_text(board, '-' + name, x, K1_Y - 7.62 - 3.0, 0.8)
-    add_text(board, 'toggle wires (K1 not fitted)', 133.0, 21.2, 0.8)
-    add_text(board, 'pad +', 132.5, 46.8, 0.8); add_text(board, 'pad -', 149.0, 46.8, 0.8)
-    add_text(board, 'positive leg', 86.0, core(24.0), 0.9); add_text(board, 'negative leg', 86.0, core(76.0), 0.9)
-    add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(36.0), 0.8); add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(64.0), 0.8)
+        add_text(board, '+' + name, x, K1_Y + 3.0)
+        add_text(board, '-' + name, x, K1_Y - 7.62 - 3.0)
+    add_text(board, 'K1: toggle wires (relay not fitted)', 135.0, 21.2)
+    add_text(board, '+12V', 150.0, 12.8)
+    add_text(board, 'J9', 147.8, 16.3, angle=90)
+    # ---- signal flow, one line per leg along its outer edge -----------------------------------
+    for y, sign in ((26.3, '+'), (121.3, '-')):
+        add_text(board, sign + ' LEG', 19.0, y, 1.2, bold=True)
+        add_arrow(board, 24.0, 33.5, y)
+        add_text(board, 'INPUT 483-575R', 46.0, y)
+        add_arrow(board, 55.0, 67.5, y)
+        add_text(board, 'STAGE 1', 75.0, y)
+        add_arrow(board, 80.5, 99.5, y)
+        add_text(board, 'STAGE 2', 106.0, y)
+    add_arrow(board, 111.5, 119.5, 26.3)
+    add_text(board, 'PAD 21.8:1', 140.5, 26.3)
+    add_arrow(board, 111.5, 119.5, 121.3)
+    add_text(board, 'to PAD - (front)', 132.0, 121.3)
+    add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(36.0)); add_text(board, 'trim: 20 kHz = 1 kHz', 48.0, core(64.0))
+    # ---- high voltage, where the voltage comes in ------------------------------------------------
+    add_warning(board, 15.0, 36.0, 6.0)
+    add_text(board, 'HIGH VOLTAGE', 15.0, 42.0, 1.3, bold=True)
+    for i, line in enumerate(('up to 120 V peak', 'on inputs, both', 'legs and OUT')):
+        add_text(board, line, 15.0, 44.8 + 1.8 * i)
+    # ---- title --------------------------------------------------------------------------------
+    add_text(board, f'{TITLE} {REVISION}', 128.0, 70.0, 1.6, bold=True)
+    add_text(board, f'{DATE}  CERN-OHL-W-2.0', 128.0, 73.0)
+    add_text(board, SOURCE, 128.0, 75.0)
+    # ---- the bottom: a crib sheet, read from below -----------------------------------------------
+    B = pcbnew.B_SilkS
+    add_text(board, f'{TITLE} {REVISION}', 156.5, 50.0, 1.6, B, bold=True, left=True)
+    add_block(board, [
+        f'{DATE}  CERN-OHL-W-2.0',
+        SOURCE,
+        'after AP AUX-0025 and M. Clark V2',
+        'passive AES17 low-pass, 100k load',
+        'chassis bond: H5 only, metal spacer',
+    ], 156.5, 53.0)
+    add_block(board, [
+        'PAD SWITCH: toggle wires into K1',
+        '+ back row:  COM 4  PAD 6  DIR 8',
+        '- front row: COM 13 PAD 11 DIR 9',
+        'later relay G6A-274P DC12:',
+        '  at rest = PAD, coil J9 1 = +12V',
+        'PAD about 21.8:1 - measure it',
+    ], 156.5, 81.0)
+    add_block(board, [
+        'IN  XLR-F: 2 +  3 -  1 GND',
+        '4 mm: red +, black -,',
+        '      green GND',
+        'OUT XLR-M: 2 +  3 -  1 GND',
+        'to QA403: XLR-F to 2 BNC,',
+        '  2 -> L+, 3 -> L-,',
+        '  1 -> both shells',
+    ], 27.5, 26.0)
+    add_block(board, [
+        'TRIM RV1 (+), RV2 (-):',
+        'through an amplifier, one',
+        'leg at a time, until',
+        '20 kHz = 1 kHz; not from the',
+        'QA403 output (100R)',
+    ], 99.5, 48.0)
+    add_warning(board, 104.0, 86.6, 3.6, B)
+    add_text(board, 'HIGH VOLTAGE', 99.5, 87.0, 1.3, B, bold=True, left=True)
+    add_block(board, [
+        'up to 120 V peak on inputs,',
+        'both legs, OUT when direct',
+        '85 Vrms max at 20 kHz',
+        'QA403 max 40 Vrms: use PAD',
+    ], 99.5, 89.6)
 
 
 # ----------------------------------------------------------------------------------------------
@@ -429,14 +567,16 @@ def build():
         fp.Value().SetVisible(False)
         if ref in ('R8', 'R9', 'R10', 'R18', 'R19', 'R20'):
             # the pad block stands upright and close: each name inside its own body
-            fp.Reference().SetPosition(pt(x, PAD_TOP + 7.6))
+            pitch = 10.16 if ref in ('R10', 'R20') else 15.24
+            fp.Reference().SetPosition(pt(x, PAD_TOP + pitch / 2))
             fp.Reference().SetTextAngleDegrees(90)
         board.Add(fp)
         fps[ref] = fp
-        # connector drawings that protrude through the end plates: drop what lies off the board
+        # connector drawings that reach past the board (through the front wall): drop them
         for item in list(fp.GraphicalItems()):
             bb = item.GetBoundingBox()
-            if item.GetLayer() == pcbnew.F_SilkS and (pcbnew.ToMM(bb.GetRight()) < 0.3 or pcbnew.ToMM(bb.GetLeft()) > L - 0.3):
+            if item.GetLayer() == pcbnew.F_SilkS and (pcbnew.ToMM(bb.GetRight()) < 0.3 or pcbnew.ToMM(bb.GetLeft()) > L - 0.3
+                                                      or pcbnew.ToMM(bb.GetTop()) < 0.0):   # outlines past the front edge
                 fp.Remove(item)
         if ref == 'J5':
             # Neutrik's 3.4 mm lands on pins 1 and 2 leave 0.66 mm to pin 3; 3.0 mm (0.7 mm ring
@@ -465,7 +605,7 @@ def pad_xy(fps, ref, number):
 if __name__ == '__main__':
     board, fps, netinfo = build()
     add_tracks(board, fps, netinfo)
-    add_silk(board)
+    add_silk(board, fps)
     board.Save(OUT)
     # The zone filler and the DRC want a board that came through the file loader (the in-memory
     # one has no connectivity data yet and the filler crashes on it), so reload before both.
