@@ -4,8 +4,7 @@ A passive low-pass between a class-D amplifier and the QA403, so that the amplif
 residue never reaches the analyzer's input stage. Audio Precision sells this as the AUX-0025;
 Matt Clark's [aes17_filter_25](https://github.com/mattclarkdotnet/aes17_filter_25) (V2, May
 2024, CERN-OHL-W) is a DIY copy of it, and this repository is a fork of it. This document reviews
-that design against what a bench with a QuantAsylum QA403 and the [Klirr](https://github.com/ToxSox/klirr)
-measurement software needs, with the numbers to argue with, and says what this fork changes. It was
+that design against what a bench with a QuantAsylum QA403 needs, with the numbers to argue with, and says what this fork changes. It was
 written before anything was ordered; the status of the build is in the [README](../README.md).
 
 Decided: **single-channel boards**, two built from the five-board minimum order. **The
@@ -32,7 +31,7 @@ of the FFT. It exists for three other reasons:
   10-100 mV of fast edges into a buffer that was designed for audio. AP's reason for the AUX
   family is exactly this: slew-induced distortion in the analyzer's front end, which shows up as
   IMD that is not the amplifier's.
-- **Ranging.** Klirr auto-ranges on the peak it sees. A carrier riding on the signal costs
+- **Ranging.** Auto-ranging goes by the peak the analyzer sees. A carrier riding on the signal costs
   headroom and, in the worst case, clips a range the audio alone would have fitted.
 - **DC and relay cycling.** A single-supply module idles at half its rail. The QA403's input is
   AC-coupled below 1 Hz, so the step at power-on walks through the ranges and QuantAsylum's forum
@@ -171,8 +170,8 @@ An earlier version of this document said 85 Vrms at 20 kHz, counting only the re
 was wrong. What it means for this bench: a BTL amplifier puts half its differential voltage on
 each leg, so 2 kW into 4 Ω (89 V across the terminals, 45 V per leg) fits even at 20 kHz. A
 single-ended amplifier at the same power does not: its full-power points above 12 kHz must be
-held to the curve. Klirr's probe profile can carry one number only, so `MaxInputVoltage` is
-85 V and the frequency dependence is a rule for full-power response sweeps, which are the only
+held to the curve. Measurement software that keeps one maximum voltage per probe should keep
+85 V, and the frequency dependence is a rule for full-power response sweeps, which are the only
 measurement that reaches it.
 
 **A short at the output is a fault, not an operating case.** With the output shorted the
@@ -235,9 +234,8 @@ The QA403's input is the constraint, and its product sheet is specific:
 | Noise floor per range, 20 kHz, inputs shorted (Cordell's measurements, not a QuantAsylum spec) | 0 dBV: −118; +6: −114; +12: −110; +18: −104; **+24: −83; +30: −83; +36: −81; +42: −79 dBV** |
 
 Two things follow. **Nothing above 40 Vrms may reach the BNCs** - the "+42 dBV" range name
-suggests 126 Vrms and that is not what the input takes; Klirr's own bench notes had that wrong and
-its direct probe profile still allows 42 Vrms, which is over the absolute maximum (42 Vrms of sine
-is 59 Vpk). And the sweet spot is narrow: a signal should
+suggests 126 Vrms and that is not what the input takes; even 42 Vrms is over the absolute
+maximum (42 Vrms of sine is 59 Vpk). And the sweet spot is narrow: a signal should
 sit in the **+18 dBV range or below**, because the step to +24 costs 20 dB of floor at once,
 while below +18 the floor falls only 4-6 dB per range, so the dynamic range relative to full
 scale barely changes (118 dB at 0 dBV, 122 dB at +18).
@@ -270,7 +268,7 @@ power sweeps worse, not better.
 or 1 kW; 20:1 is also what the bench's planned relay matrix had on its bus, so the filter's pad
 *is* the matrix's divider and there is one divider on the bench, not two. Values: 2 × 9.53 kΩ in
 series and 1.00 kΩ to ground, 0.1 %, 0.5 W, per leg - the ratio including the filter's 590 Ω
-and the analyzer's 100 kΩ is about 20.8:1, and Klirr measures it anyway. Loading on the filter
+and the analyzer's 100 kΩ is about 20.8:1, and it is measured in place anyway. Loading on the filter
 is 20 kΩ, 0.25 dB of insertion loss that the measured ratio absorbs. At 140 V the 19 kΩ
 dissipates 1 W; at 63 V, 0.2 W.
 
@@ -282,9 +280,9 @@ drive a relay: the QA403 cannot (its front expansion connector carries I2S and I
 accessories and a 3.2 V supply good for 20 mA, no switchable lines, and QuantAsylum documents
 no software control of those pins), and a relay switched by a toggle through a wall adapter is
 a toggle with extra steps. When the matrix controller exists, the relay is soldered in, the
-toggle's wires come out of its holes, and the position is set by Klirr before every step; until
-then the two positions are two probe profiles in Klirr, named by what the operator sees, and its
-gain check between steps catches a switch that did not move.
+toggle's wires come out of its holes, and the position is set by the measurement software before
+every step; until then the two positions are two probe settings, named by what the operator
+sees, and a gain check between steps catches a switch that did not move.
 
 One pole per leg is enough: the pad hangs on the filter output permanently (20 kΩ, a quarter
 of a decibel that the measured ratio absorbs) and the switch only chooses whether the BNC sees
@@ -307,7 +305,7 @@ on 3 and 4), so a toggle wired pin for pin to that board leaves the output open 
 worth knowing for anyone who builds the repo's board as is.
 
 With that, the bench's L-pad is retired. The 5 W block runs direct through the filter, every
-power sweep above about 35 Vrms runs through 20:1, and Klirr's per-step probe choice becomes the
+power sweep above about 35 Vrms runs through 20:1, and choosing the probe per step becomes the
 thing to build on the software side.
 
 ## The build
@@ -426,7 +424,7 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 2 | 75.0 Ω 1 % 1 W, CCO MF1W | between stages | C160685 | | $0.05 |
 | 2 | 3.40 kΩ 1 % 0.25 W, Yageo MFR-25FBF52-3K4 | across L3 | C3517441 | | $0.02 |
 | 2 | 24.9 Ω 1 % 0.25 W, Yageo MFR-25FBF52-24R9 | output | C3542579 | | $0.03 |
-| 4 | UNI-ROYAL MFR01SF1002A10, 10.0 kΩ 1 % 1 W 50 ppm | pad, upper arm | C58714 | Yageo MFR1WSFTE52-10K (C172916) is the alternative. 9.53 kΩ in 0.1 % is stocked nowhere through-hole, 1 % 9.53 kΩ neither; 2 × 10 kΩ over 1 kΩ gives 21.8:1 into the analyzer, and Klirr measures it. 1 W because the pair dissipates 0.84 W at 140 V | $0.05 |
+| 4 | UNI-ROYAL MFR01SF1002A10, 10.0 kΩ 1 % 1 W 50 ppm | pad, upper arm | C58714 | Yageo MFR1WSFTE52-10K (C172916) is the alternative. 9.53 kΩ in 0.1 % is stocked nowhere through-hole, 1 % 9.53 kΩ neither; 2 × 10 kΩ over 1 kΩ gives 21.8:1 into the analyzer, and the ratio is measured in place. 1 W because the pair dissipates 0.84 W at 140 V | $0.05 |
 | 2 | TE YR1B1K0CC, 1.00 kΩ 0.1 % 15 ppm | pad, lower arm | C1364308 | in stock | $0.50 |
 | 1 | 1 × 2 pin header 2.54 mm | relay coil | C492401 | | $0.02 |
 | 1 | 1N4148 DO-35 | flyback | C258182 | | $0.03 |
@@ -500,7 +498,7 @@ filter alone. Turn the + leg's trimmer until 20 kHz and 1 kHz agree within 0.02 
 the amplifier to the black input, ground the red one, and trim the − leg. Mark the trimmers.
 
 **2. Pad ratio, over frequency.** The same set-up, PAD position, at 20 Hz, 1 kHz and 20 kHz:
-the ratio enters Klirr as the probe's `Ratio`, and its change over the band should stay under
+the ratio is what the measurement software divides out of every level, and its change over the band should stay under
 0.02 dB (the pad's own capacitance and the lead's 30 pF form a pole in the megahertz). The
 DIRECT path is a probe too, with a ratio of about 1.006.
 
@@ -576,14 +574,13 @@ the top of this document can be replaced by measured ones.
 - Clearances are 0.8 mm (IPC-2221B for bare pads, 101-300 V). That is a board-level figure for a
   clean, dry lab, not a safety approval; nothing about this box is certified.
 
-## What this asks of the software
+## What this asks of the measurement software
 
-These are to-dos for [Klirr](https://github.com/ToxSox/klirr), the measurement software this
-filter was designed for; they are tracked there.
+Whatever runs the QA403 behind this filter should do three things:
 
-- **Its direct probe profile allows 42 Vrms and must allow 39 or less** - the QA403's absolute
-  maximum is 56 Vpk and software clips at 40 Vrms. A pre-step check that lets 42 Vrms through is
-  a check that does not protect the instrument.
+- **Limit the direct path to 39 Vrms or less** - the QA403's absolute maximum is 56 Vpk and its
+  software clips at 40 Vrms. A pre-step check that lets 42 Vrms through is a check that does not
+  protect the instrument.
 - **A probe needs a frequency response, not only a ratio.** The filter's residual ±0.03 dB, and
   the −0.05 dB insertion loss, are known once per board and could be divided out of the
   frequency response row the way the ratio is divided out of every level; the row would then

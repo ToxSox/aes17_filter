@@ -121,7 +121,7 @@ not worth a second shop.
 |---|---|
 | Hard | **0.1 %**, ≤ 25 ppm/K, ≥ 0.5 W, through-hole axial |
 | First choice | Vishay Dale CMF55 or PTF56 0.1 %, or Vishay MBB/MBE 0207 0.1 %; TE Connectivity Neohm, Welwyn RC55Y. Record whichever shop has both values in 0.1 % |
-| Fallback | 0.1 % is a convenience, not a necessity - Klirr measures the ratio. If 0.1 % costs over 3 € a piece, take 1 % at ≤ 50 ppm/K and say so |
+| Fallback | 0.1 % is a convenience, not a necessity - the ratio is measured in place anyway. If 0.1 % costs over 3 € a piece, take 1 % at ≤ 50 ppm/K and say so |
 
 ### 1.7 Pad switch - 2 pieces
 

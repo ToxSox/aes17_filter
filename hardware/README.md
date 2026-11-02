@@ -188,7 +188,7 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
    under H5 and plastic or metal under the rest (only H5 is plated).
 6. Work through the [verification plan](../docs/design-review.md#verification-what-makes-it-a-reference):
    trim both legs through an amplifier until 20 kHz equals 1 kHz, the pad ratio over frequency
-   into Klirr's probe profiles, then the ferrite, ground, heat and stop-band tests before the
+   into the measurement software's probe settings, then the ferrite, ground, heat and stop-band tests before the
    filter is used as a reference. Connect the green socket to the amplifier's ground in use.
 
 ## Regenerating

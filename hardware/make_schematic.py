@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Draws the filter schematic with schemdraw (pip install schemdraw):
 
-    python3 hardware/aes17-filter/make_schematic.py
+    python3 make_schematic.py      # in this directory
 
 writes aes17-filter-schematic.svg and .png next to this file. One leg is drawn in full; the
 other is identical and shares only ground, the header and the relay. Every element is placed

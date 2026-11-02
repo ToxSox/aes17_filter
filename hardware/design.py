@@ -2,8 +2,8 @@
 
 Everything that follows - the PCB generator, the JLCPCB bill of materials, the placement file
 and the schematic drawing - reads this module, so a value changed here changes all of them.
-The circuit is the one in the design review (docs/design-review.md in the fork,
-docs/aes17-filter.md in Klirr): the AUX-0025 values per leg, AP's trimmed
+The circuit is the one in the design review that comes with these files: the AUX-0025 values
+per leg, AP's trimmed
 input network, a 20:1 pad after the output resistor, switched by one pole per leg: a DPDT toggle
 wired into the relay's footprint today, the on-board DPDT relay once the matrix drives it.
 
@@ -33,14 +33,14 @@ FP = {
     'R_0W6':    'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal',
     'C_FKP2_S': 'Capacitor_THT:C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2',   # 220 p, 390 p
     'C_FKP2_L': 'Capacitor_THT:C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2',   # 4.7 n
-    'L_1mH':    'klirr:L_Radial_D11.5mm_P5.00mm',                      # drawn by the generator; takes the 11 mm WE-TIS and the 10.5 mm WE-TI
+    'L_1mH':    'aes17:L_Radial_D11.5mm_P5.00mm',                      # drawn by the generator; takes the 11 mm WE-TIS and the 10.5 mm WE-TI
     'TRIM':     'Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical',
     'BANANA_R': 'Connector:Banana_Cliff_FCR7350R_S16N-PC_Horizontal',
     'BANANA_B': 'Connector:Banana_Cliff_FCR7350B_S16N-PC_Horizontal',
     'BANANA_G': 'Connector:Banana_Cliff_FCR7350G_S16N-PC_Horizontal',
     'XLR_F':    'Connector_Audio:Jack_XLR_Neutrik_NC3FAAH2_Horizontal',
     'XLR_M':    'Connector_Audio:Jack_XLR_Neutrik_NC3MAAH_Horizontal',
-    'RELAY':    'klirr:Relay_DPDT_Omron_G6A-274P',             # drawn by the generator
+    'RELAY':    'aes17:Relay_DPDT_Omron_G6A-274P',             # drawn by the generator
     'HDR_1x2':  'Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical',
     'DIODE':    'Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal',
     'HOLE':     'MountingHole:MountingHole_3.2mm_M3',
@@ -79,7 +79,7 @@ def leg(prefix, names, nets):
         (names['R9'],  '24.9R',     'R_0W6',    'C3542579', '1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9)', [(1, n['E']), (2, n['F'])]),
         # the pad, always on the filter output; the switch picks the tap or F. 9.53 k in 0.1 % is
         # not stocked anywhere through-hole, so 2 x 10.0 k 1 % 1 W over 1.00 k 0.1 %: about 21.6:1,
-        # and Klirr measures the ratio anyway. 1 W because at 140 V the pair dissipates 0.9 W.
+        # and the ratio is measured in place anyway. 1 W because at 140 V the pair dissipates 0.9 W.
         (names['R11'], '10.0k 1W',  'R_1W',     'C58714', '1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)', [(1, n['F']), (2, n['M'])]),
         (names['R12'], '10.0k 1W',  'R_1W',     'C58714', '1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)', [(1, n['M']), (2, n['PAD'])]),
         (names['R13'], '1.00k 0.1%', 'R_0W6',   'C1364308', '0.1 %, 15 ppm, 0.25 W (TE YR1B1K0CC)', [(1, n['PAD']), (2, 'GND')]),

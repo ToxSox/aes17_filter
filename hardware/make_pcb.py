@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Builds aes17-filter.kicad_pcb from design.py with KiCad's pcbnew module (KiCad 7).
 
-    python3 hardware/aes17-filter/make_pcb.py            # writes the board and a DRC report
+    python3 make_pcb.py            # in this directory: writes the board and a DRC report
 
 Everything is placed and routed from the tables below, so the board is reproducible from the
 repository without a mouse. Coordinates are millimetres, x along the front edge (input end at 0),
@@ -140,7 +140,7 @@ PLACE.update({
 # ----------------------------------------------------------------------------------------------
 def new_footprint(board, name, descr):
     fp = pcbnew.FOOTPRINT(board)
-    fp.SetFPID(pcbnew.LIB_ID('klirr', name))
+    fp.SetFPID(pcbnew.LIB_ID('aes17', name))
     fp.SetDescription(descr)
     fp.SetAttributes(pcbnew.FP_THROUGH_HOLE)
     return fp
@@ -210,7 +210,7 @@ def fp_relay_g6a(board):
 def load_footprint(board, key):
     name = design.FP[key]
     lib, fpname = name.split(':')
-    if lib == 'klirr':
+    if lib == 'aes17':
         return {'Relay_DPDT_Omron_G6A-274P': fp_relay_g6a, 'L_Radial_D11.5mm_P5.00mm': fp_radial_coil}[fpname](board)
     fp = pcbnew.FootprintLoad(os.path.join(LIB, lib + '.pretty'), fpname)
     if fp is None:

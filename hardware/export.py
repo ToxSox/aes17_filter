@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Writes the files JLCPCB asks for from the generated board:
 
-    python3 hardware/aes17-filter/export.py
+    python3 export.py              # in this directory
 
   fab/aes17-filter-gerbers.zip   Gerbers for all copper, mask, silk and edge layers plus the
                                  Excellon drill files, in the form JLCPCB's upload expects

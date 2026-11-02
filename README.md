@@ -4,9 +4,8 @@ A passive low-pass that sits between a class-D amplifier and an audio analyzer, 
 amplifier's switching residue never reaches the analyzer's input stage. It is the circuit of
 the Audio Precision AUX-0025, on a 158 × 124 mm board in a Hammond 1444-862 aluminium chassis
 with every connector in its front long wall, with the 20 kHz knee trimmable, a 20:1 pad switched by a toggle or a relay, and the
-AUX-0025's own connectors: female XLR and dual banana in, male XLR out. Designed for a QuantAsylum QA403 and the
-[Klirr](https://github.com/ToxSox/klirr) measurement software, usable with anything that has a
-100 kΩ input.
+AUX-0025's own connectors: female XLR and dual banana in, male XLR out. Designed for a QuantAsylum QA403, usable with
+anything that has a 100 kΩ input.
 
 **Status: designed, simulated, generated, not yet built - a prototype, not yet a reference.**
 The Gerbers and the JLCPCB files are in `hardware/fab/`, checked against each other by
@@ -111,7 +110,7 @@ five boards, two assembled, Economic. Every BOM line but the coils has an LCSC n
 are requested as a global-sourcing part, four lines are pre-order parts (both WIMA capacitors,
 the Cliff sockets), and the Cliff sockets are cheaper bought at Digi-Key and soldered by hand. Then drill the front wall after
 `hardware/aes17-filter-frontwall.png`, trim both legs through an amplifier until 20 kHz equals
-1 kHz, measure the pad ratio, and the filter is a probe profile in Klirr.
+1 kHz, measure the pad ratio, and enter it in the measurement software as the probe's ratio.
 
 ## Licence
 
