@@ -8,10 +8,13 @@ AUX-0025's own connectors: female XLR and dual banana in, male XLR out. Designed
 [Klirr](https://github.com/ToxSox/klirr) measurement software, usable with anything that has a
 100 kΩ input.
 
-**Status: designed, simulated, generated, not yet built.** The Gerbers and the JLCPCB files are
-in `hardware/fab/`, the first order has not been placed. Everything below the simulation line
-is therefore a claim, not a measurement; the bring-up list in the design review says what will
-be measured first.
+**Status: designed, simulated, generated, not yet built - a prototype, not yet a reference.**
+The Gerbers and the JLCPCB files are in `hardware/fab/`, checked against each other by
+`hardware/check_release.py`; the first order has not been placed. Everything below the
+simulation line is therefore a claim, not a measurement. The design review's
+[verification plan](docs/design-review.md#verification-what-makes-it-a-reference) lists what has
+to pass before it counts as a reference: the ferrite coils' linearity first, then the ground with
+bridged amplifiers, heat, and the stop band.
 
 ![the board](hardware/aes17-filter-top.png)
 
@@ -37,14 +40,14 @@ goal: no gain; an SMD version: dearer for small runs). In short:
 | Pad | 9 kΩ / 1 kΩ, two poles per leg, hand-wired toggle | 2 × 10 kΩ / 1 kΩ (about 21.8:1), one pole per leg, a DPDT toggle wired into the footprint of an Omron G6A relay for later, pad at rest | the QA403 clips at 40 Vrms and loses 20 dB of floor above its +18 dBV range; 20:1 keeps a 2 kW amplifier below both |
 | Connectors | XLR in and out, banana test points | the AUX-0025's: female XLR plus a dual-banana pair and a common in, male XLR out, through the chassis' front wall | one set of cables tests this filter and an AUX-0025 alike; a QA403 hangs on an XLR-to-two-BNC lead |
 | Board | 175 × 90 mm, four layers | 158 × 124 mm, four layers, generated from a data file; all connectors on the front long edge; whole ground planes, 0.8 mm clearance, pad and switch at the output connector, one chassis bond at the input | the filter hangs with its connectors towards the operator, as the AUX-0025's front panel; the layout rules are in [hardware/README.md](hardware/README.md#layout-rules-it-follows) |
-| Rating | "140 Vrms continuous" | 85 Vrms at 20 kHz with 5 W parts, as a curve | at 20 kHz the shunt capacitors draw current through the input resistors: 13 W at 140 V |
+| Rating | "140 Vrms continuous" | a curve, per leg to ground: 85 Vrms to 12 kHz (the coils' 120 V), 53 Vrms at 20 kHz, 35 Vrms from 30 to 100 kHz (the trimmer's current) | at 20 kHz the shunt capacitors draw current through the input network: V2's single resistor takes 13 W at 140 V, and this build's trimmer reaches its rating at 56 V |
 | Assembly | hand-built | JLCPCB, through-hole parts included, nothing hand-selected | the trimmer absorbs the tolerances |
 
 ## What is in the tree
 
 | Path | What |
 |---|---|
-| [docs/design-review.md](docs/design-review.md) | the review of the V2 design against the AUX-0025 and the QA403, the simulation, the pad decision, the build decisions, the bill of materials, bring-up |
+| [docs/design-review.md](docs/design-review.md) | the review of the V2 design against the AUX-0025 and the QA403, the simulation, the pad decision, the build decisions, the bill of materials, grounding with bridged amplifiers, the verification plan, safety |
 | [docs/sourcing.md](docs/sourcing.md) | the shopping list with hard specifications, substitutes and open questions |
 | [sim/aes17_sim.py](sim/aes17_sim.py) | the AC analysis that produced every number in the review (numpy only) |
 | [hardware/](hardware/) | `design.py` (parts and nets as data), `make_pcb.py` (places, routes and checks the board with KiCad's `pcbnew`), `export.py` (Gerbers, BOM, placement), the schematic, the front-wall drilling, and [hardware/README.md](hardware/README.md) with the ordering steps |

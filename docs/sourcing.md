@@ -127,19 +127,21 @@ not worth a second shop.
 
 | | |
 |---|---|
-| Hard | DPDT, ON-ON (two stable positions, no centre-off), panel mount for a 1 mm aluminium wall, solder lugs, rated ≥ 1 A (the current is microamps; the rating is for contact quality) |
-| First choice | any miniature toggle of that kind (APEM 5000 series, C&K 7201, Knitter MTA 206, or the shop's house brand). Record price and the panel hole diameter |
+| Hard | DPDT, ON-ON (two stable positions, no centre-off), **non-shorting** (break before make), panel mount for a 1 mm aluminium wall, solder lugs |
+| Wanted | a **locking lever** (pull to switch), so DIRECT is not selected by accident; **gold-plated contacts**, because the current is microamps and silver contacts can grow a film that conducts unevenly at such currents |
+| First choice | a miniature toggle of that kind from APEM's 5000 or C&K's 7000 series, both of which offer locking levers and gold contacts as options; record the exact part number, price and panel hole diameter. A plain silver-contact toggle (Knitter MTA 206, house brands) works, but is the second choice |
 | Not now | the **Omron G6A-274P-ST-US DC12** relay keeps its footprint on the board but is not bought until the matrix controller exists; if a shop has it cheaply, note the price for later |
 
 ### 1.8 Connectors
 
 Settled on 1 November 2026: the connector set is the AUX-0025's. Input Neutrik NC3FAAH2 (LCSC
-C368522) plus the three Cliff sockets, output Neutrik NC3MAAH (C368463) plus two TE 5227161-7
-BNCs (C591726) with jam nuts (C305927). The lines below are kept for the alternatives.
+C368522) plus the three Cliff sockets, output Neutrik NC3MAAH (C368463) only; the QA403 hangs on
+a self-made XLR-to-two-BNC lead. The output BNCs (TE 5227161-7) were dropped with that, and the
+BNC line below is kept only as a record.
 
 | Part | Qty | Hard | First choice | Alternatives / notes |
 |---|---|---|---|---|
-| BNC jack, PCB right angle | 10 | 50 Ω, right angle, through-hole, bulkhead nut so it can be fixed in the wall | **Molex 73100-0105** (Digi-Key 1.95 €, 22 000 in stock) | Amphenol RF 31-5431 (4.97 €), TE 5227161-3 (4.68 €; the TE 1-1337543-0 is obsolete). **Confirm the chosen one's datasheet shows a threaded front and a panel nut** - the document relies on the jack being bolted to the end plate |
+| ~~BNC jack, PCB right angle~~ (dropped) | 0 | 50 Ω, right angle, through-hole, bulkhead nut so it can be fixed in the wall | **Molex 73100-0105** (Digi-Key 1.95 €, 22 000 in stock) | Amphenol RF 31-5431 (4.97 €), TE 5227161-3 (4.68 €; the TE 1-1337543-0 is obsolete). **Confirm the chosen one's datasheet shows a threaded front and a panel nut** - the document relies on the jack being bolted to the end plate |
 | 4 mm safety socket, PCB right angle | 7 (3 per board + 1) | shrouded 4 mm, ≥ 20 A, PCB mount, right angle, colours red / black / green | **Cliff FCR7350R / FCR7350B / FCR7350G** (Digi-Key 6.80-6.99 € each) | Electro-PJP 3263-PCB (25 A), Hirschmann/SKS only as panel mount (PKI 10 A, then wired to the board - acceptable). The 7 € apiece is the biggest single line in the BOM; a cheaper shrouded PCB socket at ≥ 20 A is welcome |
 
 ### 1.9 Enclosure - 2 pieces, plus the drawing

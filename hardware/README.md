@@ -10,12 +10,15 @@ changed value or part is a changed line and a re-run.
 | `make_pcb.py` | places and routes the board with KiCad 7's `pcbnew` module, fills the ground planes, runs the DRC; writes `aes17-filter.kicad_pcb` |
 | `export.py` | writes `fab/`: the Gerber + drill zip, the JLCPCB bill of materials and placement file, a parts list with notes |
 | `make_schematic.py` | draws `aes17-filter-schematic.svg/.png` (schemdraw) |
-| `make_frontwall.py` | draws the front wall's drilling, `aes17-filter-frontwall.svg/.png` |
+| `make_frontwall.py` | draws the front wall's drilling and the panel legend, `aes17-filter-frontwall.svg/.png` |
+| `check_release.py` | checks that the board, the order files, the source hash and the DRC report belong together; exit code 0 = fit to order |
 | `aes17-filter.kicad_pcb` | the board, for KiCad 7 or newer; there is no `.kicad_sch`, the schematic is the drawing |
 | `fab/aes17-filter-gerbers.zip` | upload this to JLCPCB |
 | `fab/aes17-filter-bom.csv` | upload this as the BOM (Comment, Designator, Footprint, LCSC Part #) |
 | `fab/aes17-filter-cpl.csv` | upload this as the placement file (Designator, Mid X, Mid Y, Layer, Rotation) |
 | `fab/aes17-filter-parts.csv` | the same parts with values and notes, for ordering anything elsewhere |
+| `fab/aes17-filter-schematic.pdf`, `fab/aes17-filter-drc.txt` | the schematic and the DRC report of this release |
+| `fab/RELEASE.txt` | title, revision, the source hash printed on the board, and the SHA-256 of every order file |
 
 ![top side](aes17-filter-top.png)
 
@@ -47,7 +50,7 @@ The board was gone over once more with the usual rules for audio layout. What th
   two filter outputs on layer 3, which cut slots into the plane right under the output tracks
   on layer 4; those tracks lost their return path exactly where the analyzer's signal ran.
 - **Clearance for the voltage.** Everything from the input up to OUT (in the direct position)
-  carries the amplifier's voltage: 120 V peak at the 85 Vrms rating. IPC-2221B asks 0.8 mm
+  carries the amplifier's voltage: 120 V peak at the rating of 85 Vrms per leg. IPC-2221B asks 0.8 mm
   between bare pads at 101-300 V; the board had 0.3 mm and now keeps 0.8 mm everywhere. The
   male XLR's lands on pins 1 and 2 are 3.0 mm instead of Neutrik's 3.4 mm for the same reason.
 - **The pad and the switch at the output connector.** The two pads now stand side by side right
@@ -88,11 +91,17 @@ inputs, K1's six holes labelled for the toggle wires, +12V at the coil header, a
 "AES17 filter rev A" with date, licence and source location (the CERN-OHL-W asks for the source
 location on the product where practicable). Bottom, readable from below: a crib sheet with the
 connector pin-outs and the QA403 lead, the switch wiring and the relay, the trim procedure and
-the voltage limits. Title, revision and date are three constants at the top of `add_silk()` in
-`make_pcb.py`.
+the voltage limits. Both sides carry "src" and the source hash, the first seven digits of the
+SHA-256 of `design.py` and `make_pcb.py`, the same as in `fab/RELEASE.txt`. Two ground loops,
+TP1 and TP2, sit between the stages for a scope probe's ground spring. Title, revision and date
+are three constants at the top of `design.py`.
 
 ## Ordering at JLCPCB
 
+0. **Check the release.** `python3 hardware/check_release.py` must end with "fit to order".
+   Order from a commit, not from a working copy, and keep its source hash (in `fab/RELEASE.txt`
+   and printed on both sides of the board, "src ...") with the order: a board in the hand is
+   then matched to its files without guessing.
 1. **PCB.** Upload `fab/aes17-filter-gerbers.zip`. Four layers, 1.6 mm, any colour, 1 oz copper,
    HASL or ENIG as you like, five pieces (the minimum). The stack-up JLCPCB offers for four
    layers (JLC04161H-7628 or similar) is fine; nothing here depends on impedance.
@@ -153,7 +162,8 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 | 8 | M3 × 8 screws and nuts for the XLR flanges | any |
 | 1 | a cable from the amplifier's terminals to a male XLR plug (pin 2 +, pin 3 −), or dual banana leads - the same cable then feeds an AUX-0025 | self-made |
 | 2 | an XLR-female-to-two-BNC-male lead to the QA403: pin 2 to L+ centre, pin 3 to L− centre, pin 1 to both BNC shells; about 30 cm, both legs equal | self-made (Neutrik NC3FXX, two BNC plugs, two pieces of RG58 or RG174) |
-| 2 | DPDT toggle, ON-ON, panel mount, 1/4 in bushing, solder lugs | any; APEM 5000, C&K 7201, Knitter MTA 206 |
+| 2 | DPDT toggle, ON-ON, non-shorting, panel mount, 1/4 in bushing, solder lugs; best with a locking lever and gold contacts | APEM 5000 or C&K 7000 series with those options; a plain Knitter MTA 206 works |
+| 2 | insulating sheet, 0.25 mm polyester or fish paper, cut to the bottom plate around the spacers | any |
 | 2 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
 | 10 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate; the one under H5 metal, with a star washer on the bottom plate | any |
 | 6 | Cliff FCR7350 R, B, G if bought outside JLCPCB | Digi-Key, Farnell |
@@ -174,22 +184,31 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
    between the output XLR's pin 2 (then pin 3) and pin 1, inputs open: about 1.0 kΩ in the pad
    position (the 1 kΩ leg of the pad), about 21 kΩ in the direct one (the whole pad, seen from
    its top). Mark the positions on the front.
-5. Trim and measure the ratios as in the bring-up list of
-   [docs/design-review.md](../docs/design-review.md): both trimmers through an amplifier until
-   20 kHz equals 1 kHz, then the pad ratio at 1 kHz, into Klirr's probe profiles.
+5. Lay the insulating sheet on the bottom plate before the board goes in; use a metal spacer
+   under H5 and plastic or metal under the rest (only H5 is plated).
+6. Work through the [verification plan](../docs/design-review.md#verification-what-makes-it-a-reference):
+   trim both legs through an amplifier until 20 kHz equals 1 kHz, the pad ratio over frequency
+   into Klirr's probe profiles, then the ferrite, ground, heat and stop-band tests before the
+   filter is used as a reference. Connect the green socket to the amplifier's ground in use.
 
 ## Regenerating
 
 ```
 python3 hardware/make_pcb.py        # board + DRC report (needs KiCad 7 with pcbnew for Python)
-python3 hardware/export.py          # fab/ (needs kicad-cli)
-python3 hardware/make_schematic.py  # schematic (pip install schemdraw)
+python3 hardware/make_schematic.py  # schematic, also fab/…-schematic.pdf (pip install schemdraw)
+python3 hardware/export.py          # fab/ and fab/RELEASE.txt (needs kicad-cli; after the schematic)
 python3 hardware/make_frontwall.py  # front wall drilling (matplotlib)
+python3 hardware/check_release.py   # do the files belong together?
 ```
+
+Run `make_schematic.py` before `export.py`: the schematic PDF is one of the files the release
+manifest hashes.
 
 ## Front wall holes
 
-See `aes17-filter-frontwall.png`; the table below is printed by `make_frontwall.py`. The wall is
+See `aes17-filter-frontwall.png`; the table below is printed by `make_frontwall.py`. In blue the
+drawing also carries the legend for the panel: the rating per leg at the inputs, "GND to the
+amplifier ground", the switch positions and DIRECT's 40 Vrms limit. The wall is
 the front long wall of the Hammond 1444-862, seen from outside, x from its left end, y from its
 bottom edge (which rests on the 1434-86 bottom plate).
 

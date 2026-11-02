@@ -2,7 +2,8 @@
 
 Everything that follows - the PCB generator, the JLCPCB bill of materials, the placement file
 and the schematic drawing - reads this module, so a value changed here changes all of them.
-The circuit is the one in docs/design-review.md: the AUX-0025 values per leg, AP's trimmed
+The circuit is the one in the design review (docs/design-review.md in the fork,
+docs/aes17-filter.md in Klirr): the AUX-0025 values per leg, AP's trimmed
 input network, a 20:1 pad after the output resistor, switched by one pole per leg: a DPDT toggle
 wired into the relay's footprint today, the on-board DPDT relay once the matrix drives it.
 
@@ -13,6 +14,12 @@ aluminium chassis (203 x 152 x 51 mm, flat 1 mm walls), so the filter hangs with
 towards the operator, as the AUX-0025's front panel does. The first 24 mm behind the front
 edge are the connector strip; the filter itself is the 100 mm band behind it.
 """
+
+import hashlib
+import os
+
+TITLE, REVISION, DATE = 'AES17 filter', 'rev A', '2026-11'
+SOURCE = 'github.com/ToxSox/aes17_filter'
 
 BOARD_LENGTH = 158.0
 BOARD_WIDTH = 124.0
@@ -38,6 +45,7 @@ FP = {
     'DIODE':    'Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal',
     'HOLE':     'MountingHole:MountingHole_3.2mm_M3',
     'HOLE_GND': 'MountingHole:MountingHole_3.2mm_M3_Pad_Via',
+    'TP_LOOP':  'TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm',
 }
 
 # ref, value, footprint key, LCSC part (empty = to be assigned at ordering), note for the BOM.
@@ -108,7 +116,13 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     ('H3', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H4', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H5', 'M3 GND', 'HOLE_GND', '', 'plated, on ground: the chassis bond', [(1, 'GND')]),
+    # ground loops for a scope probe's tip-and-barrel or ground spring, between the stages, for
+    # measuring the stop band at each stage's output (C3/C7 and C4/C8 pin 1) with a short ground
+    ('TP1', 'GND', 'TP_LOOP', '', 'ground test point: solder a wire loop', [(1, 'GND')]),
+    ('TP2', 'GND', 'TP_LOOP', '', 'ground test point: solder a wire loop', [(1, 'GND')]),
 ]
+
+NOT_ASSEMBLED = ('H', 'TP')     # reference prefixes that are holes and pads, not parts
 
 DO_NOT_PLACE = {'K1'}
 
@@ -126,6 +140,18 @@ MPN = {
     'J9': 'pin header 1x2 2.54 mm',
     'K1': 'Omron G6A-274P-ST-US DC12', 'D1': '1N4148',
 }
+
+
+def source_hash():
+    """The first seven hex digits of the SHA-256 of the two files the board is generated from.
+    It is printed on the board and written into fab/RELEASE.txt, so a board in the hand, the
+    order files and a commit can be matched before the commit exists."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    h = hashlib.sha256()
+    for name in ('design.py', 'make_pcb.py'):
+        with open(os.path.join(here, name), 'rb') as f:
+            h.update(f.read())
+    return h.hexdigest()[:7]
 
 
 def comment(ref, value):

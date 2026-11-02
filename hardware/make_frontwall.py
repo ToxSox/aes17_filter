@@ -47,6 +47,19 @@ HOLES = [
     ('pad toggle', make_pcb.AX_TOGGLE, TOGGLE_AXIS, TOGGLE_HOLE, False),
 ]
 
+# What belongs on the panel next to the holes (engraved, printed or a label strip): x along the
+# board, height above the wall's bottom edge, text. The rating is per leg, to ground.
+LEGEND = [
+    (make_pcb.AX_XLR_IN, 5.0, 'IN  2+ 3-'),
+    (make_pcb.AX_RED, 5.0, 'IN +'), (make_pcb.AX_BLACK, 5.0, 'IN -'), (make_pcb.AX_GREEN, 5.0, 'GND'),
+    ((make_pcb.AX_RED + make_pcb.AX_GREEN) / 2, 45.0,
+     'max per leg: 85 Vrms to 12 kHz, 53 Vrms at 20 kHz, 35 Vrms 30-100 kHz'),
+    ((make_pcb.AX_RED + make_pcb.AX_GREEN) / 2, 41.0, 'GND to the amplifier ground; IN - is not ground'),
+    (make_pcb.AX_XLR_OUT, 5.0, 'OUT  2+ 3-'),
+    (make_pcb.AX_TOGGLE, 45.0, 'PAD 1:21.8  /  DIRECT'),
+    (make_pcb.AX_TOGGLE, 25.0, 'DIRECT: max 40 Vrms\ninto the QA403;\nswitch muted only'),
+]
+
 
 def holes():
     """(label, x from the wall's left end seen from outside, y above the bottom edge, diameter)."""
@@ -79,6 +92,8 @@ def draw(hole_list):
             ax.text(x, WALL_HEIGHT + 2.0 + 6.0 * (j % 2), f'{label}\nØ{d:g}  x={x:.1f}  y={y:.1f}', ha='center', fontsize=6.5)
         else:
             ax.text(x + 2.4, y, f'Ø{d:g} ({x:.1f}, {y:.1f})', va='center', fontsize=5.5)
+    for x_board, y, text in LEGEND:
+        ax.text(BOARD_X0 + x_board, y, text, ha='center', va='center', fontsize=6, color='tab:blue')
     ax.set_xlim(-5, WALL_LENGTH + 5)
     ax.set_ylim(-5, WALL_HEIGHT + 16)
     ax.set_aspect('equal')
@@ -97,3 +112,7 @@ if __name__ == '__main__':
     print('|---|---|---|---|')
     for label, x, y, d in lst:
         print(f'| {label} | {d:g} | {x:.1f} | {y:.1f} |')
+    print()
+    print('Panel legend (blue in the drawing):')
+    for x_board, y, text in LEGEND:
+        print(f'  at x = {BOARD_X0 + x_board:.1f}, y = {y:g}: ' + text.replace(chr(10), ' '))

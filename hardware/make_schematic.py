@@ -92,4 +92,5 @@ with schemdraw.Drawing(show=False) as d:
 
     d.save(os.path.join(HERE, 'aes17-filter-schematic.svg'))
     d.save(os.path.join(HERE, 'aes17-filter-schematic.png'), dpi=150)
+    d.save(os.path.join(HERE, 'fab', 'aes17-filter-schematic.pdf'))   # the release copy
 print('ok')

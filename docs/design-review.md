@@ -134,7 +134,7 @@ above 250 kHz the conversion is better than −60 dB, so this is not a measureme
 the reason to measure the four inductors and put the two closest into one board.
 
 **Dissipation, and the honest voltage rating.** The shunt capacitors draw current at the top
-of the band, and all of it flows through R1:
+of the band, and all of it flows through R1. In V2, with its single 500 Ω resistor:
 
 | At the amplifier | 1 kHz | 20 kHz | Output shorted, 1 kHz |
 |---|---|---|---|
@@ -145,12 +145,42 @@ of the band, and all of it flows through R1:
 
 The repo's silkscreen says "140 Vrms continuous into >10 k load". That is true at 1 kHz and
 false at 20 kHz, where a 5 W resistor is at 2.5 times its rating. AP rates the AUX-0025 as
-140 Vrms "DC to 7.5 kHz, decreasing to 53 Vrms from 20 kHz to 2 MHz" for exactly this reason,
-and puts two 3 W resistors in parallel per leg. For this bench the rule is: **a 20 kHz sweep at
-rated power is fine up to about 85 V (1800 W into 4 Ω) with 5 W parts, and the probe's
-`MaxInputVoltage` should say 85 V**, not 140. Klirr's THD+N-versus-frequency curve runs at the
-reference power, not the rating, so the hot case is only the 20 kHz point of a full-power
-response sweep.
+140 Vrms "DC to 7.5 kHz, decreasing to 53 Vrms from 20 kHz to 2 MHz" for exactly this reason.
+
+**This build's rating, per leg to ground** (`rating()` in the simulation, each limit at the
+trimmer setting worst for it):
+
+| Frequency | up to 12 kHz | 15 kHz | 20 kHz | 30-100 kHz | set by |
+|---|---|---|---|---|---|
+| Sine, Vrms per leg | **85** | 70 | **53** | **35** | the coils below 12 kHz, the trimmer above |
+
+Two parts set it, and neither is the pair of 3 W resistors this section first looked at:
+
+- **The coils, below 12 kHz.** Würth gives the WE-TIS 120 V DC as maximum operating voltage
+  without saying between what, so it is read as node to ground: 85 Vrms of sine. (The
+  unshielded WE-TI HV 7687480102 is rated 400 V, if more is ever needed.)
+- **The trimmer, above 12 kHz.** The Bourns 3296 is rated 0.5 W at 70 °C over its whole 500 Ω
+  element, and used as a rheostat it is the current through the part in use that the element
+  takes: √(0.5 W / 500 Ω) = 31.6 mA. It is worst with the trimmer near zero (network 484 Ω), and
+  reached at 56 Vrms per leg at 20 kHz and at 36 Vrms at 50 kHz, at the filter's corner, where
+  the input network sees almost the whole voltage. AP's 53 Vrms from 20 kHz is the same limit.
+- The 3 W resistors, at half their rating in a closed box, would allow 63-68 Vrms at 20 kHz;
+  the pad resistors are nowhere near theirs.
+
+An earlier version of this document said 85 Vrms at 20 kHz, counting only the resistors; that
+was wrong. What it means for this bench: a BTL amplifier puts half its differential voltage on
+each leg, so 2 kW into 4 Ω (89 V across the terminals, 45 V per leg) fits even at 20 kHz. A
+single-ended amplifier at the same power does not: its full-power points above 12 kHz must be
+held to the curve. Klirr's probe profile can carry one number only, so `MaxInputVoltage` is
+85 V and the frequency dependence is a rule for full-power response sweeps, which are the only
+measurement that reaches it.
+
+**A short at the output is a fault, not an operating case.** With the output shorted the
+network carries the whole current at any frequency: the trimmer passes its rating from about
+39 Vrms per leg, the 3 W resistors theirs from about 66 V. Neither the board nor AP's original
+has a fuse, and a fuse would be a nonlinear part in the signal path; the protection is the
+operator's - and the verification below includes a timed short at a safe level to see what gives
+first.
 
 **Noise.** The source resistance the analyzer sees is 590 Ω per leg, 1.2 kΩ differential:
 0.63 µV in 20 kHz, −124 dBV, six dB under the QA403's best floor. With a 20:1 pad behind it the
@@ -353,7 +383,7 @@ first 24 mm behind that edge are the connector strip, with the switch at its rig
 the two pads right behind it; the filter is the 100 mm band behind the strip. Layers 2 and 3 are
 whole ground planes with nothing routed on them; signal on top, the crossings, the negative
 pole's switch nets and its long output run on the bottom. 0.8 mm clearance throughout (IPC-2221B
-for bare pads at 101-300 V; the input carries 120 V peak at the 85 Vrms rating). Four plain M3
+for bare pads at 101-300 V; the input carries 120 V peak at the rating of 85 Vrms per leg). Four plain M3
 holes on the band's centre line for spacers on the bottom plate, and a fifth, plated and on
 ground, in the connector strip: the one bond between the ground plane and the chassis, where the
 cables come in. No Zeners, no fuses. The layout rules behind the arrangement - whole planes,
@@ -422,29 +452,129 @@ leg; the Molex 73100-0105 has no panel mount at all) were in the design until th
 was made the AUX-0025's, where one XLR-to-BNC lead does the same job for the price of two BNC
 plugs.
 
-## Bring-up, once it exists
+## Ground, and bridged amplifiers
 
-1. Nothing to select or pair: the boards come assembled. Check the toggle wiring against the
-   K1 table with an ohmmeter before power.
-2. Trim, **through an amplifier, not the generator** (the QA403's output is 100 Ω, which would
-   move the knee by half a decibel). Any amplifier does - the next device under test, or a
-   10 € class-D board; its own response cancels because both analyzer inputs see it. QA403
-   OUT → amplifier → a few volts at its terminals. Amplifier + to the filter's red input, the
-   filter's black input to the filter's ground post (one leg at a time, single-ended), amplifier
-   terminals also straight to the QA403's **right** input, the filter's output BNCs to the
-   **left** input. Run Klirr's frequency response: the left-minus-right curve in dB is the
-   filter alone. Turn the + leg's trimmer until 20 kHz and 1 kHz agree within 0.02 dB; then move
-   the amplifier to the black input and ground the red one, and trim the − leg. No other
-   instrument is needed: the QA403 reading two inputs at once *is* the measurement, and the
-   0.02 dB is a ratio between its channels, not an absolute level. Mark the trimmers.
-3. Measure the 20:1 ratio in situ at 1 kHz at a level the direct path also accepts, and enter
-   it as the probe's `Ratio`. Re-measure the direct path's insertion loss the same way (it is a
-   probe too, with a ratio of about 1.006).
-4. Rejection at 250 kHz cannot be seen by a QA403. A function generator and a scope, or a
-   nanoVNA with a 500 Ω pad, show whether the real box lands at 50 dB or at 45.
-5. A twin-tone 18 + 20 kHz at 45 V into the filter, open output, with the IMD read on the right
-   input direct and on the left through the filter: the difference is the ferrite's. If it is
-   below the QA403's residual, the inductor question is closed for good.
+Every shunt capacitor goes to the filter's ground, which is also the chassis (through H5), the
+output XLR's pin 1 and so the QA403's ground. That is what gives the filter its common-mode
+rejection - V1 tried a floating midpoint and rejected no common mode at all - and it is the
+AUX-0025's arrangement too. It also means that a bridged (BTL) or floating class-D output is
+loaded against that ground, not only across its terminals:
+
+| Each input to ground | DC | 20 kHz | 100 kHz | 400 kHz | 1 MHz |
+|---|---|---|---|---|---|
+| Impedance, per leg | 21 kΩ (the pad; 17 kΩ with the QA403 on direct) | 870 Ω | 1.3 kΩ | 1.2 kΩ | 750 Ω |
+| Current for 10 V of common-mode residue | - | 12 mA | 8 mA | 9 mA | 13 mA |
+
+A BTL amplifier with BD modulation can carry several volts of carrier as common mode, and that
+current has to return to the amplifier somewhere. **The green socket is the path it should take:
+connect it to the amplifier's ground (its power ground, or its chassis if that is where the
+output stage is referenced).** Left open, the common-mode current returns through the analyzer
+lead, the QA403, USB, the computer and the mains earth to the amplifier: a ground loop that the
+measurement sees. Neither input is ground: on a BTL amplifier the black terminal is an output
+like the red one. Both points are on the board's bottom side and belong on the front panel.
+
+What the AUX-0025's datasheet promises for balanced and unbalanced amplifiers is AP's own
+layout's; for this board it is a verification item (below), with the numbers above as the
+expectation.
+
+## Verification: what makes it a reference
+
+Until the tests below have passed on a built board, this filter is a **prototype**, and the
+figures in this document are simulations and comparisons with earlier builds. The order follows
+the risk: the ferrite's linearity, the ground with bridged amplifiers, heat, and the stop band.
+Each test names the instruments it needs; a QA403, an amplifier, a scope with a function
+generator (or a nanoVNA) and a thermometer cover all of them.
+
+**0. Before power.** Check the toggle wiring against the K1 table with an ohmmeter: from the
+output XLR's pin 2 (then 3) to pin 1, inputs open, about 1.0 kΩ in PAD and about 21 kΩ in
+DIRECT. Each input reads about 21 kΩ to the chassis (the pad), and nothing lower.
+
+**1. Trim**, **through an amplifier, not the generator** (the QA403's output is 100 Ω, which
+would move the knee by half a decibel). Any amplifier does - the next device under test, or a
+10 € class-D board; its own response cancels because both analyzer inputs see it. QA403 OUT →
+amplifier → a few volts at its terminals. Amplifier + to the filter's red input, the filter's
+black input to its green ground socket (one leg at a time, single-ended), the amplifier
+terminals also straight to the QA403's **right** input, the filter's output (through the
+XLR-to-BNC lead) to the **left** input. The left-minus-right frequency response in dB is the
+filter alone. Turn the + leg's trimmer until 20 kHz and 1 kHz agree within 0.02 dB, then move
+the amplifier to the black input, ground the red one, and trim the − leg. Mark the trimmers.
+
+**2. Pad ratio, over frequency.** The same set-up, PAD position, at 20 Hz, 1 kHz and 20 kHz:
+the ratio enters Klirr as the probe's `Ratio`, and its change over the band should stay under
+0.02 dB (the pad's own capacitance and the lead's 30 pF form a pole in the megahertz). The
+DIRECT path is a probe too, with a ratio of about 1.006.
+
+**3. Leg symmetry.** Both inputs joined and driven together against the green socket (pure
+common mode), output read differentially: that is the common-mode-to-differential conversion of
+the built board. The simulation expects −29 dB at 20 kHz and −19 dB at 100 kHz untrimmed with
+these tolerances; trimming matches the legs' amplitude at 20 kHz, not their phase, so record
+the curve rather than assume it.
+
+**4. Ferrite linearity - the first gate.** The question is whether the coils add distortion at
+the levels a clean amplifier reaches. Measure the same amplifier signal twice at the same
+analyzer level: once through the filter in PAD, once through a plain resistive 20:1 divider
+(metal film, no inductors). The difference is the filter's. At 100 Hz, 1 kHz, 6.67 kHz and
+10 kHz; at 1, 5, 20, 40 and 80 Vrms per leg (80 V below 12 kHz only, see the rating); then SMPTE
+IMD (60 Hz + 7 kHz, 4:1) and CCIF (19 + 20 kHz) at 20 and 40 V; both legs. **Pass: the filter
+adds no more than 1 dB to any reading**, i.e. its own contribution stays at least 6 dB under the
+amplifier's. If a leg fails, the test is repeated with an air-core 1 mH coil on flying leads in
+place of L1, then L2, which tells which coil it is; the alternatives are a larger core (lower
+flux density) or air-core coils off the board. The same set-up, input shorted and the box next
+to the load bank or a mains transformer, shows the hum the shielded coils pick up.
+
+**5. Ground with a bridged amplifier.** With a BTL class-D amplifier: the common-mode current
+in the green lead (a 1 Ω resistor in it and the scope across it, or a current probe), against
+the table above; the amplifier's own residue and THD with the filter and with a plain resistive
+probe; and the measurement with the computer on battery and on the mains (the QA403's ground
+then floats or does not). Pass: the THD readings agree within 1 dB in all three cases, and the
+amplifier's protection does not react to the filter.
+
+**6. Heat.** A 20 kHz sine on one leg, single-ended, lid closed, 15 minutes each at 35, 45 and
+53 Vrms; then the temperatures of R1/R2 (and R11/R12), the trimmer, L1 and C1 with a
+thermocouple or an IR thermometer, and the 20 kHz ratio from test 1 watched for drift. Pass: the
+trimmer's body under 70 °C (its rating's reference), the film capacitors under 85 °C (FKP2 is
+rated 100 °C), the 3 W resistors under 150 °C, the ratio drifting less than 0.02 dB. A
+temperature-indicator strip on R1 is a cheap witness for later use. Then a timed short: output
+shorted, 20 V per leg at 1 kHz, 60 s, nothing over the limits above; no more than that - a
+short at full voltage is a fault (see the rating), not a test.
+
+**7. Stop band, per stage.** A QA403 cannot see 250 kHz. A function generator and a scope (10:1
+probe, its ground spring on TP1 or TP2), or a nanoVNA with a 500 Ω series pad, from 100 kHz to
+20 MHz: at the stage-1 output (C3/C7 pin 1), the stage-2 output (C4/C8 pin 1) and the XLR, in
+DIRECT and in PAD, with the board in the closed chassis and out of it. Expect 45-50 dB at
+250 kHz (one V1 build measured 45 against 55 simulated) and the coils' self-resonance above
+1 MHz. A PAD reading much worse than DIRECT minus 27 dB means coupling into the pad's 1 kΩ
+node; a closed-chassis reading much better than an open one means the chassis is doing work
+the layout should.
+
+**8. The switch.** Switch only with the amplifier muted or off: the toggle breaks before it makes
+(specify a non-shorting part), so the analyzer sees an open input for a moment, never the
+unpadded voltage, but DIRECT at full power is over the QA403's 40 Vrms. A toggle with a locking
+lever (pull to switch) keeps DIRECT from being selected by accident. Check both positions under
+a 5 V signal with the scope on the output for anything but a clean step.
+
+If all eight pass, the board is a reference within its rating and the numbers in the tables at
+the top of this document can be replaced by measured ones.
+
+## Safety, as far as this board goes
+
+- **The rating is per leg** (see "Dissipation"): 85 Vrms to 12 kHz, 53 Vrms at 20 kHz, 35 Vrms
+  from 30 to 100 kHz. It belongs on the front panel at the inputs, with "max 40 Vrms into the
+  QA403 in DIRECT" at the switch; the front-wall drawing carries that legend.
+- **DIRECT passes the amplifier's full voltage** to the male XLR, whose pins are recessed but are
+  the analyzer's input. A locking toggle and switching only with the amplifier muted are the
+  protection; the pad position is the one the relay rests in, too.
+- **The chassis is the filter's ground**, bonded at H5, and through the output lead the QA403's.
+  It is a shield, not a protective earth; the bench's earthing is the amplifier's and the
+  computer's business.
+- **Underneath**, the solder side sits 8 mm above the bottom plate on 10 mm spacers, every lead
+  carrying the input voltage. A sheet of 0.25 mm polyester or fish paper on the bottom plate,
+  cut around the five spacers, keeps a bent lead or a dropped screw off the chassis.
+- **No fuse and no thermal cut-out**: both would be nonlinear parts in the signal path, which is
+  why AP has none either. The rating and test 6's timed short are the protection, and a
+  temperature-indicator strip on R1 records it if the rating was ever exceeded.
+- Clearances are 0.8 mm (IPC-2221B for bare pads, 101-300 V). That is a board-level figure for a
+  clean, dry lab, not a safety approval; nothing about this box is certified.
 
 ## What this asks of the software
 
@@ -487,11 +617,10 @@ coil line in `design.py` names it as the alternative.
 voltage rating sets are few and cheap: the two 3 W input resistors per leg ($0.06 each) would
 become 2 W parts, the 630 V capacitors 400 V ones (the 630 V WIMA at ±2.5 % is the one actually
 stocked), the 1 W pad resistors 0.5 W. Under a dollar per board, and the limit this board has
-is not the voltage anyway but the dissipation at 20 kHz: 2.45 W per leg at 60 V, 2.72 W at
-63 V, 4.9 W at 85 V, against the 6 W of the two 3 W resistors; a shorted output at 63 V is 8 W
-per leg, so brief in either design. Reducing the goal would give up the 85 V (1800 W into 4 Ω)
-that the 3 W pair allows for the price of two resistors. **Not worth making**; the honest rating
-curve in the "Dissipation" section is what this item was really about.
+is not the parts' voltages anyway but the coils' 120 V and the trimmer's current, as the rating
+curve in the "Dissipation" section shows: 85 Vrms per leg to 12 kHz, 53 Vrms at 20 kHz. Smaller
+resistors would give that up for under a dollar. **Not worth making**; the honest rating curve
+is what this item was really about.
 
 **A mostly SMD version, orderable through JLCPCB, probably not safe into a short.** The board
 is orderable through JLCPCB as it is: every part is through-hole and JLCPCB hand-solders them at
@@ -518,7 +647,10 @@ written so that it is a change of footprints, not a redesign.
   is ever needed.
 - **Not air-core inductors.** AP's choice, and it removes the ferrite's low-frequency
   distortion, but it trades it for hum pickup on a bench with a kilowatt load bank, and the
-  distortion in question is 15-20 dB below the QA403's residual.
+  distortion in question measured 15-20 dB below the QA403's residual on V2 boards - on other
+  boards with other coils, so it is the first gate of the verification, not a settled fact. An
+  air-core coil on flying leads is the comparison there; a footprint for one is not on the
+  board, because a 1 mH air coil is 50 mm across.
 - **Not a lower impedance level or a third stage.** A constrained re-optimisation of the same
   topology found no set of values that adds more than 2 dB of rejection without raising the
   dissipation at 20 kHz, and an extra LC stage is another 30 € per board for rejection that the

@@ -8,11 +8,17 @@
   fab/aes17-filter-bom.csv       Comment, Designator, Footprint, LCSC Part # - JLCPCB's BOM columns
   fab/aes17-filter-cpl.csv       Designator, Mid X, Mid Y, Layer, Rotation - JLCPCB's placement columns
   fab/aes17-filter-parts.csv     the same parts with value, note and quantity, for ordering elsewhere
+  fab/aes17-filter-drc.txt       the DRC report the board was checked with
+  fab/RELEASE.txt                title, revision, the source hash printed on the board, and the
+                                 SHA-256 of every file in fab/ - check_release.py verifies it
 
 Run make_pcb.py first; this only reads the .kicad_pcb and design.py.
 """
 import csv
+import hashlib
 import os
+import re
+import shutil
 import unicodedata
 import subprocess
 import sys
@@ -90,7 +96,7 @@ def bom_and_cpl():
     parts_rows = []
     cpl_rows = []
     for ref, value, fpkey, lcsc, note, pins in design.PARTS:
-        if ref.startswith('H'):
+        if ref.startswith(design.NOT_ASSEMBLED):
             continue
         fp = fps[ref]
         footprint = design.FP[fpkey].split(':')[1]
@@ -119,6 +125,47 @@ def bom_and_cpl():
     return len(bom_rows), len(cpl_rows)
 
 
+RELEASE_FILES = ('aes17-filter-gerbers.zip', 'aes17-filter-bom.csv', 'aes17-filter-cpl.csv',
+                 'aes17-filter-parts.csv', 'aes17-filter-drc.txt', 'aes17-filter-schematic.pdf')
+
+
+def sha256(path):
+    with open(path, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+def drc_summary(path):
+    txt = open(path).read()
+    errors = txt.count('Severity: error')
+    m = re.search(r'\*\* Found (\d+) unconnected pads', txt)
+    unconnected = int(m.group(1)) if m else -1
+    return errors, unconnected
+
+
+def release():
+    """Copies the DRC report into fab/ and writes fab/RELEASE.txt."""
+    shutil.copyfile(os.path.join(HERE, 'drc.txt'), os.path.join(FAB, 'aes17-filter-drc.txt'))
+    errors, unconnected = drc_summary(os.path.join(FAB, 'aes17-filter-drc.txt'))
+    kicad = subprocess.run(['kicad-cli', '--version'], capture_output=True, text=True).stdout.strip()
+    lines = [
+        f'{design.TITLE} {design.REVISION}, {design.DATE}',
+        f'source hash {design.source_hash()} (SHA-256 of hardware/design.py and hardware/make_pcb.py,',
+        '  printed on both sides of the board)',
+        f'generated with KiCad {kicad}',
+        f'DRC: {errors} errors, {unconnected} unconnected pads (aes17-filter-drc.txt)',
+        f'board {design.BOARD_LENGTH:g} x {design.BOARD_WIDTH:g} mm, four layers, Hammond 1444-862 chassis',
+        '',
+        'SHA-256 of the order files (in fab/) and of the board:',
+    ]
+    for name in RELEASE_FILES + ('../aes17-filter.kicad_pcb',):
+        lines.append(f'  {sha256(os.path.join(FAB, name))}  {os.path.normpath(name)}')
+    lines += ['', 'Order from a commit whose RELEASE.txt passes `python3 check_release.py`, and name',
+              'the commit in the order (a tag or a branch such as release/rev-a).']
+    with open(os.path.join(FAB, 'RELEASE.txt'), 'w') as f:
+        f.write('\n'.join(lines) + '\n')
+    return f'{design.REVISION}, source {design.source_hash()}, DRC {errors} errors'
+
+
 if __name__ == '__main__':
     out, files = gerbers()
     print('gerbers:', out, len(files), 'files')
@@ -126,3 +173,4 @@ if __name__ == '__main__':
         print('   ', f)
     n_lines, n_parts = bom_and_cpl()
     print(f'bom: {n_lines} lines, cpl: {n_parts} parts')
+    print('release:', release())

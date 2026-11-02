@@ -123,6 +123,49 @@ def monte_carlo(tolL, tolC, tolR, n=400, seed=1):
           f"worst 250-500 kHz {worst_rej.max():.1f} dB")
 
 
+# This build: the AUX-0025 values with two 220 pF for the 390 pF and the Wurth WE-TIS coils
+# (2.1 ohm typ.), and AP's input network with a 500 ohm trimmer: 1k || 14k || (1k + RV).
+BUILD = dict(AUX0025, C34=440e-12, Ldcr=2.1)
+
+
+def network(rv):
+    return 1 / (1 / 1000 + 1 / 14000 + 1 / (1000 + rv))
+
+
+def rating():
+    """The highest sine voltage per leg (leg to ground) the parts take, over frequency.
+
+    The limits, each at the trimmer setting that is worst for it:
+      coils     Wurth gives 120 V DC max operating voltage, without saying between what: read
+                as node to ground, that is 85 Vrms of sine anywhere
+      trimmer   Bourns 3296, 0.5 W at 70 C over the whole 500 ohm element; used as a rheostat
+                the current, not the power in the part in use, is what the element takes:
+                sqrt(0.5 / 500) = 31.6 mA. Worst with the trimmer near zero (network 484 ohm)
+      3 W parts the two 1 k at half their rating, 1.5 W, in a closed box
+      pad       the 10 k 1 W at half their rating
+    A BTL amplifier puts half its differential voltage on each leg.
+    """
+    print("== the highest sine voltage per leg (leg to ground), and what limits it ==")
+    i_rv = math.sqrt(0.5 / 500)
+    worst = {}
+    for rv in (5.0, 140.0, 281.0):          # networks 484, 513 (nominal trim), 540 ohm
+        p = dict(BUILD, R1=network(rv))
+        for f in (1e3, 5e3, 7.5e3, 10e3, 12e3, 15e3, 20e3, 30e3, 50e3, 100e3, 250e3, 500e3):
+            v = node_voltages(f, p, 1.0)
+            vnet = abs(v[1] - v[2])
+            lim = {'coil 120 Vpk': 120 / math.sqrt(2),
+                   'trimmer 31.6 mA': i_rv * (1000 + rv) / vnet,
+                   '1k 3W at 1.5 W': math.sqrt(1.5 * 1000) / vnet,
+                   'pad 10k at 0.5 W': math.sqrt(0.5 / 10e3) * 21e3 / abs(v[7])}
+            name = min(lim, key=lim.get)
+            if f not in worst or lim[name] < worst[f][0]:
+                worst[f] = (lim[name], name, rv)
+    for f, (vmax, name, rv) in sorted(worst.items()):
+        print(f"  {f/1e3:6.1f} kHz: {vmax:5.0f} Vrms per leg   ({name}, trimmer at {rv:.0f} ohm)")
+    print("  rating: 85 Vrms per leg to 12 kHz, falling as 1/f to 53 Vrms at 20 kHz, 35 Vrms from 20 to"
+          " 100 kHz; a BTL amplifier may put twice that across its terminals")
+
+
 def dissipation():
     print("== current through R1 and L1 and the power in R1, per leg (output open into 100k) ==")
     for vin, label in ((44.7, '500 W / 4 ohm'), (63.2, '1000 W / 4 ohm'), (89.4, '2000 W / 4 ohm'), (140., 'repo max')):
@@ -171,5 +214,6 @@ if __name__ == '__main__':
     monte_carlo(0.10, 0.025, 0.01)
     monte_carlo(0.02, 0.01, 0.01)
     dissipation()
+    rating()
     analyzer_ranges()
     noise()

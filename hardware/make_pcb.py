@@ -132,6 +132,7 @@ PLACE.update({
     # ground meets the chassis, next to where the cables come in
     'H1': (14.0, core(50.0), 0), 'H2': (50.0, core(50.0), 0), 'H3': (90.0, core(50.0), 0), 'H4': (151.5, core(50.0), 0),
     'H5': (34.75, 10.0, 0),
+    'TP1': (68.0, core(50.0), 0), 'TP2': (98.0, core(50.0), 0),
 })
 
 # ----------------------------------------------------------------------------------------------
@@ -224,7 +225,7 @@ def load_footprint(board, key):
 # ----------------------------------------------------------------------------------------------
 F, B = 'F.Cu', 'B.Cu'
 # The whole filter, up to and including OUT in the direct position, carries the amplifier's
-# voltage: 120 V peak at the 85 Vrms rating, 200 V peak at the 140 Vrms V2 once claimed. IPC-2221B
+# voltage: 120 V peak at the rating of 85 Vrms per leg, 200 V peak at the 140 Vrms V2 once claimed. IPC-2221B
 # asks 0.8 mm between bare pads (A6) and 0.4 mm between masked tracks (B4) for 101-300 V, so the
 # board keeps 0.8 mm everywhere; it has the room.
 CLEARANCE = 0.8
@@ -409,8 +410,7 @@ SHORT_VALUE = {
     '4.7n': '4n7', '75.0R 1W': '75R 1W', '3.40k': '3k4', '24.9R': '24R9', '10.0k 1W': '10k 1W',
     '1.00k 0.1%': '1k 0.1%', '1N4148': '1N4148',
 }
-TITLE, REVISION, DATE = 'AES17 filter', 'rev A', '2026-11'
-SOURCE = 'github.com/ToxSox/aes17_filter'
+TITLE, REVISION, DATE, SOURCE = design.TITLE, design.REVISION, design.DATE, design.SOURCE
 
 
 def add_silk(board, fps):
@@ -419,8 +419,8 @@ def add_silk(board, fps):
     # ---- every part: reference and value in one label where its reference stood ---------------
     for ref, fp in fps.items():
         r = fp.Reference()
-        if ref.startswith('H') or ref.startswith('J') or ref == 'K1':
-            if ref.startswith('H') or ref in ('J9', 'K1'):
+        if ref.startswith(('H', 'J', 'TP')) or ref == 'K1':
+            if ref.startswith(('H', 'TP')) or ref in ('J9', 'K1'):
                 r.SetVisible(False)            # holes need no names; J9 and K1 get their own labels
             continue
         if ref in ('R8', 'R9', 'R10', 'R18', 'R19', 'R20'):
@@ -476,6 +476,10 @@ def add_silk(board, fps):
     add_text(board, f'{TITLE} {REVISION}', 128.0, 70.0, 1.6, bold=True)
     add_text(board, f'{DATE}  CERN-OHL-W-2.0', 128.0, 73.0)
     add_text(board, SOURCE, 128.0, 75.0)
+    add_text(board, f'src {design.source_hash()}', 128.0, 77.0)
+    for tp in ('TP1', 'TP2'):
+        x = pcbnew.ToMM(fps[tp].GetPosition().x)
+        add_text(board, 'GND', x, 71.4)
     # ---- the bottom: a crib sheet, read from below -----------------------------------------------
     B = pcbnew.B_SilkS
     add_text(board, f'{TITLE} {REVISION}', 156.5, 50.0, 1.6, B, bold=True, left=True)
@@ -485,6 +489,7 @@ def add_silk(board, fps):
         'after AP AUX-0025 and M. Clark V2',
         'passive AES17 low-pass, 100k load',
         'chassis bond: H5 only, metal spacer',
+        f'src {design.source_hash()}: see fab/RELEASE.txt',
     ], 156.5, 53.0)
     add_block(board, [
         'PAD SWITCH: toggle wires into K1',
@@ -502,6 +507,8 @@ def add_silk(board, fps):
         'to QA403: XLR-F to 2 BNC,',
         '  2 -> L+, 3 -> L-,',
         '  1 -> both shells',
+        'IN - is not ground: green',
+        '  to the amplifier ground',
     ], 27.5, 26.0)
     add_block(board, [
         'TRIM RV1 (+), RV2 (-):',
@@ -509,13 +516,16 @@ def add_silk(board, fps):
         'leg at a time, until',
         '20 kHz = 1 kHz; not from the',
         'QA403 output (100R)',
+        'probe: stage 1 = C3/C7 pin 1,',
+        'stage 2 = C4/C8 pin 1, GND = TP',
     ], 99.5, 48.0)
     add_warning(board, 104.0, 86.6, 3.6, B)
     add_text(board, 'HIGH VOLTAGE', 99.5, 87.0, 1.3, B, bold=True, left=True)
     add_block(board, [
         'up to 120 V peak on inputs,',
         'both legs, OUT when direct',
-        '85 Vrms max at 20 kHz',
+        'per leg: 85 Vrms to 12 kHz,',
+        '53 Vrms at 20 kHz, 35 to 100k',
         'QA403 max 40 Vrms: use PAD',
     ], 99.5, 89.6)
 
