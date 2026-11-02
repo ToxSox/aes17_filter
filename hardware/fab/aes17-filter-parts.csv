@@ -40,6 +40,3 @@ J1,IN +,Cliff FCR7350R,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087,"Cliff 
 J2,IN -,Cliff FCR7350B,Banana_Cliff_FCR7350B_S16N-PC_Horizontal,C6555263,"Cliff FCR7350B black, amplifier -",yes
 J3,GND,Cliff FCR7350G,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085,"Cliff FCR7350G green, common / chassis",yes
 J5,OUT XLR,Neutrik NC3MAAH,Jack_XLR_Neutrik_NC3MAAH_Horizontal,C368463,"Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground",yes
-K1,G6A-274P-ST-US DC12,Omron G6A-274P-ST-US DC12,Relay_DPDT_Omron_G6A-274P,C129439,"DO NOT PLACE until the matrix drives it; NC = pad, NO = direct; until then the toggle is wired into its holes",NO - footprint only
-J9,COIL,pin header 1x2 2.54 mm,PinHeader_1x02_P2.54mm_Vertical,C492401,"relay coil, 12 V from the matrix controller",yes
-D1,1N4148,1N4148,D_DO-35_SOD27_P7.62mm_Horizontal,C258182,flyback across the coil; pin 1 is the cathode (band) and goes to COIL+,yes

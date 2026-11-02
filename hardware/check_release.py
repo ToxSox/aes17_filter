@@ -10,8 +10,7 @@
   - every file listed in RELEASE.txt still has the SHA-256 written there
   - the DRC report has no errors and no unconnected pads
   - the schematic was drawn from the current design.py (its hash and the positive leg's values)
-  - the relay footprint is the top view of Omron's bottom-view drawing (pins 1-8-9-16 run
-    anticlockwise seen from the top), so the polarised coil goes in the right way round
+  - the pad is switched: its top is not on the filter output, so DIRECT sees the analyzer alone
   - the READMEs give the board size and the chassis the generator uses
 
 Run make_pcb.py and export.py first; this only reads.
@@ -81,13 +80,11 @@ check(f'sha256 {dhash}' in texts_svg and not missing,
       f'the schematic was drawn from this design.py ({dhash})'
       + ('' if not missing else f': missing or stale {missing}') + ' - run make_schematic.py')
 
-k1 = next(fp for fp in board.GetFootprints() if fp.GetReference() == 'K1')
-pos = {p.GetNumber(): p.GetPosition() for p in k1.Pads()}
-def turn(a, b, c):
-    """z of (b - a) x (c - b) in board coordinates (y down): negative = anticlockwise as seen."""
-    return (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x)
-check(turn(pos['1'], pos['8'], pos['9']) < 0 and turn(pos['8'], pos['9'], pos['16']) < 0,
-      'K1 is drawn in top view: pins 1, 8, 9, 16 run anticlockwise seen from the top')
+nets = design.nets()
+pad_tops = [(ref, pad) for ref, pad in nets.get('PT_P', []) + nets.get('PT_N', []) if ref.startswith('R')]
+on_f = {(ref, pad) for ref, pad in nets.get('F_P', []) + nets.get('F_N', [])}
+check(len(pad_tops) == 2 and not on_f & set(pad_tops),
+      'the pad tops (PT) are separate nets from the filter outputs (F): the toggle takes the pad off in DIRECT')
 
 size = f'{design.BOARD_LENGTH:g} × {design.BOARD_WIDTH:g} mm'
 for doc in ('../README.md', 'README.md'):

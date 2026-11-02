@@ -4,8 +4,10 @@ Everything that follows - the PCB generator, the JLCPCB bill of materials, the p
 and the schematic drawing - reads this module, so a value changed here changes all of them.
 The circuit is the one in the design review that comes with these files: the AUX-0025 values
 per leg, AP's trimmed
-input network, a 20:1 pad after the output resistor, switched by one pole per leg: a DPDT toggle
-wired into the relay's footprint today, the on-board DPDT relay once the matrix drives it.
+input network, a 20:1 pad after the output resistor, switched by a 4PDT toggle in the front
+wall, two poles per leg: one connects the pad to the filter output in PAD and takes it off in
+DIRECT, the other picks the pad's tap or the filter output for the output XLR. In DIRECT the
+filter sees nothing but the analyzer, as the AUX-0025 does; there is no relay and no supply.
 
 Coordinates are millimetres on a 158 x 124 mm board: x runs along the front edge from the
 input (x = 0) to the output (x = 158), y from the front edge (y = 0) to the back (y = 124).
@@ -41,9 +43,7 @@ FP = {
     'BANANA_G': 'Connector:Banana_Cliff_FCR7350G_S16N-PC_Horizontal',
     'XLR_F':    'Connector_Audio:Jack_XLR_Neutrik_NC3FAAH2_Horizontal',
     'XLR_M':    'Connector_Audio:Jack_XLR_Neutrik_NC3MAAH_Horizontal',
-    'RELAY':    'aes17:Relay_DPDT_Omron_G6A-274P',             # drawn by the generator
-    'HDR_1x2':  'Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical',
-    'DIODE':    'Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal',
+    'WIRES':    'aes17:Wire_Field_4PDT',                       # drawn by the generator: ten solder holes for the toggle
     'HOLE':     'MountingHole:MountingHole_3.2mm_M3',
     'HOLE_GND': 'MountingHole:MountingHole_3.2mm_M3_Pad_Via',
     'TP_LOOP':  'TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm',
@@ -84,19 +84,20 @@ def leg(prefix, names, nets):
         (names['R7'],  '3.40k',     'R_0W6',    'C1366835', 'Vishay MRS25000C3401FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C3401FCT00 = C1382495', [(1, n['D']), (2, n['E'])]),
         (names['C9'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['E']), (2, 'GND')]),
         (names['R9'],  '24.9R',     'R_0W6',    'C3542579', '1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9)', [(1, n['E']), (2, n['F'])]),
-        # the pad, always on the filter output; the switch picks the tap or F. 2 x 10.0 k over
+        # the pad: its top (PT) is put on the filter output F by the switch in PAD only, so in
+        # DIRECT the filter sees the analyzer alone; the other pole picks the tap or F. 2 x 10.0 k over
         # 1.00 k, all three 0.1 % / 15 ppm from one family: the QA403 subtracts the two legs in its
         # analogue input stage, so the legs' ratios must match each other, which a measured probe
         # factor per channel cannot correct (1 % upper arms left -39 dB of common mode in the
         # difference). 0.25 W each: 0.125 W, half the rating, at 74 Vrms per leg.
-        (names['R11'], '10.0k 0.1%', 'R_0207_P15', 'C1364313', '0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k', [(1, n['F']), (2, n['M'])]),
+        (names['R11'], '10.0k 0.1%', 'R_0207_P15', 'C1364313', '0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k', [(1, n['PT']), (2, n['M'])]),
         (names['R12'], '10.0k 0.1%', 'R_0207_P15', 'C1364313', '0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k', [(1, n['M']), (2, n['PAD'])]),
         (names['R13'], '1.00k 0.1%', 'R_0W6',   'C1364308', '0.1 %, 15 ppm, 0.25 W (TE YR1B1K0CC)', [(1, n['PAD']), (2, 'GND')]),
     ]
     return parts
 
-NETS_P = dict(IN='IN_P', A='A_P', T='T_P', X='X_P', B='B_P', D='D_P', E='E_P', F='F_P', M='M_P', PAD='PAD_P', OUT='OUT_P')
-NETS_N = dict(IN='IN_N', A='A_N', T='T_N', X='X_N', B='B_N', D='D_N', E='E_N', F='F_N', M='M_N', PAD='PAD_N', OUT='OUT_N')
+NETS_P = dict(IN='IN_P', A='A_P', T='T_P', X='X_P', B='B_P', D='D_P', E='E_P', F='F_P', PT='PT_P', M='M_P', PAD='PAD_P', OUT='OUT_P')
+NETS_N = dict(IN='IN_N', A='A_N', T='T_N', X='X_N', B='B_N', D='D_N', E='E_N', F='F_N', PT='PT_N', M='M_N', PAD='PAD_N', OUT='OUT_N')
 NAMES_P = dict(R1a='R1', R1b='R2', R1c='R3', RV1='RV1', C1='C1', R3='R4', C34='C2', C34b='C9', L1='L1', C7='C3',
                R5='R5', L3='L2', R7='R6', C9='C4', R9='R7', R11='R8', R12='R9', R13='R10')
 NAMES_N = dict(R1a='R11', R1b='R12', R1c='R13', RV1='RV2', C1='C5', R3='R14', C34='C6', C34b='C10', L1='L3', C7='C7',
@@ -111,15 +112,14 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     ('J3', 'GND',   'BANANA_G', 'C6041085', 'Cliff FCR7350G green, common / chassis',    [(1, 'GND')]),
     # connectors, output end (x = 158): the AUX-0025's male XLR; the QA403 takes an XLR-to-two-BNC lead
     ('J5', 'OUT XLR', 'XLR_M',  'C368463', 'Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground', [(1, 'GND'), (2, 'OUT_P'), (3, 'OUT_N'), ('G', 'GND')]),
-    # the pad switch: the relay's footprint, whose six contact holes take the toggle's wires until
-    # the relay is fitted - pole B (+ leg) 13 / 11 / 9, pole A (- leg) 4 / 6 / 8, common first.
-    # Pins as Omron numbers them; the footprint is drawn from the top (Omron's drawing is the
-    # bottom view), and the coil is polarised: pin 1 +, pin 16 -.
-    # A separate header on the same nets would only hang a stub on the output.
-    ('K1', 'G6A-274P-ST-US DC12', 'RELAY', 'C129439', 'DO NOT PLACE until the matrix drives it; NC = pad, NO = direct; until then the toggle is wired into its holes',
-        [(1, 'COIL+'), (16, 'COIL-'), (13, 'OUT_P'), (11, 'PAD_P'), (9, 'F_P'), (4, 'OUT_N'), (6, 'PAD_N'), (8, 'F_N')]),
-    ('J9', 'COIL', 'HDR_1x2',   'C492401', 'relay coil, 12 V from the matrix controller', [(1, 'COIL+'), (2, 'COIL-')]),
-    ('D1', '1N4148', 'DIODE',   'C258182', 'flyback across the coil; pin 1 is the cathode (band) and goes to COIL+', [(1, 'COIL+'), (2, 'COIL-')]),
+    # the pad switch: a 4PDT ON-ON toggle in the front wall (gold contacts, non-shorting), its
+    # wires soldered into W1, ten holes straight below it. Per leg two poles:
+    #   pole a, pad feed:  common -> PT,  PAD throw -> F,   DIRECT throw not connected
+    #   pole b, output:    common -> OUT, PAD throw -> PAD, DIRECT throw -> F
+    # so F has two holes per leg, joined on the board. In DIRECT the pad hangs from nothing.
+    ('W1', '4PDT wires', 'WIRES', '', 'solder holes for the pad toggle (APEM 5666CDB or similar, 4PDT ON-ON, gold contacts); not a part',
+        [(1, 'OUT_P'), (2, 'F_P'), (3, 'F_P'), (4, 'PT_P'), (5, 'PAD_P'),
+         (6, 'OUT_N'), (7, 'F_N'), (8, 'F_N'), (9, 'PT_N'), (10, 'PAD_N')]),
     # mounting holes for M3 stand-offs on the chassis' bottom plate; H5 is plated and bonds the
     # ground plane to the chassis in the connector strip, the others are plain
     ('H1', 'M3', 'HOLE', '', 'plain hole, no pad', []),
@@ -133,9 +133,9 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     ('TP2', 'GND', 'TP_LOOP', '', 'ground test point: solder a wire loop', [(1, 'GND')]),
 ]
 
-NOT_ASSEMBLED = ('H', 'TP')     # reference prefixes that are holes and pads, not parts
+NOT_ASSEMBLED = ('H', 'TP', 'W')     # reference prefixes that are holes and pads, not parts
 
-DO_NOT_PLACE = {'K1'}
+DO_NOT_PLACE = set()
 
 MPN = {
     'L1': 'Wurth 7447480102', 'L2': 'Wurth 7447480102', 'L3': 'Wurth 7447480102', 'L4': 'Wurth 7447480102',
@@ -150,8 +150,6 @@ MPN = {
     'RV1': 'Bourns 3296W-1-501LF', 'RV2': 'Bourns 3296W-1-501LF',
     'J1': 'Cliff FCR7350R', 'J2': 'Cliff FCR7350B', 'J3': 'Cliff FCR7350G',
     'J4': 'Neutrik NC3FAAH2', 'J5': 'Neutrik NC3MAAH',
-    'J9': 'pin header 1x2 2.54 mm',
-    'K1': 'Omron G6A-274P-ST-US DC12', 'D1': '1N4148',
 }
 
 

@@ -17,7 +17,9 @@ so nothing below is settled until it has been looked up there too.
 **Update of 2 November 2026:** a second review changed four lines, all found at JLCPCB: the
 coils are the unshielded Würth 7447480102 (C1331132), the pad's upper arms TE YR1B10KCC 0.1 %
 (C1364313), R4/R14 and R6/R16 0.6 W Vishay MRS25 (C1235858, C1366835), and the toggle must have
-gold contacts. Sections 1.1, 1.6 and 1.7 say so; the rest of this list is as it was.
+gold contacts. Later the same day the relay footprint was dropped: the pad switch is a **4PDT**
+toggle (two poles per leg, so the pad comes off the output in DIRECT). Sections 1.1, 1.6 and 1.7
+say so; the rest of this list is as it was.
 
 How to use this: work through section 1 part by part, fill the result table in section 3, and
 answer the questions in section 2 where a page says so. Record for every part the **exact
@@ -57,7 +59,7 @@ build adds or changes against the repo, and still has to be found:**
 | AP's values instead of the repo's E24 ones | 412 Ω, 3.40 kΩ, 24.9 Ω (0.6 W), 75.0 Ω (1 W), all 1 % metal film; **390 pF 630 V polypropylene** instead of 2 × 220 pF | 1.4, 1.5 | resistors yes (E96 is standard there); 390 pF: look for WIMA FKP2J003901D00HSSD / JSSD or Kemet PFR |
 | The 20 kHz trim | 2 × 1.00 kΩ 1 % 3 W per leg, 14.0 kΩ, **500 Ω 25-turn trimmer (Bourns 3296W-1-501LF)** | 1.2, 1.3 | trimmer yes; 3 W 1 % resistors: check Vishay RS02B / CPF3 or Chinese 3 W metal film 1 % |
 | The 20:1 pad instead of 9 k / 1 k | 9.53 kΩ and 1.00 kΩ, **0.1 %**, 0.5 W, axial | 1.6 | 0.1 % axial is thin there; 1 % at 50 ppm is the stated fallback |
-| Toggle in the front wall, relay footprint kept for the matrix | DPDT ON-ON panel toggle, wired into the relay's footprint (the Omron G6A-274P is not bought yet) | 1.7 | yes, toggles are commodity |
+| Toggle in the front wall | 4PDT ON-ON panel toggle with gold contacts, wired into the ten holes of W1 (no relay) | 1.7 | yes, toggles are commodity |
 | BNC instead of XLR | 4 × PCB right-angle BNC with panel nut, **Molex 73100-0105** | 1.8 | yes, and Chinese equivalents; the panel nut is the thing to confirm |
 | 4 mm safety sockets instead of Cliff test jacks | 3 × shrouded 4 mm PCB socket ≥ 20 A, **Cliff FCR7350 R/B/G** | 1.8 | Cliff unlikely; a shrouded Chinese 4 mm PCB socket at ≥ 20 A is acceptable if it is right-angle and the datasheet gives the rating |
 | All connectors in one long wall | **Hammond 1444-862** chassis + **1434-86** bottom plate, 10 mm M3 spacers | 1.9 | no; Digi-Key, Mouser, Reichelt |
@@ -134,10 +136,10 @@ not worth a second shop.
 
 | | |
 |---|---|
-| Hard | DPDT, ON-ON (two stable positions, no centre-off), **non-shorting** (break before make), panel mount for a 1 mm aluminium wall, solder lugs |
+| Hard | **4PDT**, ON-ON (two stable positions, no centre-off), **non-shorting** (break before make), panel mount for a 1 mm aluminium wall, solder lugs, open-contact dielectric rating ≥ 250 V |
 | Hard, too | **gold-plated contacts**: a dry circuit, silver is not acceptable. Wanted: a **locking lever** (pull to switch), so DIRECT is not selected by accident; gold-plated contacts because the current is microamps and silver contacts can grow a film that conducts unevenly at such currents |
-| First choice | a miniature toggle of that kind from APEM's 5000 or C&K's 7000 series, both of which offer locking levers and gold contacts as options; record the exact part number, price and panel hole diameter. A plain silver-contact toggle (Knitter MTA 206, house brands) works, but is the second choice |
-| Not now | the **Omron G6A-274P-ST-US DC12** relay keeps its footprint on the board but is not bought until the matrix controller exists; if a shop has it cheaply, note the price for later |
+| First choice | **APEM 5666CDB**: 4PDT ON-ON, 1/4-40 bushing, solder lugs, gold-plated contacts (rated 0.4 VA at 20 V, which is a switching rating: the filter is switched with the amplifier off). Otherwise a 4PDT from APEM's 5000 or C&K's 7000 series with gold contacts; record the exact part number, price and the dielectric rating between open contacts |
+| Not any more | the Omron G6A-274P relay: its footprint was dropped, a supply line has no place in the filter |
 
 ### 1.8 Connectors
 
@@ -173,8 +175,8 @@ pieces, ENIG not required. Quote the price with shipping to Germany at the time 
    220 pF is settled. Give part numbers and prices.
 4. **Mouser stock** for every "0 in stock" and "back order" line above: Würth 7447480102,
    Vishay PAC500005000FAC000, Vishay KP1830122633, Kemet PFR5472F630J13L4BULK.
-5. **Omron G6A-274P-ST-US DC12** price at Mouser, Reichelt and LCSC, for later (Reichelt lists
-   Omron signal relays under its own names; search "G6A-274P"). Not needed for the first build.
+5. **The 4PDT toggle with gold contacts** (APEM 5666CDB or equivalent) at Mouser, RS and
+   Reichelt: price, stock, and the dielectric rating between open contacts from the data sheet.
 6. **Two BNC leads**, male to male, 50 Ω, 20-30 cm, equal length, for the filter's output to
    the QA403's L+ and L−: a shop and a price. (The QA403 is connected by cable; its front-panel
    BNC pitch does not matter.)

@@ -13,11 +13,11 @@ female XLR and a dual banana pair in, a male XLR out; the QA403 is fed through a
 XLR-to-two-BNC lead.
 **The topology and the impedance level stay as they are** - the design is a faithful copy of the
 AUX-0025 and nothing found below beats it for the money. What changes: the **20 kHz knee gets a
-trim**, the **pad becomes 20:1**, switched by a toggle today and a relay once the matrix drives
+trim**, the **pad becomes 20:1**, switched by a 4PDT toggle that takes it off the output in DIRECT
 it, the **inductors are the unshielded ±5 % drum cores** V2 measured, and the **voltage rating
 is stated honestly** as a curve rather than a number. The reasoning follows. (Revised on
-2 November 2026 after a second outside review: the pad's permanent load, leg matching, the
-rating above 70 kHz, the coil, and the relay footprint.)
+2 November 2026 after a second outside review: the pad's load and leg matching, the rating
+above 70 kHz and the coil; the relay footprint was then dropped for a passive 4PDT toggle.)
 
 ## What the filter is for, on a QA403
 
@@ -96,10 +96,11 @@ netlist above is right.
 repo quotes this as "±0.05 dB" by centring it. The AUX-0025 values give +0.075 dB; with the
 analyzer's 100 kΩ and about 185 pF of input plus cable it is +0.05 dB, and AP then trims each leg
 to flat with the pot. The −3 dB point is 58 kHz. Load dependence is only insertion loss:
-−0.05 dB into 100 kΩ, −0.1 into 50 kΩ, −0.5 into 10 kΩ, with the same shape. **On this board
-the pad's 21 kΩ never leaves the output**, so in DIRECT the filter works into 100 kΩ ‖ 21 kΩ =
-17.4 kΩ: **−0.30 dB, a ratio of 1.035:1**, not the −0.05 dB of a bare filter (`build_tables()`
-prints it). The trim is done in place and absorbs the shape; the ratio is measured like the pad's.
+−0.05 dB into 100 kΩ, −0.1 into 50 kΩ, −0.5 into 10 kΩ, with the same shape. **This board takes
+the pad off the output in DIRECT** (two switch poles per leg), so DIRECT is the bare filter into
+the analyzer, −0.05 dB or 1.006:1, as on the AUX-0025. An intermediate version left the pad's
+21 kΩ on the output in both positions; that cost 0.30 dB and, through the trim, 14 dB of
+rejection at 50 Hz (`build_tables()` and `cmrr()` print both positions).
 
 **Stop band.** −53.6 dB at 250 kHz, a shelf at −52 to −58 dB through 500 kHz (the bypass
 resistor across each inductor sets it), −69 dB at 1 MHz, then falling 12 dB per octave. The
@@ -138,23 +139,26 @@ percentile of the common mode that reaches the analyzer as difference:
 
 | Parts (each leg trimmed alone in DIRECT) | 50 Hz | 1 kHz | 10 kHz | 20 kHz | 100 kHz |
 |---|---|---|---|---|---|
-| coils ±5 %, pad all 0.1 % (**as built**), DIRECT | −59 dB | −57 dB | −38 dB | −31 dB | −15 dB |
+| coils ±5 %, pad all 0.1 % (**as built**), DIRECT (pad off) | **−74 dB** | −58 dB | −38 dB | −31 dB | −15 dB |
 | the same, PAD | **−52 dB** | −52 dB | −38 dB | −31 dB | −15 dB |
 | pad with 1 % upper arms (rev A as first drawn), PAD | **−36 dB** | −36 dB | −35 dB | −31 dB | −15 dB |
-| coils ±20 % (the WE-TIS as JLCPCB lists it), DIRECT | −49 dB | −47 dB | −29 dB | −22 dB | **−5 dB** |
-| coils ±5 % paired to 1 % between the legs, DIRECT | −61 dB | −58 dB | −40 dB | −33 dB | −19 dB |
-| coils ±5 %, untrimmed, DIRECT | −80 dB | −55 dB | −35 dB | −29 dB | −15 dB |
+| pad left on the output in DIRECT (the intermediate version) | −59 dB | −57 dB | −38 dB | −31 dB | −15 dB |
+| coils ±20 % (the WE-TIS as JLCPCB lists it), DIRECT | −64 dB | −49 dB | −28 dB | −21 dB | **−5 dB** |
+| coils ±5 % paired to 1 % between the legs, DIRECT | −76 dB | −60 dB | −40 dB | −33 dB | −19 dB |
+| coils ±5 %, untrimmed, DIRECT | −81 dB | −55 dB | −35 dB | −29 dB | −15 dB |
 
 Three things follow. The pad's resistors must match between the legs, not only be known: with
 1 % upper arms the pad position let 1.5 % of any hum or common-mode residue through, so all
 three pad resistors are now 0.1 % / 15 ppm parts of one family. The coils' tolerance is what
 sets the top of the band, which is the second reason (after linearity) for the ±5 % part.
 And trimming each leg alone costs low-frequency rejection: the legs end up with different R1
-(484-540 Ω) against the pad's permanent 21 kΩ, a 0.1-0.3 % gain difference, where the
-untrimmed legs were better matched at DC. Pairing the coils between the legs (an LCR meter,
-four coils, ten minutes) buys 2-4 dB; it is worth doing when the coils are soldered by hand, and
-not a reason to give up JLCPCB's assembly. Bridged amplifiers put little common mode in the
-audio band; −52 dB at mains frequency is a figure to measure (test 3 below), not to assume.
+(495-534 Ω) against whatever loads the output, a gain difference of up to 0.3 % against the
+pad's 21 kΩ but only 0.02 % against the analyzer's 100 kΩ - the main reason the pad comes off
+the output in DIRECT. In PAD it is on, so PAD stays at −52 dB at mains frequency. Pairing the
+coils between the legs (an LCR meter, four coils, ten minutes) buys 2-4 dB; it is worth doing
+when the coils are soldered by hand, and not a reason to give up JLCPCB's assembly. Bridged
+amplifiers put little common mode in the audio band; these are figures to measure (test 3
+below), not to assume.
 
 **Dissipation, and the honest voltage rating.** The shunt capacitors draw current at the top
 of the band, and all of it flows through R1. In V2, with its single 500 Ω resistor:
@@ -307,52 +311,38 @@ tolerance is not about knowing the ratio (that is measured) but about the two le
 same one: the analyzer subtracts the legs before anything can correct them (see "Leg matching").
 The first draw of rev A had 1 % / 50 ppm upper arms and would have let −36 dB of common mode
 through in PAD, and drifted against the cold 15 ppm lower arm in a power sweep. Loading on the
-filter is 21 kΩ, in both switch positions. At 85 V the pair dissipates 0.33 W, 0.16 W each; at
+filter is 21 kΩ in PAD and nothing in DIRECT. At 85 V the pair dissipates 0.33 W, 0.16 W each; at
 63 V, 0.18 W. Half their 0.25 W rating is reached at 74 Vrms per leg, which is the board's
 low-frequency rating.
 
-The switch is a **DPDT toggle in the front wall, wired into the footprint of a DPDT signal relay
-(Omron G6A-274P)** that sits on the board, **unpopulated**, straight below it. (An earlier
-version had a separate 2 × 3 header for the toggle, as the original had; it hung a stub on the
-output, and the relay's holes take the same six wires.) A toggle because today nothing exists to
-drive a relay: the QA403 cannot (its front expansion connector carries I2S and I2C for digital
-accessories and a 3.2 V supply good for 20 mA, no switchable lines, and QuantAsylum documents
-no software control of those pins), and a relay switched by a toggle through a wall adapter is
-a toggle with extra steps. When the matrix controller exists, the relay is soldered in, the
-toggle's wires come out of its holes, and the position is set by the measurement software before
-every step; until then the two positions are two probe settings, named by what the operator
-sees, and a gain check between steps catches a switch that did not move.
+The switch is a **4PDT ON-ON toggle in the front wall**, non-shorting, with **gold contacts**
+(APEM 5666CDB or similar), two poles per leg, its ten wires soldered into W1, a field of ten
+holes straight below it. There is **no relay and no supply** in the box: an earlier draw had
+the footprint of an Omron G6A relay for a later matrix controller, but a 12 V line from a wall
+adapter or a controller would bring a second ground into the measurement ground (the leakage of
+a switch-mode supply's Y capacitor, digital noise) right beside the output, which is not what a
+passive reference filter should carry. Switching by a matrix belongs in a separate attenuator
+behind the filter. Until then the two positions are two probe settings, named by what the
+operator sees, and a gain check between steps catches a switch that did not move.
 
-One pole per leg is enough: the pad hangs on the filter output permanently (21 kΩ: in DIRECT
-0.30 dB of insertion loss, a ratio of 1.035 that is measured like the pad's) and the switch only
-chooses whether the analyzer sees the filter output or the 1 kΩ tap. So the whole board needs
-one DPDT - one pole for each leg - and the relay's footprint has exactly that, in two rows of
-three contact holes, common first. **Omron draws the G6A's terminals in bottom view**; the
-footprint is drawn from the top, mirrored from Omron's drawing, so that pins 1 → 8 → 9 → 16 run
-anticlockwise as on any DIP. (The first draw of rev A had Omron's bottom view as it stands:
-the polarised coil would have been reversed, and the relay would never have pulled in on
-+12 V at J9 pin 1. `check_release.py` now checks the sense of rotation.)
+Two poles per leg, so that **DIRECT is the bare filter**, as on the AUX-0025 and as in V2:
 
-| K1 pin | Row | Net | Toggle lug |
+| Pole (per leg) | Common | PAD throw | DIRECT throw |
 |---|---|---|---|
-| 13 | back, + leg | **output XLR pin 2** | pole 1, common |
-| 11 | back, + leg | pad tap, + leg (normally closed) | pole 1, "pad" |
-| 9 | back, + leg | filter output, + leg (direct, normally open) | pole 1, "direct" |
-| 4 | front, − leg | **output XLR pin 3** | pole 2, common |
-| 6 | front, − leg | pad tap, − leg (normally closed) | pole 2, "pad" |
-| 8 | front, − leg | filter output, − leg (direct, normally open) | pole 2, "direct" |
-| 16, 1 | back, front | relay coil − and +: J9 pin 2 and pin 1 (+12 V); D1's cathode on pin 1 | - |
+| a, pad feed | pad top (PT) | filter output (F) | not connected |
+| b, output | output XLR (pin 2 for +, 3 for −) | pad tap (PAD) | filter output (F) |
 
-The toggle wires go by the silkscreen (+COM, +PAD, +DIR on the back row, −COM, −PAD, −DIR on
-the front), which is the same holes as before; only the relay's pin numbers moved. The toggle
-should have **gold contacts**: at 100 kΩ the switch carries microamperes, a dry circuit, where
-silver contacts grow a sulphide film that makes level steps and low-level distortion.
- **At rest
-the relay selects the pad**: with the matrix controller off or unplugged the analyzer sees a
-twentieth of the amplifier, which is the safe default. The repo's header is laid out
-differently (two poles per leg, and its second pole's common on pin 6 with the two "direct" pins
-on 3 and 4), so a toggle wired pin for pin to that board leaves the output open in one position;
-worth knowing for anyone who builds the repo's board as is.
+In PAD, pole a puts the pad on the output and pole b takes the tap; in DIRECT the pad hangs
+from nothing and the output is F. W1's holes are two rows of five in the same order, OUT, F, F,
+PT, PAD: the back row for the + leg, the front row for the − leg, each labelled on the
+silkscreen; the two F holes of a leg are joined on the board, one for each pole's wire. A
+toggle breaks before it makes, so in either direction the output is open for a moment and never
+sees the unpadded voltage through the pad's tap; if pole a fails open in PAD, the output sees a
+1 kΩ to ground, which is safe. At 100 kΩ the switch carries microamperes, a dry circuit, where
+silver contacts grow a sulphide film that makes level steps and low-level distortion: gold is a
+requirement, not an option. The open contacts see up to 120 V peak between F and the tap; a
+miniature toggle's dielectric rating (several hundred volts between open contacts) covers it,
+but check the data sheet of the part bought.
 
 With that, the bench's L-pad is retired. The 5 W block runs direct through the filter, every
 power sweep above about 35 Vrms runs through 20:1, and choosing the probe per step becomes the
@@ -404,7 +394,7 @@ every coil in the same orientation.
 **Assembly.** The board is meant to be **assembled by JLCPCB, through-hole parts included**,
 and nothing is hand-selected. The Monte Carlo that decides this: 200 boards with the coils
 anywhere within their tolerance and the capacitors anywhere within ±5 %, each leg then trimmed
-with R1 alone, in DIRECT with the pad's 21 kΩ on the output. The coil as fitted is the
+with R1 alone, in DIRECT, into the analyzer's 100 kΩ. The coil as fitted is the
 unshielded Würth WE-TI 7447480102, ±5 % with 1.15 Ω of winding resistance.
 
 | Parts as delivered | Untrimmed, worst leg | Trimmed, worst leg | R1 range the trim needed |
@@ -416,7 +406,7 @@ unshielded Würth WE-TI 7447480102, ±5 % with 1.15 Ω of winding resistance.
 Within the trimmer's reach the trimmed residual is the same whatever the parts: it is the shape
 of the curve, not the tolerance, that sets it. What the tolerance does set is how well the two
 legs match at the top of the band (see "Leg matching"). So the
-whole board goes through assembly, and the hand work is: drill the front wall, wire the toggle,
+whole board goes through assembly, and the hand work is: drill the front wall, wire the toggle (ten wires),
 turn two trimmers, measure the pad ratio. Of the five boards, two are assembled; JLCPCB lets
 the assembly count differ from the board count.
 
@@ -485,13 +475,10 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 2 | 24.9 Ω 1 % 0.25 W, Yageo MFR-25FBF52-24R9 | output | C3542579 | | $0.03 |
 | 4 | TE YR1B10KCC, 10.0 kΩ **0.1 % 15 ppm** 0.25 W | pad, upper arm | C1364313 | 2 397 in stock at JLCPCB on 2 November 2026; the same family as the lower arm, so the legs' ratios match to 0.2 % and track in temperature. 9.53 kΩ in 0.1 % is stocked nowhere through-hole; 2 × 10 kΩ over 1 kΩ gives 21.8:1 into the analyzer | $0.50 |
 | 2 | TE YR1B1K0CC, 1.00 kΩ 0.1 % 15 ppm | pad, lower arm | C1364308 | in stock | $0.50 |
-| 1 | 1 × 2 pin header 2.54 mm | relay coil | C492401 | | $0.02 |
-| 1 | 1N4148 DO-35 | flyback | C258182 | | $0.03 |
-| 0 | Omron G6A-274P-ST-US DC12 | K1, footprint only | C129439 | in stock at $2.74 when the matrix needs it | - |
 | 1 | Neutrik NC3FAAH2, female XLR, horizontal PCB | J4, input | C368522 | in stock at LCSC; AP's input connector | $0.84-1.80 |
 | 1 | Neutrik NC3MAAH, male XLR, horizontal PCB | J5, output | C368463 | in stock at LCSC; AP's output connector; the QA403 hangs on an XLR-to-two-BNC lead | $0.79-1.80 |
 | 3 | Cliff FCR7350 R / B / G, 4 mm safety socket, PCB | J1-J3, at 19.05 mm for a dual banana | C6041087 / C6555263 / C6041085 | pre-order at $11-12 each at LCSC; 6.80 € at Digi-Key - buy there and solder the three by hand if the JLCPCB price stands | $11 |
-| 1 | DPDT toggle ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing | pad switch, in the front wall | - | wired into K1's holes; a dry circuit, silver contacts are not suitable | 3-8 € |
+| 1 | **4PDT** toggle ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; APEM 5666CDB or similar | pad switch, in the front wall | - | ten wires into W1; a dry circuit, silver contacts are not suitable; not a JLCPCB part (RS, Mouser) | 8-15 € |
 | 4 | screws for the two XLR flanges | the front wall | - | M3 as drawn on the front wall (3.2 mm holes); check against Neutrik's drawing of the NC3FAAH2 / NC3MAAH whether the flange takes M3 through or a 2.9 mm self-tapping screw, and drill to suit | 0.5 € |
 | 1 | Hammond 1444-862 chassis + 1434-86 bottom plate | box | - | flat 1 mm aluminium walls; all connectors in the front long wall | 31 € |
 | 5 | M3 spacers 10 mm + screws | board on the bottom plate; the one under H5 metal, bonding ground to the chassis | - | | 1 € |
@@ -519,7 +506,7 @@ loaded against that ground, not only across its terminals:
 
 | Each input to ground | DC | 20 kHz | 100 kHz | 400 kHz | 1 MHz |
 |---|---|---|---|---|---|
-| Impedance, per leg | 21 kΩ (the pad; 17 kΩ with the QA403 on direct) | 870 Ω | 1.3 kΩ | 1.2 kΩ | 750 Ω |
+| Impedance, per leg | 21 kΩ in PAD (the pad), 100 kΩ in DIRECT (the QA403) | 870 Ω | 1.3 kΩ | 1.2 kΩ | 750 Ω |
 | Current for 10 V of common-mode residue | - | 12 mA | 8 mA | 9 mA | 13 mA |
 
 A BTL amplifier with BD modulation can carry several volts of carrier as common mode, and that
@@ -542,9 +529,10 @@ the risk: the ferrite's linearity, the ground with bridged amplifiers, heat, and
 Each test names the instruments it needs; a QA403, an amplifier, a scope with a function
 generator (or a nanoVNA) and a thermometer cover all of them.
 
-**0. Before power.** Check the toggle wiring against the K1 table with an ohmmeter: from the
-output XLR's pin 2 (then 3) to pin 1, inputs open, about 1.0 kΩ in PAD and about 21 kΩ in
-DIRECT. Each input reads about 21 kΩ to the chassis (the pad), and nothing lower.
+**0. Before power.** Check the toggle wiring against the switch table with an ohmmeter: from
+the output XLR's pin 2 (then 3) to pin 1, inputs open, about 1.0 kΩ in PAD and open (megohms)
+in DIRECT. Each input reads about 21 kΩ to the chassis in PAD and open in DIRECT, and nothing
+lower in either.
 
 **1. Trim**, **through an amplifier, not the generator** (the QA403's output is 100 Ω, which
 would move the knee by half a decibel). Any amplifier does - the next device under test, or a
@@ -559,14 +547,14 @@ the amplifier to the black input, ground the red one, and trim the − leg. Mark
 **2. Pad ratio, over frequency.** The same set-up, PAD position, at 20 Hz, 1 kHz and 20 kHz:
 the ratio is what the measurement software divides out of every level, and its change over the band should stay under
 0.02 dB (the pad's own capacitance and the lead's 30 pF form a pole in the megahertz). The
-DIRECT path is a probe too, with a ratio of about 1.035 (the pad's 21 kΩ stays on the output).
-Trim with the analyzer lead that will be used: its capacitance sits on the output in DIRECT and
-behind the pad's 950 Ω in PAD, so a board trimmed flat in DIRECT with 185 pF on it reads
-+0.026 dB at 20 kHz in PAD - record both, or divide both out.
+DIRECT path is a probe too, with a ratio of about 1.006. Trim with the analyzer lead that will
+be used: its capacitance sits on the output in DIRECT and behind the pad's 950 Ω in PAD, and
+the pad itself loads the filter in PAD only, so a board trimmed flat in DIRECT with 185 pF on it
+reads +0.025 dB at 20 kHz in PAD - record both, or divide both out.
 
 **3. Leg symmetry.** Both inputs joined and driven together against the green socket (pure
 common mode), output read differentially: that is the common-mode-to-differential conversion of
-the built board, in DIRECT and in PAD. The simulation expects, trimmed, −59 / −52 dB at 50 Hz
+the built board, in DIRECT and in PAD. The simulation expects, trimmed, −74 / −52 dB at 50 Hz
 (DIRECT / PAD), −31 dB at 20 kHz and −15 dB at 100 kHz; trimming matches the legs' amplitude at
 20 kHz, not their phase, so record the curve rather than assume it. If it is much worse at
 50 Hz, measure the pads' ratios leg against leg; if at 20-100 kHz, measure the coils.
@@ -613,7 +601,7 @@ DIRECT and in PAD, with the board in the closed chassis and out of it. Expect 45
 node; a closed-chassis reading much better than an open one means the chassis is doing work
 the layout should.
 
-**8. The switch.** Switch only with the amplifier muted or off: the toggle breaks before it makes
+**8. The switch.** Switch only with the amplifier off: the toggle breaks before it makes
 (specify a non-shorting part with gold contacts), so the analyzer sees an open input for a
 moment, never the unpadded voltage, but DIRECT at full power is over the QA403's 40 Vrms. A toggle with a locking
 lever (pull to switch) keeps DIRECT from being selected by accident. Check both positions under
@@ -639,8 +627,8 @@ the top of this document can be replaced by measured ones.
   "AES17 filter" means the class-D pre-filter that sits in front of an analyzer's own AES17
   low-pass, as the AUX-0025 does, not that low-pass itself.
 - **DIRECT passes the amplifier's full voltage** to the male XLR, whose pins are recessed but are
-  the analyzer's input. A locking toggle and switching only with the amplifier muted are the
-  protection; the pad position is the one the relay rests in, too.
+  the analyzer's input. A locking toggle and switching only with the amplifier off are the
+  protection.
 - **The chassis is the filter's ground**, bonded at H5, and through the output lead the QA403's.
   It is a shield, not a protective earth; the bench's earthing is the amplifier's and the
   computer's business.
@@ -662,11 +650,12 @@ Whatever runs the QA403 behind this filter should do three things:
   42 Vrms through, or that ignores a bridged amplifier's half-supply DC, is a check that does not
   protect the instrument.
 - **A probe needs a frequency response, not only a ratio.** The filter's residual ±0.03 dB, and
-  the −0.30 dB insertion loss in DIRECT, are known once per board and could be divided out of the
+  the −0.05 dB insertion loss in DIRECT, are known once per board and could be divided out of the
   frequency response row the way the ratio is divided out of every level; the row would then
   show the amplifier and not the filter. Everything else (THD+N, SNR, power) is unaffected.
-- **Per-step probe choice.** Direct for the audio block, 20:1 for the sweeps, in one run. Once
-  the relay is populated and the matrix drives it, this is the normal case.
+- **Per-step probe choice.** Direct for the audio block, 20:1 for the sweeps, in one run. With
+  the toggle that means a prompt to the operator between steps and a gain check after it; a
+  separate, matrix-driven attenuator behind the filter would make it automatic.
 
 ## The original author's three planned changes
 
@@ -744,11 +733,11 @@ before anything was ordered. Every number in it was re-simulated here; what it c
 
 | Point | Verdict | What was done |
 |---|---|---|
-| K1's footprint drawn from Omron's bottom view, so mirrored: the polarised coil reversed | **right** - a board bug | footprint redrawn in top view, poles reassigned so the toggle holes keep their nets, J9 and D1 turned; `check_release.py` checks the sense of rotation |
+| K1's footprint drawn from Omron's bottom view, so mirrored: the polarised coil reversed | **right** - a board bug | first redrawn in top view; then the relay, J9 and D1 were dropped altogether for a passive 4PDT toggle (no supply line into the filter) |
 | `rating()` checked neither R4 nor R6; 85 Vrms claimed above 100 kHz | **right** | both now 0.6 W in the same footprint; `rating()` checks every resistor; the rating is 75 / 55 / 30 Vrms per leg |
-| the DIRECT model left out the pad's 21 kΩ: −0.30 dB, not −0.05 | **right** | the simulation models the pad in both positions; ratio 1.035 in the docs and on the schematic |
+| the DIRECT model left out the pad's 21 kΩ: −0.30 dB, not −0.05 | **right** | the pad now comes off the output in DIRECT (4PDT, two poles per leg): −0.05 dB again, as on the AUX-0025; the simulation models both positions |
 | 1 % upper pad arms: −36 to −39 dB of common mode in PAD, which no probe factor can correct | **right** | all pad resistors 0.1 % / 15 ppm, one family: −52 dB |
-| trimming each leg alone costs low-frequency rejection in DIRECT | **right**, smaller than claimed | −80 → −59 dB at 50 Hz; documented, pairing the coils recommended where they are hand-soldered |
+| trimming each leg alone costs low-frequency rejection in DIRECT | **right**, smaller than claimed | with the pad on the output −80 → −59 dB at 50 Hz; with it switched off in DIRECT −74 dB; pairing the coils recommended where they are hand-soldered |
 | shielded ferrite coils less linear than the unshielded drum | **plausible, unmeasured** | the unshielded ±5 % coil V2 measured is fitted; the shielded one is test 4's comparison. The "10-25 dB" in the review is not backed by a measurement either |
 | JLCPCB lists the WE-TIS at ±20 % | **right**, and worse than stated | ±20 % coils can need R1 below the network's 483 Ω; one more reason for the ±5 % coil |
 | the schematic generator did not read `design.py` (9.53 k, 390 p) | **right** | it does now, prints the design's hash, and `check_release.py` compares it |
@@ -760,5 +749,5 @@ before anything was ordered. Every number in it was re-simulated here; what it c
 | one ground plane, pin 1 on it; not AES48 | **by design** | the shunt capacitors need the analyzer's ground as their reference, as on the AUX-0025; "Ground, and bridged amplifiers" and test 5 cover the loop |
 | hum pickup with 66 mm between the legs | **plausible, unquantified** | test 4 now turns the box in the field |
 | F_N on the bottom past the pad tap | **negligible** | 0.2 pF from F_N into the 950 Ω tap is −90 dB at 20 kHz; the stop-band test in PAD would show more |
-| unfiltered J9, relay not fitted | **later** | for the matrix revision |
+| unfiltered J9, relay not fitted | **gone** | no relay, no J9: switching by a matrix belongs in a separate attenuator |
 | name and source-impedance limits | **right** | stated in the README and the safety section |

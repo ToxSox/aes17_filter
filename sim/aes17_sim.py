@@ -10,8 +10,8 @@ the half circuit is exact for a balanced drive):
                |                      |                       |
               GND                    GND                     GND
 
-The build itself (BUILD) adds the 20:1 pad, which this board leaves on the output in both switch
-positions, so the analyzer's load in DIRECT is 100k || 21k. Needs numpy only. Prints every table
+The build itself (BUILD) adds the 20:1 pad, which a 4PDT toggle connects to the output in PAD
+and takes off in DIRECT, where the analyzer's 100k is the only load. Needs numpy only. Prints every table
 quoted in the document (the common-mode Monte Carlo takes half a minute):
 
     python3 sim/aes17_sim.py
@@ -132,10 +132,10 @@ def monte_carlo(tolL, tolC, tolR, n=400, seed=1):
 
 # This build: the AUX-0025 values with two 220 pF for the 390 pF and the unshielded Wurth WE-TI
 # 7447480102 coils (1.15 ohm), AP's input network with a 500 ohm trimmer: 1k || 14k || (1k + RV),
-# and the 20:1 pad (2 x 10.0 k over 1.00 k) that hangs on the output in both switch positions.
+# and the 20:1 pad (2 x 10.0 k over 1.00 k), on the output in PAD only.
 BUILD = dict(AUX0025, C34=440e-12, Ldcr=1.15)
 PAD = (20e3, 1e3)
-DIRECT = dict(pad=PAD, tap=False)       # the analyzer on F, the pad still loading it
+DIRECT = dict()                         # the analyzer on F, the pad switched off
 PADDED = dict(pad=PAD, tap=True)        # the analyzer on the pad's tap
 
 
@@ -158,7 +158,7 @@ def trim(p, lo=440.0, hi=700.0, **kw):
 
 
 def build_tables():
-    print("== this build: the pad loads the output in both positions (QA403 100k, lead 185 pF) ==")
+    print("== this build: DIRECT (pad off) and PAD, into the QA403's 100k and a 185 pF lead ==")
     p = dict(BUILD, R1=trim(BUILD, **DIRECT))
     for label, kw in (("DIRECT, 100k", DIRECT), ("PAD, 100k", PADDED)):
         ref = transfer(np.array([1e3]), p, **kw)[0]
@@ -185,9 +185,10 @@ DERATE = 0.5
 
 
 def part_powers(f, p, rv, vin=1.0):
-    """Power in every resistor, and the trimmer's current, for vin per leg (DIRECT; the pad
-    dissipates the same in either position)."""
-    v = node_voltages(f, p, vin, **DIRECT)
+    """Power in every resistor, and the trimmer's current, for vin per leg, in PAD: the only
+    position in which the pad dissipates, and the one any voltage over the QA403's 40 Vrms is
+    measured in."""
+    v = node_voltages(f, p, vin, **PADDED)
     s = 2j * math.pi * f
     vnet = v[1] - v[2]
     i_c34 = (v[2] - v[4]) / (p['R3'] + 1 / (s * p['C34']))
@@ -238,7 +239,7 @@ def rating(verbose=True):
 
 def cmrr(n=500, seed=2):
     """Common mode in, difference out: both legs built from parts drawn within tolerance, each
-    trimmed on its own in DIRECT, then driven together. Prints the 95th percentile of
+    trimmed on its own in DIRECT (pad off), then driven together. Prints the 95th percentile of
     |H+ - H-| / |H| in dB, i.e. how much of a common-mode signal the QA403's differential input
     sees as signal, and the trimmed legs' worst passband deviation."""
     print(f"== common mode to difference, 95th percentile of {n} boards, each leg trimmed alone ==")
@@ -265,10 +266,10 @@ def cmrr(n=500, seed=2):
                 for k in ('R3', 'R5', 'R7', 'R9'):
                     q[k] *= 1 + rng.uniform(-0.01, 0.01)
                 pad = (PAD[0] * (1 + rng.uniform(-tol_pad, tol_pad)), PAD[1] * (1 + rng.uniform(-0.001, 0.001)))
-                h0 = transfer(freqs, q, pad=pad, tap=False)
-                q['R1'] = trim(q, pad=pad, tap=False)
-                legs.append((h0, transfer(freqs, q, pad=pad, tap=False), transfer(freqs, q, pad=pad, tap=True)))
-                ripple.append(np.abs(db(transfer(PASSBAND, q, pad=pad, tap=False)) - db(transfer(np.array([1e3]), q, pad=pad, tap=False))[0]).max())
+                h0 = transfer(freqs, q)
+                q['R1'] = trim(q)
+                legs.append((h0, transfer(freqs, q), transfer(freqs, q, pad=pad, tap=True)))
+                ripple.append(np.abs(db(transfer(PASSBAND, q)) - db(transfer(np.array([1e3]), q))[0]).max())
             for i, key in enumerate(res):
                 hp, hn = legs[0][i], legs[1][i]
                 res[key].append(np.abs(hp - hn) / np.abs((hp + hn) / 2))
