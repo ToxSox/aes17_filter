@@ -39,9 +39,9 @@ goal: no gain; an SMD version: dearer for small runs). In short:
 | Pad | 9 kΩ / 1 kΩ, two poles per leg, hand-wired toggle | 2 × 10 kΩ / 1 kΩ, all 0.1 % / 15 ppm (about 21.8:1), two poles per leg on a 4PDT toggle (gold contacts): in DIRECT the pad is off the output and the filter sees the analyzer alone, as on the AUX-0025. | the QA403 clips at 40 Vrms and loses 20 dB of floor above its +18 dBV range; 20:1 keeps a 2 kW amplifier below both. 0.1 % in every arm because the QA403 subtracts the legs in its analogue input: 1 % arms would let −36 dB of common mode through |
 | Connectors | XLR in and out, banana test points | the AUX-0025's: female XLR plus a dual-banana pair and a common in, male XLR out, through the chassis' front wall | one set of cables tests this filter and an AUX-0025 alike; a QA403 hangs on an XLR-to-two-BNC lead |
 | Board | 175 × 90 mm, four layers | 158 × 124 mm, four layers, generated from a data file; all connectors on the front long edge; whole ground planes, 0.8 mm clearance, pad and switch at the output connector, one chassis bond at the input | the filter hangs with its connectors towards the operator, as the AUX-0025's front panel; the layout rules are in [hardware/README.md](hardware/README.md#layout-rules-it-follows) |
-| Rating | "140 Vrms continuous" | a curve, per leg to ground: 75 Vrms to 15 kHz (the pad), 55 Vrms at 20 kHz (the trimmer's current), 30 Vrms from 30 kHz to 1 MHz (trimmer, then the 0.6 W resistors around the coils) | at 20 kHz the shunt capacitors draw current through the input network: V2's single resistor takes 13 W at 140 V, and this build's trimmer reaches its rating at 56 V; above 70 kHz the stop band's current flows in R4 and R6 |
+| Rating | "140 Vrms continuous" | a curve, per leg to ground: 75 Vrms to 15 kHz (the pad), 55 Vrms at 20 kHz (the trimmer's current), 30 Vrms from 30 kHz to 1 MHz (trimmer, then the 0.6 W resistors around the coils); several tones at once (audio over a class-D carrier) share it: the sum of (V / Vmax)² stays at or below 1 | at 20 kHz the shunt capacitors draw current through the input network: V2's single resistor takes 13 W at 140 V, and this build's trimmer reaches its rating at 56 V; above 70 kHz the stop band's current flows in R4 and R6 |
 | Coils | Würth 7687480102, unshielded ±5 % | the same Würth 7687480102 | the most linear ferrite coil of the size, and the tightest; the shielded WE-TIS fits the same footprint for comparison |
-| Assembly | hand-built | JLCPCB for everything it has in stock (22 parts per board); coils, film capacitors, the two 412 Ω and the Cliff sockets bought locally and soldered by hand | JLCPCB had those only on pre-order (19-21 working days); the trimmer absorbs the tolerances, and pairing coils and capacitors between the legs gains 2-4 dB of common-mode rejection |
+| Assembly | hand-built | JLCPCB for everything it has in stock (22 parts per board); coils, film capacitors, the two 412 Ω and the Cliff sockets bought locally and soldered by hand | JLCPCB had those only on pre-order (19-21 working days); the trimmer absorbs the tolerances in the frequency response; pairing coils **and** capacitors between the legs to 1 % gains 14 dB of common-mode rejection at 20-100 kHz (one of the two alone 2-4 dB) |
 
 ## What is in the tree
 
@@ -65,7 +65,7 @@ One leg against ground, 100 kΩ load, relative to 1 kHz; the script prints the f
 | 500 kHz | −57.5 dB | −58.4 dB |
 | 1 MHz | −69 dB | −70 dB |
 | Insertion loss | −0.05 dB | −0.05 dB direct (the pad is switched off) |
-| Common mode in the difference, 95 % of boards | - | −74 dB at 50 Hz direct, −52 dB through the pad, −31 dB at 20 kHz |
+| Common mode in the difference, 95 % of boards | - | −74 dB at 50 Hz direct, −52 dB through the pad, −31 dB at 20 kHz; −45 dB with coils and capacitors paired |
 | Source noise at the analyzer | −124 dBV direct | −124 dBV direct, −122 dBV through the pad |
 | Input resistor at 63 Vrms, 20 kHz | 2.7 W | 1.4 W in each of two |
 

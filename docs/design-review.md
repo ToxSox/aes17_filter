@@ -139,13 +139,16 @@ percentile of the common mode that reaches the analyzer as difference:
 
 | Parts (each leg trimmed alone in DIRECT) | 50 Hz | 1 kHz | 10 kHz | 20 kHz | 100 kHz |
 |---|---|---|---|---|---|
-| coils ±5 %, pad all 0.1 % (**as built**), DIRECT (pad off) | **−74 dB** | −58 dB | −38 dB | −31 dB | −15 dB |
-| the same, PAD | **−52 dB** | −52 dB | −38 dB | −31 dB | −15 dB |
-| pad with 1 % upper arms (rev A as first drawn), PAD | **−36 dB** | −36 dB | −35 dB | −31 dB | −15 dB |
+| coils ±5 %, pad all 0.1 % (**as built**), DIRECT (pad off) | **−74 dB** | −58 dB | −37 dB | −31 dB | −14 dB |
+| the same, PAD | **−52 dB** | −52 dB | −38 dB | −31 dB | −14 dB |
+| pad with 1 % upper arms (rev A as first drawn), PAD | **−37 dB** | −37 dB | −35 dB | −30 dB | −14 dB |
 | pad left on the output in DIRECT (the intermediate version) | −59 dB | −57 dB | −38 dB | −31 dB | −15 dB |
 | coils ±20 % (the WE-TIS as JLCPCB lists it), DIRECT | −64 dB | −49 dB | −28 dB | −21 dB | **−5 dB** |
-| coils ±5 % paired to 1 % between the legs, DIRECT | −76 dB | −60 dB | −40 dB | −33 dB | −19 dB |
-| coils ±5 %, untrimmed, DIRECT | −81 dB | −55 dB | −35 dB | −29 dB | −15 dB |
+| coils ±5 % paired to 1 % between the legs, DIRECT | −76 dB | −60 dB | −40 dB | −33 dB | −18 dB |
+| film capacitors paired to 1 %, coils not, DIRECT | −77 dB | −61 dB | −41 dB | −33 dB | −17 dB |
+| **coils and capacitors paired to 1 %**, DIRECT | −88 dB | −72 dB | **−52 dB** | **−45 dB** | **−29 dB** |
+| the same, PAD | −53 dB | −53 dB | −51 dB | −45 dB | −29 dB |
+| coils ±5 %, untrimmed, DIRECT | −81 dB | −55 dB | −35 dB | −29 dB | −14 dB |
 
 Three things follow. The pad's resistors must match between the legs, not only be known: with
 1 % upper arms the pad position let 1.5 % of any hum or common-mode residue through, so all
@@ -155,8 +158,13 @@ And trimming each leg alone costs low-frequency rejection: the legs end up with 
 (495-534 Ω) against whatever loads the output, a gain difference of up to 0.3 % against the
 pad's 21 kΩ but only 0.02 % against the analyzer's 100 kΩ - the main reason the pad comes off
 the output in DIRECT. In PAD it is on, so PAD stays at −52 dB at mains frequency. Pairing the
-coils between the legs (an LCR meter, four coils, ten minutes) buys 2-4 dB; it is worth doing
-when the coils are soldered by hand, and not a reason to give up JLCPCB's assembly. Bridged
+legs' parts is where the top of the band is won, but only if **both** coils and film
+capacitors are paired: the trimmer matches the legs' amplitude at 20 kHz, not their phase, and
+the phase of each stage is set by its L and C together, so pairing one of the two buys 2-4 dB
+and pairing both 14 dB (−31 → −45 dB at 20 kHz, −14 → −29 dB at 100 kHz). Coils and capacitors
+are soldered by hand anyway; hardware/README.md shows how to pair them with the QA403 when no
+LCR meter is at hand. An outside review found that the earlier table had only the coils-paired
+case and the build notes called pairing "not required"; both are corrected. Bridged
 amplifiers put little common mode in the audio band; these are figures to measure (test 3
 below), not to assume.
 
@@ -194,7 +202,7 @@ MBB0207** in the same 0207 body and footprint. The parts that set it:
 
 - **The pad, below 15 kHz.** The 10 kΩ upper arms are 0.25 W precision parts (TE YR1B, chosen
   for 0.1 % and 15 ppm, see "The pad"); at half their rating they take 74 Vrms per leg. The
-  coils' 120 V (read as node to ground, 85 Vrms) is no longer the limit.
+  coils' 400 V (WE-TI HV, read as node to ground) never is.
 - **The trimmer, above 12 kHz.** The Bourns 3296 is rated 0.5 W at 70 °C over its whole 500 Ω
   element, and used as a rheostat it is the current through the part in use that the element
   takes: √(0.5 W / 500 Ω) = 31.6 mA. It is worst with the trimmer near zero (network 484 Ω), and
@@ -202,6 +210,14 @@ MBB0207** in the same 0207 body and footprint. The parts that set it:
   the input network sees almost the whole voltage. AP's 53 Vrms from 20 kHz is the same limit.
 - **R6 and R4, above 70 kHz**, as above.
 - The 3 W resistors, at half their rating in a closed box, would allow 63-68 Vrms at 20 kHz.
+
+**Several frequencies at once.** The curve is for one sine. A filterless class-D output carries
+its carrier all the time, under the audio, and a two-tone test is two sines: the powers in
+every resistor add, and so do the squared currents in the trimmer. The rule is therefore
+**the sum of (V / Vmax(f))² over the tones at or below 1**, each V per leg and Vmax read from
+the curve. A 20 Vrms carrier at 500 kHz (Vmax 34 V) uses 35 % of the budget and leaves
+55 × √0.65 ≈ 44 Vrms at 20 kHz; a carrier of 2 V, as an amplifier with its own output filter
+has, uses 0.3 % and changes nothing. `rating()` prints the rule under the table.
 
 An earlier version of this document said 85 Vrms at 20 kHz, counting only the resistors; that
 was wrong, and so was the 85 Vrms above 100 kHz that the second version printed. What it means for this bench: a BTL amplifier puts half its differential voltage on
@@ -382,7 +398,7 @@ trim range both reward. What it costs: coupling between the drum cores. Simulate
 coupling as a mutual inductance, k = 1 % between L1 and L2 (38 mm apart, axes parallel) moves
 the stop band by 1-1.5 dB, and hum pickup from a nearby transformer is test 4's second half.
 Pairing the coils by measurement is optional (see "Leg matching"). On the board as laid out the two legs' coils
-are **66 mm apart**, the same as V2, and the two coils of one leg **30 mm**, against V2's
+are **66 mm apart**, the same as V2, and the two coils of one leg **38 mm** (centre to centre), against V2's
 165 mm; the latter is the pair the simulation says matters least, the coils of one leg being in
 series, and the nearest connector pin is 50 mm away. Both legs are laid out as mirror images,
 every coil in the same orientation.
@@ -482,7 +498,7 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 1 | **4PDT** toggle ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; APEM 5666CDB or similar | pad switch, in the front wall | - | ten wires into W1; a dry circuit, silver contacts are not suitable; not a JLCPCB part (RS, Mouser) | 8-15 € |
 | 4 | screws for the two XLR flanges | the front wall | - | M3 as drawn on the front wall (3.2 mm holes); check against Neutrik's drawing of the NC3FAAH2 / NC3MAAH whether the flange takes M3 through or a 2.9 mm self-tapping screw, and drill to suit | 0.5 € |
 | 1 | Hammond 1444-862 chassis + 1434-86 bottom plate | box | - | flat 1 mm aluminium walls; all connectors in the front long wall | 31 € |
-| 5 | M3 spacers 10 mm + screws | board on the bottom plate; the one under H5 metal, bonding ground to the chassis | - | | 1 € |
+| 7 | M3 spacers 10 mm + screws | board on the bottom plate; the one under H5 metal, bonding ground to the chassis | - | | 1 € |
 | | four-layer PCB 158 × 124 mm, five pieces, two assembled | | | JLCPCB | see README |
 
 JLCPCB's assembly terms, from their help pages in October 2026: minimum two boards; Economic
@@ -515,7 +531,14 @@ current has to return to the amplifier somewhere. **The green socket is the path
 connect it to the amplifier's ground (its power ground, or its chassis if that is where the
 output stage is referenced).** Left open, the common-mode current returns through the analyzer
 lead, the QA403, USB, the computer and the mains earth to the amplifier: a ground loop that the
-measurement sees. Neither input is ground: on a BTL amplifier the black terminal is an output
+measurement sees. So the green socket stays connected with a bridged amplifier too; an outside
+review suggested leaving it open, which sends exactly this current through the analyzer lead.
+With the amplifier and the computer both earthed, a mains-frequency loop remains (mains earth,
+amplifier, green socket, the filter's ground, the output lead's shields, the QA403, USB, the
+computer). What it drops along the output lead is common to both BNC shields, since pin 1 feeds
+both, so the QA403's differential input rejects most of it; test 5 shows what is left, and the
+simple cure is the computer on battery. Whether the QA403 runs behind a USB isolator has not
+been checked here. Neither input is ground: on a BTL amplifier the black terminal is an output
 like the red one. Both points are on the board's bottom side and belong on the front panel.
 
 What the AUX-0025's datasheet promises for balanced and unbalanced amplifiers is AP's own
@@ -556,16 +579,25 @@ reads +0.025 dB at 20 kHz in PAD - record both, or divide both out.
 **3. Leg symmetry.** Both inputs joined and driven together against the green socket (pure
 common mode), output read differentially: that is the common-mode-to-differential conversion of
 the built board, in DIRECT and in PAD. The simulation expects, trimmed, −74 / −52 dB at 50 Hz
-(DIRECT / PAD), −31 dB at 20 kHz and −15 dB at 100 kHz; trimming matches the legs' amplitude at
+(DIRECT / PAD), −31 dB at 20 kHz and −14 dB at 100 kHz unpaired, −45 and −29 dB with coils
+and capacitors paired; trimming matches the legs' amplitude at
 20 kHz, not their phase, so record the curve rather than assume it. If it is much worse at
 50 Hz, measure the pads' ratios leg against leg; if at 20-100 kHz, measure the coils.
 
 **4. Ferrite linearity - the first gate.** The question is whether the coils add distortion at
-the levels a clean amplifier reaches. Measure the same amplifier signal twice at the same
+the levels a clean amplifier reaches. V2's −133 dB HD3 was measured at 5 V and 1 kHz, where L1
+carries 0.4 mA; at 45 Vrms and 6.67 kHz (whose third harmonic is 20 kHz) it carries 17 mA, at
+55 Vrms and 20 kHz 61 mA, the shunt capacitors' current. That record says nothing about these
+levels, which is what this test is for. Measure the same amplifier signal twice at the same
 analyzer level: once through the filter in PAD, once through a plain resistive 20:1 divider
-(metal film, no inductors). The difference is the filter's. At 100 Hz, 1 kHz, 6.67 kHz and
-10 kHz; at 1, 5, 20, 40 and 80 Vrms per leg (80 V below 12 kHz only, see the rating); then SMPTE
-IMD (60 Hz + 7 kHz, 4:1) and CCIF (19 + 20 kHz) at 20 and 40 V; both legs. **Pass: the filter
+(metal film, no inductors), built from resistors at a small fraction of their rating (3 W or
+5 W parts) so that it adds no self-heating distortion of its own; the filter's pad runs its
+0.25 W parts at half their rating and should show its own if it has any. The difference is
+the filter's. At 20 Hz (where the pad's warming would show), 100 Hz, 1 kHz, 6.67 kHz and
+10 kHz; at 1, 5, 20, 40 and 75 Vrms per leg (75 V below 15 kHz only, see the rating); then
+SMPTE IMD (60 Hz + 7 kHz, 4:1) and CCIF (19 + 20 kHz) at 20 and 40 V - 40 Vrms of two equal
+tones has the peak of a 57 Vrms sine, so it is already the rating's limit at 20 kHz and the
+highest coil current the filter is allowed; both legs. **Pass: the filter
 adds no more than 1 dB to any reading**, i.e. its own contribution stays at least 6 dB under the
 amplifier's. If a leg fails, the test is repeated with an air-core 1 mH coil on flying leads in
 place of L1, then L2, which tells which coil it is; the alternatives are a larger core (lower
@@ -576,8 +608,15 @@ transformer, and turned through 90° and 180°, shows the hum the unshielded coi
 two legs are 66 mm apart, so a field gradient across the box is not common mode to them. A
 uniform field is, but only if L1 and L3 (and L2 and L4) have the same winding sense; the coils
 carry no marking, so hardware/README.md shows how to find it with the QA403 before soldering.
+The load cables are the other near source: they carry the amplifier's full current. Input
+shorted, a second amplifier driving the load bank at 1 kHz, its cables run past the box at 30,
+10 and 3 cm, along the front wall and across it: the 1 kHz line at the filter's output is the
+pickup, and the distance at which it disappears into the floor is the one to keep on the
+bench. If it is too close for comfort, the shielded WE-TIS from the comparison above, or a
+steel box, are the remedies; aluminium does not screen 50 Hz or 1 kHz.
 
-**5. Ground with a bridged amplifier.** With a BTL class-D amplifier: the common-mode current
+**5. Ground with a bridged amplifier.** With a BTL class-D amplifier, the green socket on its
+ground throughout (see "Ground, and bridged amplifiers"): the common-mode current
 in the green lead (a 1 Ω resistor in it and the scope across it, or a current probe), against
 the table above; the amplifier's own residue and THD with the filter and with a plain resistive
 probe; and the measurement with the computer on battery and on the mains (the QA403's ground
@@ -656,7 +695,16 @@ Whatever runs the QA403 behind this filter should do three things:
 - **A probe needs a frequency response, not only a ratio.** The filter's residual ±0.03 dB, and
   the −0.05 dB insertion loss in DIRECT, are known once per board and could be divided out of the
   frequency response row the way the ratio is divided out of every level; the row would then
-  show the amplifier and not the filter. Everything else (THD+N, SNR, power) is unaffected.
+  show the amplifier and not the filter. Levels, THD and THD+N in the AES17 bandwidth (to
+  20 kHz), SNR and power need no such correction.
+- **Nothing above 20 kHz is the amplifier's alone.** The filter is a low-pass and starts at
+  the band's edge: −0.3 dB at 30 kHz, −1.0 dB at 40 kHz (the second harmonic of 20 kHz),
+  −3.5 dB at 60 kHz, −5.6 dB at 80 kHz, with −40° of phase at 20 kHz and −122° at 60 kHz
+  (`wideband()` in the simulation). THD+N in an 80 or 90 kHz bandwidth, the harmonics of tones
+  above 6.7 kHz, and anything about waveform, rise time or phase read through it are the
+  filter's as much as the amplifier's. That is so for every class-D pre-filter, the AUX-0025's
+  included; such readings belong to a measurement without the filter, on an amplifier whose
+  carrier the analyzer can take.
 - **Per-step probe choice.** Direct for the audio block, 20:1 for the sweeps, in one run: a
   prompt to the operator between steps and a gain check after it.
 
@@ -752,3 +800,24 @@ before anything was ordered. Every number in it was re-simulated here; what it c
 | hum pickup with 66 mm between the legs | **plausible, unquantified** | test 4 now turns the box in the field |
 | F_N on the bottom past the pad tap | **negligible** | 0.2 pF from F_N into the 950 Ω tap is −90 dB at 20 kHz; the stop-band test in PAD would show more |
 | name and source-impedance limits | **right** | stated in the README and the safety section |
+
+## The third review, point by point
+
+A second outside review read the release of 3 November 2026 (source hash ba2eb23). Its numbers
+were re-simulated here; the board did not change, the documentation and the simulation did:
+
+| Point | Verdict | What was done |
+|---|---|---|
+| the trimmer matches amplitude, not phase: pairing coils **and** capacitors gains 14 dB of common-mode rejection at 20-100 kHz; the build notes called pairing "not required" | **right** (the `cmrr()` "bug" was a missing case, not a wrong one) | `cmrr()` has the capacitors-paired and both-paired cases; "Leg matching", the build notes and the README recommend pairing both, with a QA403 method for it |
+| V2's −133 dB HD3 was measured at 5 V and 1 kHz; at 45-55 V the coils carry 17-61 mA | **right**, and test 4 already went to 80 V at 6.67 kHz and CCIF at 40 V | test 4 states the currents, that CCIF at 40 V is the rating's limit, adds 20 Hz, and holds its 75 V to the rating |
+| the pad's 0.25 W parts warm by 25-35 K: thermal distortion at 20 Hz | **plausible, small** (estimated well under −110 dB) | test 4's reference divider must be built from parts at a fraction of their rating, or it hides the effect; larger pad parts are a rev B candidate if the test shows one |
+| field gradients across the 66 mm between the legs; load cables next to the box | **right**, unquantified | test 4 adds a load-cable distance test; shielded coils or a steel box are the remedies if it fails |
+| the rating is for one sine; a class-D carrier adds to the audio | **right** | the sum of (V / Vmax)² ≤ 1, with an example, in "Dissipation" and from `rating()` |
+| `part_powers()` only in PAD; the coils' 120 V in `rating()` | **not a limit / stale** | above 20 kHz the shunt capacitors set the currents in both positions; the coil figure is now 400 V and never binds |
+| wideband THD+N through the filter | **right**, true of every pre-filter | the attenuation and phase above 20 kHz are in "What this asks of the measurement software", from `wideband()` |
+| leave the green socket open with BTL amplifiers, use a USB isolator | **no** for the first: that sends the carrier's common-mode current through the analyzer lead | "Ground, and bridged amplifiers" says why it stays connected, that the remaining loop is common mode on the lead, and that the computer on battery breaks it; the isolator is unchecked |
+| 25 mm stubs to the shunt capacitors: series resonance near 15-20 MHz | **right**, far above any carrier | test 7 measures to 20 MHz; feed-through placement is a rev B candidate if it shows |
+| a power-on arc burns the toggle's gold contacts | **no** | closed contacts carry, they do not switch; switching under load was already excluded |
+| 0.5 pF between the toggle's poles bypasses the pad | **negligible** | 0.6 dB less stop band at 1 MHz in PAD, as much as the pad resistors' own capacitance |
+| amplifiers without post-filter feedback move the 20 kHz trim by hundredths of a dB | **smaller** | 5-10 µH of output inductance moves it by 0.005-0.009 dB |
+| stale text: shielding, four plain holes, 30 mm, five spacers | **right** | corrected |
