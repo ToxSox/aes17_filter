@@ -101,7 +101,7 @@ them; check Neutrik's drawing whether the NC3FAAH2 / NC3MAAH flange takes M3 or 
 self-tapping screw), one **4PDT** ON-ON non-shorting toggle with **gold contacts** and a 1/4 in
 bushing, such as the APEM 5666CDB (its ten wires go into W1's holes; the switch carries
 microamperes, a dry circuit), one Hammond 1444-862 chassis
-with its 1434-86 bottom plate and five 10 mm M3 spacers, the one under the plated hole H5 metal; and once for the bench a lead from the
+with its 1434-86 bottom plate and seven 10 mm M3 spacers, the one under the plated hole H5 metal; and once for the bench a lead from the
 amplifier terminals to a male XLR plug (or dual banana leads) and an XLR-female-to-two-BNC lead
 for the QA403, both of which an AUX-0025 takes as well.
 
