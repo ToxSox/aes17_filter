@@ -402,7 +402,9 @@ unshielded Würth WE-TI 7447480102, ±5 % with 1.15 Ω of winding resistance.
 Within the trimmer's reach the trimmed residual is the same whatever the parts: it is the shape
 of the curve, not the tolerance, that sets it. What the tolerance does set is how well the two
 legs match at the top of the band (see "Leg matching"). So the
-whole board goes through assembly, and the hand work is: drill the front wall, wire the toggle (ten wires),
+board goes through assembly except the ten film capacitors, which JLCPCB has only on pre-order
+(19-21 working days): they are bought locally, measured and paired between the legs, and
+soldered by hand. The hand work is: solder the capacitors, drill the front wall, wire the toggle (ten wires),
 turn two trimmers, measure the pad ratio. Of the five boards, two are assembled; JLCPCB lets
 the assembly count differ from the board count.
 
@@ -463,8 +465,8 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 4 | UNI-ROYAL MFR03SF1001A10, 1.00 kΩ 1 % 3 W 50 ppm | input network | C58750 | in stock; Vishay RS02B1K000FE12 (C3397612) is the AP part at $3.71 | $0.06 |
 | 2 | 14.0 kΩ 1 % 0.25 W | input network | C127223 | | $0.01 |
 | 2 | Bourns 3296W-1-501LF, 500 Ω 25-turn | 20 kHz knee | C69564 | in stock | $0.97 |
-| 6 | WIMA FKP2J002201D00HSSD, 220 pF 630 V ±2.5 % | C1, C5 and the bypass pairs C2+C9, C6+C10 | C5742108 | pre-order; 390 pF is not stocked, so two 220 pF in parallel make 440 pF as the repo has it (1 dB less at 250 kHz than AP's 390 pF, nothing else) | $0.23 |
-| 4 | WIMA FKP2F014701I00JA00, 4.7 nF 250 V ±5 % | C3, C4, C7, C8 | C20412818 | pre-order | $0.41 |
+| 6 | WIMA FKP2J002201D00HSSD, 220 pF 630 V ±2.5 % | C1, C5 and the bypass pairs C2+C9, C6+C10 | C5742108 | **soldered by hand**, bought locally (Bürklin, also in ±1 %): JLCPCB quoted 19 working days of pre-order; 390 pF is not stocked, so two 220 pF in parallel make 440 pF as the repo has it (1 dB less at 250 kHz than AP's 390 pF, nothing else) | $0.23 |
+| 4 | WIMA FKP2F014701I00JA00, 4.7 nF 250 V ±5 % | C3, C4, C7, C8 | C20412818 | **soldered by hand**, bought locally (Digi-Key): JLCPCB quoted 21 working days of pre-order | $0.41 |
 | 2 | 412 Ω 1 % **0.6 W**, Vishay MRS25000C4120FCT00 | bypass across L1 | C1235858 | 0207 body, same footprint; 3 in stock at JLCPCB on 2 November 2026, so likely pre-order; same part: Vishay MBB02070C4120FRP00 (C1758271), Yageo MF0207FTE52-412R (C3401155) | - |
 | 2 | 75.0 Ω 1 % 1 W, CCO MF1W | between stages | C160685 | | $0.05 |
 | 2 | 3.40 kΩ 1 % **0.6 W**, Vishay MRS25000C3401FCT00 | across L3 | C1366835 | 0207 body, same footprint; 125 in stock at JLCPCB on 2 November 2026 | - |

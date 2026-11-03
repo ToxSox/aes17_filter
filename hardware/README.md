@@ -111,13 +111,13 @@ are three constants at the top of `design.py`.
    JLCPCB hand-solders those ($3.58 per order plus $0.0164 per joint, one extra day).
 3. **Parts review.** In the parts page every line with an LCSC number resolves on its own,
    including the coils: the unshielded Würth WE-TI 7447480102, ±5 %, is JLCPCB part
-   **C1331132** (2.14 € on 1 November 2026, pre-order like the WIMA capacitors). The shielded
+   **C1331132** (2.14 € on 1 November 2026, pre-order). The shielded
    WE-TIS 7447471102, C1331105, fits the same footprint; it was the coil of the first draw of
    rev A and is now only the comparison for the linearity test (JLCPCB lists it as ±20 %, which
    the trimmer cannot always reach). The 412 Ω 0.6 W (C1235858, three in stock on 2 November
    2026) will most likely be pre-order too; Vishay MBB02070C4120FRP00 (C1758271) and Yageo
    MF0207FTE52-412R (C3401155) are the same part. The
-   BOM file is plain ASCII on purpose: JLCPCB's import reads "Würth" as "W眉rth". Four more lines are **pre-order** (both WIMA capacitors, the Cliff sockets): JLCPCB
+   BOM file is plain ASCII on purpose: JLCPCB's import reads "Würth" as "W眉rth". The ten WIMA film capacitors (C1-C10) are **not in the BOM and the placement file**: JLCPCB has them only on pre-order (19-21 working days, quoted on 3 November 2026), so they are bought locally and soldered by hand. Three more lines are **pre-order** (the Cliff sockets): JLCPCB
    buys them after payment, quotes the final price within 48 hours, and they take nine to
    twenty business days to arrive; connectors carry a $20 inspection fee per type, so the three
    Cliff colours cost $60 in inspection alone. The cheaper route for the Cliff sockets is to
@@ -140,8 +140,8 @@ For an assembly of five boards (quantities include JLCPCB's attrition allowance)
 |---|---|---|---|---|
 | TE 5227161-7 BNC (C591726) | 20 | 99.63 | 4.98 | in stock; no longer on the board - the XLR output replaced the BNCs |
 | Cliff FCR7350R / B / G (C6041087 / C6555263 / C6041085) | 5 each | 58.13 / 58.13 / 50.32 | 11.6 / 11.6 / 10.1 | **shortage: pre-order**, plus the connector inspection fee per type |
-| WIMA 220 pF 630 V ±2.5 % (C5742108) | 30 | 7.19 | 0.24 | shortage: pre-order |
-| WIMA 4.7 nF 250 V (C20412818) | 25 | 10.70 | 0.43 | shortage: pre-order |
+| WIMA 220 pF 630 V ±2.5 % (C5742108) | 30 | 7.19 | 0.24 | shortage: pre-order, 19 working days; now soldered by hand instead |
+| WIMA 4.7 nF 250 V (C20412818) | 25 | 10.70 | 0.43 | shortage: pre-order, 21 working days; now soldered by hand instead |
 | Bourns 3296W-1-501LF (C69564) | 10 | 6.75 | 0.67 | in stock |
 | TE YR1B1K0CC 0.1 % (C1364308) | 10 | 3.57 | 0.36 | in stock |
 | UNI-ROYAL 1 kΩ 3 W (C58750) | 21 | 1.04 | 0.05 | in stock |
@@ -174,6 +174,10 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 
 1. Check the assembled board against `fab/aes17-filter-parts.csv`; measure the four coils if
    an LCR meter is at hand (not required, the trimmer takes care of their spread).
+   Then solder the ten film capacitors per board, which JLCPCB leaves out: 220 pF in C1, C2, C9
+   (+ leg) and C5, C6, C10 (− leg), 4.7 nF in C3, C4 (+) and C7, C8 (−). With an LCR meter,
+   measure them first and give the two legs the closest pairs (C1/C5, C2+C9 / C6+C10, C3/C7,
+   C4/C8); the polypropylene parts have no polarity.
 2. Drill the front wall after `aes17-filter-frontwall.png`; the hole table is at the end of this
    file. Easiest and safest: drill the four spacer holes in the bottom plate, stand the board on
    its spacers, put the chassis over it, and mark the connector centres through from inside.

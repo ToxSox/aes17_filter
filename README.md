@@ -84,8 +84,8 @@ are LCSC or JLCPCB's global-sourcing quote on 1 November 2026, single quantity.
 | 4 | UNI-ROYAL MFR03SF1001A10, 1.00 kΩ 1 % 3 W 50 ppm | input network | C58750 | $0.06 |
 | 2 | 14.0 kΩ 1 % 0.25 W | input network | C127223 | $0.01 |
 | 2 | Bourns 3296W-1-501LF, 500 Ω 25-turn trimmer | 20 kHz knee | C69564 | $0.97 |
-| 6 | WIMA FKP2J002201D00HSSD, 220 pF 630 V ±2.5 % | C1, C5, and the bypass pairs C2+C9, C6+C10 (440 pF) | C5742108, pre-order | $0.23 |
-| 4 | WIMA FKP2F014701I00JA00, 4.7 nF 250 V ±5 % | C3, C4, C7, C8 | C20412818, pre-order | $0.41 |
+| 6 | WIMA FKP2J002201D00HSSD, 220 pF 630 V ±2.5 % | C1, C5, and the bypass pairs C2+C9, C6+C10 (440 pF) | **soldered by hand**, not in the JLCPCB order: Bürklin (also as FKP2J002201D00ESSD, ±1 %, 42D8516); LCSC C5742108 would be pre-order | $0.23 |
+| 4 | WIMA FKP2F014701I00JA00, 4.7 nF 250 V ±5 % | C3, C4, C7, C8 | **soldered by hand**, not in the JLCPCB order: Digi-Key (0.67 €); LCSC C20412818 would be pre-order | $0.41 |
 | 2 | 412 Ω 1 % **0.6 W**, Vishay MRS25000C4120FCT00 | bypass across L1; carries the stop band above 150 kHz | C1235858 (or MBB02070C4120FRP00, C1758271) | - |
 | 2 | 75.0 Ω 1 % 1 W, CCO MF1W | between the stages | C160685 | $0.05 |
 | 2 | 3.40 kΩ 1 % **0.6 W**, Vishay MRS25000C3401FCT00 | across L3; carries the current near 100 kHz | C1366835 | - |
@@ -108,9 +108,11 @@ for the QA403, both of which an AUX-0025 takes as well.
 ## Ordering and building
 
 [hardware/README.md](hardware/README.md): upload the three files in `hardware/fab/` to JLCPCB,
-five boards, two assembled, Economic. Every BOM line has a JLCPCB/LCSC number; the coils, both
-WIMA capacitors, the 412 Ω and the Cliff sockets are pre-order parts, and the Cliff sockets are
-cheaper bought at Digi-Key and soldered by hand. Then drill the front wall after
+five boards, two assembled, Economic. Every BOM line has a JLCPCB/LCSC number; the coils, the
+412 Ω and the Cliff sockets are pre-order parts, and the Cliff sockets are cheaper bought at
+Digi-Key and soldered by hand. The ten WIMA capacitors are not in the JLCPCB files at all: they
+are bought in Germany (Bürklin, Digi-Key), measured, paired between the legs and soldered by hand
+after assembly, 20 joints per board. Then drill the front wall after
 `hardware/aes17-filter-frontwall.png`, trim both legs through an amplifier until 20 kHz equals
 1 kHz, measure both ratios (PAD about 21.8:1, DIRECT about 1.006:1), and enter them in the
 measurement software as the probes' ratios.

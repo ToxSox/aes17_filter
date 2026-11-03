@@ -101,7 +101,7 @@ def bom_and_cpl():
         fp = fps[ref]
         footprint = design.FP[fpkey].split(':')[1]
         place = ref not in design.DO_NOT_PLACE
-        parts_rows.append((ref, value, design.comment(ref, value), footprint, lcsc, note, 'yes' if place else 'NO - footprint only'))
+        parts_rows.append((ref, value, design.comment(ref, value), footprint, lcsc, note, 'yes' if place else 'NO - solder by hand'))
         if not place:
             continue
         key = (design.comment(ref, value), footprint, lcsc)

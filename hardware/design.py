@@ -65,24 +65,24 @@ def leg(prefix, names, nets):
         (names['R1c'], '14.0k',     'R_0W6',    'C127223', '1 % metal film 0.25 W (CCO MF1/4W-14K)', [(1, n['IN']), (2, n['A'])]),
         (names['RV1'], '500R',      'TRIM',     'C69564', 'Bourns 3296W-1-501LF, 25 turns', [(1, n['T']), (2, n['A']), (3, n['A'])]),
         # first stage
-        (names['C1'],  '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %', [(1, n['A']), (2, 'GND')]),
+        (names['C1'],  '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only', [(1, n['A']), (2, 'GND')]),
         # 0.6 W: this resistor carries the stop band. 0.25 W parts reach their rating at about
         # 30 Vrms per leg at 250-500 kHz, which a filterless class-D output's carrier can be.
         (names['R3'],  '412R',      'R_0W6',    'C1235858', 'Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C4120FRP00 = C1758271, Yageo MF0207FTE52-412R = C3401155', [(1, n['A']), (2, n['X'])]),
         # 390 pF is not stocked at LCSC; two 220 pF in parallel (440 pF, as the repo has it) are
-        (names['C34'], '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
-        (names['C34b'], '220p',     'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
+        (names['C34'], '220p',      'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
+        (names['C34b'], '220p',     'C_FKP2_S', 'C5742108', 'WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF', [(1, n['X']), (2, n['B'])]),
         # the unshielded drum core: the largest air gap, so the most linear ferrite coil of this
         # size, and the coil family V2 measured at -133 dB HD3; the shielded WE-TIS 7447471102
         # (C1331105, +-20 % at JLCPCB) fits the same footprint but is unmeasured for distortion
         (names['L1'],  '1mH',       'L_1mH',    'C1331132', 'Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105', [(1, n['A']), (2, n['B'])]),
-        (names['C7'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['B']), (2, 'GND')]),
+        (names['C7'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only', [(1, n['B']), (2, 'GND')]),
         # second stage
         (names['R5'],  '75.0R 1W',  'R_1W',     'C160685', '1 %, 1 W metal film (CCO MF1W-75R)', [(1, n['B']), (2, n['D'])]),
         (names['L3'],  '1mH',       'L_1mH',    'C1331132', 'Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105', [(1, n['D']), (2, n['E'])]),
         # 0.6 W: around the second stage's resonance (50-150 kHz) this resistor takes the power
         (names['R7'],  '3.40k',     'R_0W6',    'C1366835', 'Vishay MRS25000C3401FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C3401FCT00 = C1382495', [(1, n['D']), (2, n['E'])]),
-        (names['C9'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %', [(1, n['E']), (2, 'GND')]),
+        (names['C9'],  '4.7n',      'C_FKP2_L', 'C20412818', 'WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only', [(1, n['E']), (2, 'GND')]),
         (names['R9'],  '24.9R',     'R_0W6',    'C3542579', '1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9)', [(1, n['E']), (2, n['F'])]),
         # the pad: its top (PT) is put on the filter output F by the switch in PAD only, so in
         # DIRECT the filter sees the analyzer alone; the other pole picks the tap or F. 2 x 10.0 k over
@@ -135,7 +135,10 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
 
 NOT_ASSEMBLED = ('H', 'TP', 'W')     # reference prefixes that are holes and pads, not parts
 
-DO_NOT_PLACE = set()
+# Parts JLCPCB leaves out, to be soldered by hand after assembly: the ten film capacitors. They
+# are pre-order parts at JLCPCB (19-21 working days), and bought locally they can be measured
+# and paired between the legs before they go in.
+DO_NOT_PLACE = {ref for ref, *_ in PARTS if ref.startswith('C')}
 
 MPN = {
     'L1': 'Wurth 7447480102', 'L2': 'Wurth 7447480102', 'L3': 'Wurth 7447480102', 'L4': 'Wurth 7447480102',
