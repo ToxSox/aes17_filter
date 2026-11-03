@@ -157,6 +157,37 @@ pre-order at 11 € each plus the inspection fee, against 6.80 € at Digi-Key f
 pin and four pegs to solder. Assembling two boards instead of five brings the parts to about
 140 € plus the coils.
 
+## Shopping list, bought locally (two boards)
+
+JLCPCB fits the 22 parts per board it had in stock. Everything else is bought locally; the
+quantities include what pairing the legs needs (see "Building the two boards", step 1).
+**Why 12 of a ±5 % part for 8 places:** the chance of finding four pairs within 1 % is 7 % from
+8 parts, 67 % from 10 and 99 % from 12 if the values spread evenly over the tolerance, and
+26 / 93 / 100 % for a typical reel, whose spread is narrower (simulated, tolerance = 3σ). Two
+more cover a bent lead and give the winding-sense test its sender coil.
+
+**On the board, soldered by hand:**
+
+| Buy | Fitted | Part | Pairing | Where |
+|---|---|---|---|---|
+| 14 | 8 | **Würth 7687480102**, 1 mH ±5 %, unshielded drum core (L1-L4) | four pairs, L1/L3 and L2/L4 per board, from 12 | Digi-Key |
+| 14 | 8 | **WIMA FKP2F014701I00JA00**, 4.7 nF 250 V ±5 % (C3, C4, C7, C8) | four pairs, C3/C7 and C4/C8 per board, from 12 | Digi-Key |
+| 14 | 12 | **WIMA FKP2J002201D00ESSD**, 220 pF 630 V **±1 %** (C1, C2, C5, C6, C9, C10) | two ±1 % parts differ by 2 % at most, which is what the simulation counts as paired; measure and sort anyway: the closest two as C1/C5, then C2 + C9 against C6 + C10 | Bürklin 42D8516 |
+| (20) | (12) | or the ±2.5 % FKP2J002201D00HSSD, if the ±1 % is not to be had | then pairing matters: 20 to choose from | Digi-Key, Bürklin |
+| 6 | 4 | **412 Ω 1 % 0.6 W**, Vishay MRS25000C4120FCT00 or any 0207 body (R4, R14) | none needed | Digi-Key, Mouser, Bürklin |
+| 2 each | 2 each | **Cliff FCR7350R, FCR7350B, FCR7350G**, red, black, green (J1-J3) | - | Digi-Key, Farnell |
+
+**For pairing and the verification tests, not on the board:**
+
+| Buy | Part | For |
+|---|---|---|
+| 1 each | 100 Ω, 6.8 kΩ, 47 kΩ, 1 %, 0.25 W | the series resistor when pairing with the QA403: coils, 4.7 nF, 220 pF |
+| 2 + 1 | 10 kΩ and 1 kΩ, 1 %, **3 W or more**, metal film (the UNI-ROYAL MFR03S on the board, or a Vishay PR03) | test 4's reference divider, 2 × 10 k over 1 k as the pad: at 75 Vrms it runs at about 4 % of its rating, so it adds no self-heating distortion of its own |
+| 1 | 1 Ω, 1 % | test 5's current shunt in the green lead |
+| 4, optional | Würth WE-TIS 7447471102, shielded | test 4's comparison, one board's worth (availability outside JLCPCB not checked) |
+
+Plus the box, the toggle and the leads in the next table.
+
 ## What is not on the board
 
 | Qty for two boards | Part | Where |
@@ -168,7 +199,6 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 | 2 | insulating sheet, 0.25 mm polyester or fish paper, cut to the bottom plate around the spacers | any |
 | 2 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
 | 14 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate (seven per board); the one under H5 metal, with a star washer on the bottom plate | any |
-| 6 | Cliff FCR7350 R, B, G if bought outside JLCPCB | Digi-Key, Farnell |
 | | wire for the toggle: ten pieces of about 25 mm, 0.25 mm² stranded, into W1's holes | |
 
 ## Building the two boards
