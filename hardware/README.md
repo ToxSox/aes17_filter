@@ -37,7 +37,8 @@ self-made lead, XLR female to two BNC males. The first 24 mm behind the front ed
 connector strip with the switch and the pad block at its right-hand end; the filter is the
 100 mm band behind it, the two legs mirror images about its centre line. Layers 2 and 3 are
 whole ground planes, broken only by the holes; every track is on layer 1 or 4. The board stands
-on five M3 spacers on the bottom plate; the XLRs are screwed to the wall, the Cliff sockets held
+on seven M3 spacers on the bottom plate (four on the centre line, H5 in the connector strip,
+H6 and H7 in the back corners); the XLRs are screwed to the wall, the Cliff sockets held
 by the board alone (they have no panel retention; the wall just has a clearance hole for the
 Ø11 barrel). The DRC in KiCad 7 reports no errors and no unconnected nets at 0.8 mm clearance;
 the warnings are silkscreen over pads and the footprints not being from a library table.
@@ -163,10 +164,10 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 | 8 | screws for the XLR flanges: M3 × 8 and nuts if the flange holes are through-holes, else 2.9 mm self-tapping (Neutrik's drawing of the NC3FAAH2 / NC3MAAH decides; not checked) | any |
 | 1 | a cable from the amplifier's terminals to a male XLR plug (pin 2 +, pin 3 −), or dual banana leads - the same cable then feeds an AUX-0025 | self-made |
 | 2 | an XLR-female-to-two-BNC-male lead to the QA403: pin 2 to L+ centre, pin 3 to L− centre, pin 1 to both BNC shells; about 30 cm, both legs equal | self-made (Neutrik NC3FXX, two BNC plugs, two pieces of RG58 or RG174) |
-| 2 | **4PDT** toggle, ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; best with a locking lever | APEM 5666CDB or another 4PDT with gold contacts; the switch carries microamperes at 100 kΩ, a dry circuit, so standard silver contacts (a plain Knitter MTA 206, for one) are not suitable |
+| 2 | **4PDT** toggle, ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; best with a locking lever | APEM 5666CDB or another 4PDT with gold contacts; the switch carries microamperes at 100 kΩ, a dry circuit, so standard silver contacts (a plain Knitter MTA 206, for one) are not suitable. Gold contacts are rated to switch only 0.4 VA at 20 V: they carry the full voltage closed, but are switched with the amplifier off |
 | 2 | insulating sheet, 0.25 mm polyester or fish paper, cut to the bottom plate around the spacers | any |
 | 2 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
-| 10 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate; the one under H5 metal, with a star washer on the bottom plate | any |
+| 14 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate (seven per board); the one under H5 metal, with a star washer on the bottom plate | any |
 | 6 | Cliff FCR7350 R, B, G if bought outside JLCPCB | Digi-Key, Farnell |
 | | wire for the toggle: ten pieces of about 25 mm, 0.25 mm² stranded, into W1's holes | |
 
@@ -175,14 +176,25 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 1. Check the assembled board against `fab/aes17-filter-parts.csv`; measure the four coils if
    an LCR meter is at hand (not required, the trimmer takes care of their spread).
    Then solder what JLCPCB leaves out, per board: the 412 Ω 0.6 W in R4 and R14; the coils,
-   L1/L2 (+ leg) and L3/L4 (− leg), all four the same way round if the coils carry a marking
-   (electrically either way works); 220 pF in C1, C2, C9 (+) and C5, C6, C10 (−),
+   L1/L2 (+ leg) and L3/L4 (− leg), all four with the same winding sense (see below); 220 pF in C1, C2, C9 (+) and C5, C6, C10 (−),
    4.7 nF in C3, C4 (+) and C7, C8 (−); and the Cliff sockets, red J1, black J2, green J3. With
    an LCR meter, measure coils and capacitors first and give the two legs the closest pairs
    (L1/L3, L2/L4, C1/C5, C2+C9 / C6+C10, C3/C7, C4/C8); the polypropylene parts have no
    polarity.
+
+   **Winding sense of the coils.** For the filter either way round works, but an unshielded
+   drum core picks up stray magnetic fields (a mains transformer, a load bank), and the
+   aluminium box does not screen 50 Hz. A field that reaches both legs alike then appears as
+   common mode, which the QA403 rejects, only if L1 and L3 (and L2 and L4) are the same way
+   round; Würth does not mark the start of the winding. To find it with the QA403 before
+   soldering: QA403 output, 1 kHz at about 1 V, into one coil (the "sender") through 100 Ω;
+   stand each other coil on top of it, axis on axis and always leads up, its leads to the left
+   input, and read the phase against the output: about +90° or −90° (the induced voltage leads
+   the current). Mark the lead that gives +90° on the left input's centre pin and put it in the
+   square pad on all four. Then test the sender itself the same way, with a marked coil as
+   the sender.
 2. Drill the front wall after `aes17-filter-frontwall.png`; the hole table is at the end of this
-   file. Easiest and safest: drill the four spacer holes in the bottom plate, stand the board on
+   file. Easiest and safest: drill the seven spacer holes in the bottom plate, stand the board on
    its spacers, put the chassis over it, and mark the connector centres through from inside.
 3. Fit the board on the bottom plate, put the chassis over it, screw the XLR flanges to the
    wall, fit the toggle.
@@ -196,7 +208,9 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
    (then black) input to the green: about 21 kΩ in PAD, open in DIRECT. Mark the positions on the
    front.
 5. Lay the insulating sheet on the bottom plate before the board goes in; use a metal spacer
-   under H5 and plastic or metal under the rest (only H5 is plated).
+   under H5 and plastic or metal under the rest (only H5 is plated). Set the trimmers (step 6)
+   with a few volts from the amplifier: the trim does not depend on the level, and the box is
+   open while you turn them.
 6. Work through the [verification plan](../docs/design-review.md#verification-what-makes-it-a-reference):
    trim both legs through an amplifier until 20 kHz equals 1 kHz, the pad ratio over frequency
    into the measurement software's probe settings, then the ferrite, ground, heat and stop-band tests before the

@@ -431,7 +431,8 @@ the two pads right behind it; the filter is the 100 mm band behind the strip. La
 whole ground planes with nothing routed on them; signal on top, the crossings, the negative
 pole's switch nets and its long output run on the bottom. 0.8 mm clearance throughout (IPC-2221B
 for bare pads at 101-300 V; laid out for 120 V peak, 85 Vrms per leg, above the 75 Vrms rating). Four plain M3
-holes on the band's centre line for spacers on the bottom plate, and a fifth, plated and on
+holes on the band's centre line for spacers on the bottom plate, two more in the back corners
+so that the back of the board does not hang 50 mm past them, and a seventh, plated and on
 ground, in the connector strip: the one bond between the ground plane and the chassis, where the
 cables come in. No Zeners, no fuses. The layout rules behind the arrangement - whole planes,
 pairs kept together, long runs only at low impedance, the pad and switch at the output
@@ -572,7 +573,9 @@ flux density) or air-core coils off the board. Repeat on a board with the shield
 7447471102 in place of the fitted WE-TI: that settles the shielded-or-not question by
 measurement. The same set-up, input shorted and the box next to the load bank or a mains
 transformer, and turned through 90° and 180°, shows the hum the unshielded coils pick up; the
-two legs are 66 mm apart, so a field gradient across the box is not common mode to them.
+two legs are 66 mm apart, so a field gradient across the box is not common mode to them. A
+uniform field is, but only if L1 and L3 (and L2 and L4) have the same winding sense; the coils
+carry no marking, so hardware/README.md shows how to find it with the QA403 before soldering.
 
 **5. Ground with a bridged amplifier.** With a BTL class-D amplifier: the common-mode current
 in the green lead (a 1 Ω resistor in it and the scope across it, or a current probe), against
@@ -602,7 +605,8 @@ node; a closed-chassis reading much better than an open one means the chassis is
 the layout should.
 
 **8. The switch.** Switch only with the amplifier off: the toggle breaks before it makes
-(specify a non-shorting part with gold contacts), so the analyzer sees an open input for a
+(specify a non-shorting part with gold contacts, whose switching rating is only 0.4 VA at
+20 V; they carry the full voltage closed, but switching 75 Vrms would burn the gold off), so the analyzer sees an open input for a
 moment, never the unpadded voltage, but DIRECT at full power is over the QA403's 40 Vrms. A toggle with a locking
 lever (pull to switch) keeps DIRECT from being selected by accident. Check both positions under
 a 5 V signal with the scope on the output for anything but a clean step.
@@ -634,7 +638,7 @@ the top of this document can be replaced by measured ones.
   computer's business.
 - **Underneath**, the solder side sits 8 mm above the bottom plate on 10 mm spacers, every lead
   carrying the input voltage. A sheet of 0.25 mm polyester or fish paper on the bottom plate,
-  cut around the five spacers, keeps a bent lead or a dropped screw off the chassis.
+  cut around the seven spacers, keeps a bent lead or a dropped screw off the chassis.
 - **No fuse and no thermal cut-out**: both would be nonlinear parts in the signal path, which is
   why AP has none either. The rating and test 6's timed short are the protection, and a
   temperature-indicator strip on R1 records it if the rating was ever exceeded.

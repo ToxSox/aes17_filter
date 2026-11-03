@@ -1,18 +1,18 @@
 AES17 filter rev A, 2026-11
-source hash 5c9fc69 (SHA-256 of hardware/design.py and hardware/make_pcb.py,
+source hash ba2eb23 (SHA-256 of hardware/design.py and hardware/make_pcb.py,
   printed on both sides of the board)
 generated with KiCad 7.0.11
 DRC: 0 errors, 0 unconnected pads (aes17-filter-drc.txt)
 board 158 x 124 mm, four layers, Hammond 1444-862 chassis
 
 SHA-256 of the order files (in fab/) and of the board:
-  b0fe9d8d305543c214392b318e1435de14f1e3d1eb737a32ab492f4aa130c96b  aes17-filter-gerbers.zip
+  602c2be37cf8928c50c4e8a33958df8f4181d30bc280ecc74d315c54323858b9  aes17-filter-gerbers.zip
   d632ec883f616e34a58fb583ea5c6d2cd2907fa9184712ccb2a6566019e60732  aes17-filter-bom.csv
   b41548e154c34a1a030f272f93c8e38079a4e05d706a8ef7e9b7427fff6132b3  aes17-filter-cpl.csv
   bf22990634daf15789a0ab42b1f41459be5bcbae3ccace96b7954d60e4891fce  aes17-filter-parts.csv
-  7656a91da1a7813905b35a48368868da0bf4824d8803eb3555f2248ae36154ee  aes17-filter-drc.txt
-  32d9cea57ad80bd3e969196e2b47bc17252358980b3d218f621e9720d207d241  aes17-filter-schematic.pdf
-  ce2f9289753e3315d0e42896324e0b95b96ffdd608b9ba6ba4390f9868bdfb7b  ../aes17-filter.kicad_pcb
+  f2cfb7817e8bf07bb7fd19071b177386b1c3c30123460d5b06f13c055265ac9f  aes17-filter-drc.txt
+  ca3474c39b51a052f155b66d3c4db7d725877b2b27eb7888ecf65e57dbbc17ec  aes17-filter-schematic.pdf
+  70f9ba64d184e12a25fb97e725ed2a86c08b9f5ecdc7e02cfa1153a0fa68e581  ../aes17-filter.kicad_pcb
 
 Order from a commit whose RELEASE.txt passes `python3 check_release.py`, and name
 the commit in the order (a tag or a branch such as release/rev-a).

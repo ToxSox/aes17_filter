@@ -133,6 +133,9 @@ PLACE.update({
     # ground meets the chassis, next to where the cables come in
     'H1': (14.0, core(50.0), 0), 'H2': (50.0, core(50.0), 0), 'H3': (90.0, core(50.0), 0), 'H4': (151.5, core(50.0), 0),
     'H5': (34.75, 10.0, 0),
+    # and two in the back corners, so that the back of the board does not hang 50 mm past the
+    # centre line; 5.5 mm from both edges leaves room for the spacer and a washer
+    'H6': (5.5, W - 5.5, 0), 'H7': (L - 5.5, W - 5.5, 0),
     'TP1': (68.0, core(50.0), 0), 'TP2': (98.0, core(50.0), 0),
 })
 
@@ -491,6 +494,8 @@ def add_silk(board, fps):
         ' b: COM-OUT, PAD side-PAD, DIR-F',
         'DIRECT: pad off, 100k load only',
         'PAD about 21.8:1 - measure it',
+        'switch only with the amp off:',
+        '  gold contacts, 20 V / 0.4 VA',
     ], 156.5, 81.0)
     add_block(board, [
         'IN  XLR-F: 2 +  3 -  1 GND',
@@ -504,7 +509,7 @@ def add_silk(board, fps):
         '  to the amplifier ground',
     ], 27.5, 26.0)
     add_block(board, [
-        'TRIM RV1 (+), RV2 (-):',
+        'TRIM RV1 (+), RV2 (-), few V:',
         'through an amplifier, one',
         'leg at a time, until',
         '20 kHz = 1 kHz; not from the',

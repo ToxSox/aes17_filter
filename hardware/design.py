@@ -120,12 +120,15 @@ PARTS = leg('P', NAMES_P, NETS_P) + leg('N', NAMES_N, NETS_N) + [
     ('W1', '4PDT wires', 'WIRES', '', 'solder holes for the pad toggle (APEM 5666CDB or similar, 4PDT ON-ON, gold contacts); not a part',
         [(1, 'OUT_P'), (2, 'F_P'), (3, 'F_P'), (4, 'PT_P'), (5, 'PAD_P'),
          (6, 'OUT_N'), (7, 'F_N'), (8, 'F_N'), (9, 'PT_N'), (10, 'PAD_N')]),
-    # mounting holes for M3 stand-offs on the chassis' bottom plate; H5 is plated and bonds the
+    # mounting holes for M3 stand-offs on the chassis' bottom plate, seven in all; H5 is plated and bonds the
     # ground plane to the chassis in the connector strip, the others are plain
     ('H1', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H2', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H3', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H4', 'M3', 'HOLE', '', 'plain hole, no pad', []),
+    # H6 and H7 hold the back of the board, which would otherwise hang 50 mm past the centre line
+    ('H6', 'M3', 'HOLE', '', 'plain hole, no pad', []),
+    ('H7', 'M3', 'HOLE', '', 'plain hole, no pad', []),
     ('H5', 'M3 GND', 'HOLE_GND', '', 'plated, on ground: the chassis bond', [(1, 'GND')]),
     # ground loops for a scope probe's tip-and-barrel or ground spring, between the stages, for
     # measuring the stop band at each stage's output (C3/C7 and C4/C8 pin 1) with a short ground
