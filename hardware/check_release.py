@@ -9,6 +9,8 @@
     and RELEASE.txt names the same one
   - every file listed in RELEASE.txt still has the SHA-256 written there
   - the DRC report has no errors and no unconnected pads
+  - the schematic was drawn from the current design.py (its hash and the positive leg's values)
+  - the pad is switched: its top is not on the filter output, so DIRECT sees the analyzer alone
   - the READMEs give the board size and the chassis the generator uses
 
 Run make_pcb.py and export.py first; this only reads.
@@ -67,6 +69,22 @@ drc = open(os.path.join(FAB, 'aes17-filter-drc.txt')).read()
 m = re.search(r'\*\* Found (\d+) unconnected pads', drc)
 check(drc.count('Severity: error') == 0 and m is not None and m.group(1) == '0',
       'the DRC report has no errors and no unconnected pads')
+
+svg = open(os.path.join(HERE, 'aes17-filter-schematic.svg')).read()
+texts_svg = ' '.join(re.findall(r'<!-- (.*?) -->', svg))
+with open(os.path.join(HERE, 'design.py'), 'rb') as f:
+    dhash = hashlib.sha256(f.read()).hexdigest()[:7]
+values = {ref: value for ref, value, *_ in design.PARTS}
+missing = [ref for ref in design.NAMES_P.values() if ref not in texts_svg or values[ref] not in texts_svg]
+check(f'sha256 {dhash}' in texts_svg and not missing,
+      f'the schematic was drawn from this design.py ({dhash})'
+      + ('' if not missing else f': missing or stale {missing}') + ' - run make_schematic.py')
+
+nets = design.nets()
+pad_tops = [(ref, pad) for ref, pad in nets.get('PT_P', []) + nets.get('PT_N', []) if ref.startswith('R')]
+on_f = {(ref, pad) for ref, pad in nets.get('F_P', []) + nets.get('F_N', [])}
+check(len(pad_tops) == 2 and not on_f & set(pad_tops),
+      'the pad tops (PT) are separate nets from the filter outputs (F): the toggle takes the pad off in DIRECT')
 
 size = f'{design.BOARD_LENGTH:g} × {design.BOARD_WIDTH:g} mm'
 for doc in ('../README.md', 'README.md'):

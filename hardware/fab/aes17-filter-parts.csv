@@ -3,43 +3,40 @@ R1,1.00k 3W,UNI-ROYAL MFR03SF1001A10,R_Axial_DIN0614_L14.3mm_D5.7mm_P20.32mm_Hor
 R2,1.00k 3W,UNI-ROYAL MFR03SF1001A10,R_Axial_DIN0614_L14.3mm_D5.7mm_P20.32mm_Horizontal,C58750,"1 %, 3 W, 50 ppm metal film (UNI-ROYAL MFR03SF1001A10)",yes
 R3,14.0k,14.0k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C127223,1 % metal film 0.25 W (CCO MF1/4W-14K),yes
 RV1,500R,Bourns 3296W-1-501LF,Potentiometer_Bourns_3296W_Vertical,C69564,"Bourns 3296W-1-501LF, 25 turns",yes
-C1,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,WIMA FKP2J002201D00HSSD 630 V 2.5 %,yes
-R4,412R,412R,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3558411,1 % metal film 0.25 W (Yageo MFR-25FTE52-412R),yes
-C2,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF,yes
-C9,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF,yes
-L1,1mH,Wurth 7447471102,L_Radial_D11.5mm_P5.00mm,C1331105,"Wurth WE-TIS 7447471102, shielded; JLCPCB lists it as +-20 % (the datasheet says +-10 %), the trimmer covers either; fallback Wurth 7447480102 = C1331132",yes
-C3,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,WIMA FKP2F014701I00JA00 250 V 5 %,yes
+C1,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only",NO - solder by hand
+R4,412R,Vishay MRS25000C4120FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1235858,"Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; soldered by hand (Digi-Key, Mouser, Buerklin); any 412 R 1 % 0.6 W in a 0207 body: Vishay MBB0207, Yageo MF0207FTE52",NO - solder by hand
+C2,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
+C9,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
+L1,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
+C3,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R5,75.0R 1W,75.0R 1W,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C160685,"1 %, 1 W metal film (CCO MF1W-75R)",yes
-L2,1mH,Wurth 7447471102,L_Radial_D11.5mm_P5.00mm,C1331105,"Wurth WE-TIS 7447471102, shielded; JLCPCB lists it as +-20 % (the datasheet says +-10 %), the trimmer covers either; fallback Wurth 7447480102 = C1331132",yes
-R6,3.40k,3.40k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3517441,1 % metal film 0.25 W (Yageo MFR-25FBF52-3K4),yes
-C4,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,WIMA FKP2F014701I00JA00 250 V 5 %,yes
+L2,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
+R6,3.40k,Vishay MRS25000C3401FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1366835,"Vishay MRS25000C3401FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C3401FCT00 = C1382495",yes
+C4,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R7,24.9R,24.9R,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3542579,1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9),yes
-R8,10.0k 1W,UNI-ROYAL MFR01SF1002A10,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C58714,"1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)",yes
-R9,10.0k 1W,UNI-ROYAL MFR01SF1002A10,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C58714,"1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)",yes
+R8,10.0k 0.1%,TE YR1B10KCC,R_Axial_DIN0207_L6.3mm_D2.5mm_P15.24mm_Horizontal,C1364313,"0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k",yes
+R9,10.0k 0.1%,TE YR1B10KCC,R_Axial_DIN0207_L6.3mm_D2.5mm_P15.24mm_Horizontal,C1364313,"0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k",yes
 R10,1.00k 0.1%,TE YR1B1K0CC,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1364308,"0.1 %, 15 ppm, 0.25 W (TE YR1B1K0CC)",yes
 R11,1.00k 3W,UNI-ROYAL MFR03SF1001A10,R_Axial_DIN0614_L14.3mm_D5.7mm_P20.32mm_Horizontal,C58750,"1 %, 3 W, 50 ppm metal film (UNI-ROYAL MFR03SF1001A10; Vishay RS02B1K000FE12 is C3397612)",yes
 R12,1.00k 3W,UNI-ROYAL MFR03SF1001A10,R_Axial_DIN0614_L14.3mm_D5.7mm_P20.32mm_Horizontal,C58750,"1 %, 3 W, 50 ppm metal film (UNI-ROYAL MFR03SF1001A10)",yes
 R13,14.0k,14.0k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C127223,1 % metal film 0.25 W (CCO MF1/4W-14K),yes
 RV2,500R,Bourns 3296W-1-501LF,Potentiometer_Bourns_3296W_Vertical,C69564,"Bourns 3296W-1-501LF, 25 turns",yes
-C5,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,WIMA FKP2J002201D00HSSD 630 V 2.5 %,yes
-R14,412R,412R,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3558411,1 % metal film 0.25 W (Yageo MFR-25FTE52-412R),yes
-C6,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF,yes
-C10,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,WIMA FKP2J002201D00HSSD 630 V 2.5 %; one of two in parallel = 440 pF,yes
-L3,1mH,Wurth 7447471102,L_Radial_D11.5mm_P5.00mm,C1331105,"Wurth WE-TIS 7447471102, shielded; JLCPCB lists it as +-20 % (the datasheet says +-10 %), the trimmer covers either; fallback Wurth 7447480102 = C1331132",yes
-C7,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,WIMA FKP2F014701I00JA00 250 V 5 %,yes
+C5,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only",NO - solder by hand
+R14,412R,Vishay MRS25000C4120FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1235858,"Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; soldered by hand (Digi-Key, Mouser, Buerklin); any 412 R 1 % 0.6 W in a 0207 body: Vishay MBB0207, Yageo MF0207FTE52",NO - solder by hand
+C6,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
+C10,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
+L3,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
+C7,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R15,75.0R 1W,75.0R 1W,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C160685,"1 %, 1 W metal film (CCO MF1W-75R)",yes
-L4,1mH,Wurth 7447471102,L_Radial_D11.5mm_P5.00mm,C1331105,"Wurth WE-TIS 7447471102, shielded; JLCPCB lists it as +-20 % (the datasheet says +-10 %), the trimmer covers either; fallback Wurth 7447480102 = C1331132",yes
-R16,3.40k,3.40k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3517441,1 % metal film 0.25 W (Yageo MFR-25FBF52-3K4),yes
-C8,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,WIMA FKP2F014701I00JA00 250 V 5 %,yes
+L4,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
+R16,3.40k,Vishay MRS25000C3401FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1366835,"Vishay MRS25000C3401FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C3401FCT00 = C1382495",yes
+C8,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R17,24.9R,24.9R,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3542579,1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9),yes
-R18,10.0k 1W,UNI-ROYAL MFR01SF1002A10,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C58714,"1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)",yes
-R19,10.0k 1W,UNI-ROYAL MFR01SF1002A10,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C58714,"1 %, 1 W, 50 ppm metal film (UNI-ROYAL MFR01SF1002A10; Yageo MFR1WSFTE52-10K is C172916)",yes
+R18,10.0k 0.1%,TE YR1B10KCC,R_Axial_DIN0207_L6.3mm_D2.5mm_P15.24mm_Horizontal,C1364313,"0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k",yes
+R19,10.0k 0.1%,TE YR1B10KCC,R_Axial_DIN0207_L6.3mm_D2.5mm_P15.24mm_Horizontal,C1364313,"0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k",yes
 R20,1.00k 0.1%,TE YR1B1K0CC,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1364308,"0.1 %, 15 ppm, 0.25 W (TE YR1B1K0CC)",yes
 J4,IN XLR,Neutrik NC3FAAH2,Jack_XLR_Neutrik_NC3FAAH2_Horizontal,C368522,"Neutrik NC3FAAH2, pin 2 = +, pin 3 = -, pin 1 and G = ground",yes
-J1,IN +,Cliff FCR7350R,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087,"Cliff FCR7350R red, amplifier +; with J2 at 19.05 mm for a dual banana plug; pre-order at LCSC, cheaper from Digi-Key",yes
-J2,IN -,Cliff FCR7350B,Banana_Cliff_FCR7350B_S16N-PC_Horizontal,C6555263,"Cliff FCR7350B black, amplifier -",yes
-J3,GND,Cliff FCR7350G,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085,"Cliff FCR7350G green, common / chassis",yes
+J1,IN +,Cliff FCR7350R,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087,"Cliff FCR7350R red, amplifier +; with J2 at 19.05 mm for a dual banana plug; soldered by hand (Digi-Key)",NO - solder by hand
+J2,IN -,Cliff FCR7350B,Banana_Cliff_FCR7350B_S16N-PC_Horizontal,C6555263,"Cliff FCR7350B black, amplifier -; soldered by hand (Digi-Key)",NO - solder by hand
+J3,GND,Cliff FCR7350G,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085,"Cliff FCR7350G green, common / chassis; soldered by hand (Digi-Key)",NO - solder by hand
 J5,OUT XLR,Neutrik NC3MAAH,Jack_XLR_Neutrik_NC3MAAH_Horizontal,C368463,"Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground",yes
-K1,G6A-274P-ST-US DC12,Omron G6A-274P-ST-US DC12,Relay_DPDT_Omron_G6A-274P,C129439,"DO NOT PLACE until the matrix drives it; NC = pad, NO = direct; until then the toggle is wired into its holes",NO - footprint only
-J9,COIL,pin header 1x2 2.54 mm,PinHeader_1x02_P2.54mm_Vertical,C492401,"relay coil, 12 V from the matrix controller",yes
-D1,1N4148,1N4148,D_DO-35_SOD27_P7.62mm_Horizontal,C258182,flyback across the coil; pin 1 is the cathode (band) and goes to COIL+,yes

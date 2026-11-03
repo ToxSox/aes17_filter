@@ -72,7 +72,7 @@ def ascii_only(text):
 # NC3FAAH2 model a quarter the other way and its NC3MAAH model a half turn. The headers and the
 # trimmers are symmetric in their pins, so a half turn too many still fits the holes; the XLRs
 # only fit one way, which the holes enforce whatever this file says.
-ROTATION_OFFSET = {'J4': 270, 'J5': 180, 'J9': 90, 'RV1': 90, 'RV2': 90}
+ROTATION_OFFSET = {'J4': 270, 'J5': 180, 'RV1': 90, 'RV2': 90}
 
 
 def part_centre(fp):
@@ -101,7 +101,7 @@ def bom_and_cpl():
         fp = fps[ref]
         footprint = design.FP[fpkey].split(':')[1]
         place = ref not in design.DO_NOT_PLACE
-        parts_rows.append((ref, value, design.comment(ref, value), footprint, lcsc, note, 'yes' if place else 'NO - footprint only'))
+        parts_rows.append((ref, value, design.comment(ref, value), footprint, lcsc, note, 'yes' if place else 'NO - solder by hand'))
         if not place:
             continue
         key = (design.comment(ref, value), footprint, lcsc)

@@ -33,9 +33,9 @@ CLIFF_AXIS = 6.3    # Cliff S16N-PC: 5.5 mm axis height on 0.8 mm stand-offs
 XLR_HOLE, XLR_SCREW, XLR_SCREW_D = 22.5, 9.9, 3.2   # Neutrik: hole >= 22 mm, two M3 holes 19.8 mm apart on a diagonal
 CLIFF_HOLE = 11.5   # clears the socket's 11.0 mm barrel; Cliff does not specify a panel hole
 TOGGLE_HOLE = 6.4   # 1/4 in bushing
-TOGGLE_AXIS = 24.0  # the toggle sits high, straight above K1's footprint (8.4 mm relay), so that its
-                    # body (about 13 x 8 mm, 13-18 mm deep with the lugs) clears whatever is fitted
-                    # there and its six wires drop about 15 mm into K1's contact holes
+TOGGLE_AXIS = 24.0  # the 4PDT toggle sits high, straight above W1, so that its body (a 4PDT
+                    # miniature toggle is about 13 x 17 mm, 20 mm deep with the lugs) clears the
+                    # board and its ten wires drop about 15 mm into W1's holes
 
 HOLES = [
     # label, x along the board, axis above the board, hole diameter, XLR screws?
@@ -53,11 +53,11 @@ LEGEND = [
     (make_pcb.AX_XLR_IN, 5.0, 'IN  2+ 3-'),
     (make_pcb.AX_RED, 5.0, 'IN +'), (make_pcb.AX_BLACK, 5.0, 'IN -'), (make_pcb.AX_GREEN, 5.0, 'GND'),
     ((make_pcb.AX_RED + make_pcb.AX_GREEN) / 2, 45.0,
-     'max per leg: 85 Vrms to 12 kHz, 53 Vrms at 20 kHz, 35 Vrms 30-100 kHz'),
+     'max per leg: 75 Vrms to 15 kHz, 55 Vrms at 20 kHz, 30 Vrms 30 kHz-1 MHz'),
     ((make_pcb.AX_RED + make_pcb.AX_GREEN) / 2, 41.0, 'GND to the amplifier ground; IN - is not ground'),
     (make_pcb.AX_XLR_OUT, 5.0, 'OUT  2+ 3-'),
     (make_pcb.AX_TOGGLE, 45.0, 'PAD 1:21.8  /  DIRECT'),
-    (make_pcb.AX_TOGGLE, 25.0, 'DIRECT: max 40 Vrms\ninto the QA403;\nswitch muted only'),
+    (make_pcb.AX_TOGGLE, 25.0, 'DIRECT: max 40 Vrms,\n56 Vpk incl. DC;\nswitch amp off only'),
 ]
 
 

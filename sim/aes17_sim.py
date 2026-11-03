@@ -10,7 +10,9 @@ the half circuit is exact for a balanced drive):
                |                      |                       |
               GND                    GND                     GND
 
-Needs numpy only. Prints every table quoted in the document:
+The build itself (BUILD) adds the 20:1 pad, which a 4PDT toggle connects to the output in PAD
+and takes off in DIRECT, where the analyzer's 100k is the only load. Needs numpy only. Prints every table
+quoted in the document (the common-mode Monte Carlo takes half a minute):
 
     python3 sim/aes17_sim.py
 """
@@ -25,8 +27,11 @@ REPO = dict(R1=500., C1=220e-12, R3=330., C34=440e-12, L1=1e-3, L3=1e-3, Ldcr=1.
 AUX0025 = dict(REPO, R1=503., R3=412., C34=390e-12, R5=75., R7=3400., R9=24.9, Ldcr=0.5)
 
 
-def admittance(f, p, Rload=100e3, Cload=0.0, pad=None):
-    """The nodal admittance matrix at one frequency, and the node the analyzer sits on."""
+def admittance(f, p, Rload=100e3, Cload=0.0, pad=None, tap=True):
+    """The nodal admittance matrix at one frequency, and the node the analyzer sits on.
+    pad = (Rtop, Rbottom) hangs a divider on the filter output; tap=True puts the analyzer on its
+    tap (PAD), tap=False leaves it on the output with the divider still there (DIRECT on this
+    board, whose pad is never disconnected)."""
     s = 2j * math.pi * f
     Y = np.zeros((9, 9), dtype=complex)  # 0 GND, 1 in, 2..6 internal, 7 out, 8 pad tap
 
@@ -41,7 +46,9 @@ def admittance(f, p, Rload=100e3, Cload=0.0, pad=None):
     add(6, 7, 1 / p['R9'])
     load_node = 7
     if pad:
-        add(7, 8, 1 / pad[0]); add(8, 0, 1 / pad[1]); load_node = 8
+        add(7, 8, 1 / pad[0]); add(8, 0, 1 / pad[1])
+        if tap:
+            load_node = 8
     add(load_node, 0, 1 / Rload)
     if Cload:
         add(load_node, 0, s * Cload)
@@ -123,47 +130,153 @@ def monte_carlo(tolL, tolC, tolR, n=400, seed=1):
           f"worst 250-500 kHz {worst_rej.max():.1f} dB")
 
 
-# This build: the AUX-0025 values with two 220 pF for the 390 pF and the Wurth WE-TIS coils
-# (2.1 ohm typ.), and AP's input network with a 500 ohm trimmer: 1k || 14k || (1k + RV).
-BUILD = dict(AUX0025, C34=440e-12, Ldcr=2.1)
+# This build: the AUX-0025 values with two 220 pF for the 390 pF and the unshielded Wurth WE-TI
+# 7687480102 coils (1.0 ohm), AP's input network with a 500 ohm trimmer: 1k || 14k || (1k + RV),
+# and the 20:1 pad (2 x 10.0 k over 1.00 k), on the output in PAD only.
+BUILD = dict(AUX0025, C34=440e-12, Ldcr=1.0)
+PAD = (20e3, 1e3)
+DIRECT = dict()                         # the analyzer on F, the pad switched off
+PADDED = dict(pad=PAD, tap=True)        # the analyzer on the pad's tap
 
 
 def network(rv):
     return 1 / (1 / 1000 + 1 / 14000 + 1 / (1000 + rv))
 
 
-def rating():
-    """The highest sine voltage per leg (leg to ground) the parts take, over frequency.
+def trim(p, lo=440.0, hi=700.0, **kw):
+    """R1 such that |H(20 kHz)| = |H(1 kHz)|, by bisection: what turning the trimmer does."""
+    def err(r1):
+        h = transfer(np.array([1e3, 20e3]), dict(p, R1=r1), **kw)
+        return db(h[1]) - db(h[0])
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        if err(mid) > 0:     # 20 kHz too high: more resistance, more damping
+            lo = mid
+        else:
+            hi = mid
+    return (lo + hi) / 2
 
-    The limits, each at the trimmer setting that is worst for it:
-      coils     Wurth gives 120 V DC max operating voltage, without saying between what: read
-                as node to ground, that is 85 Vrms of sine anywhere
-      trimmer   Bourns 3296, 0.5 W at 70 C over the whole 500 ohm element; used as a rheostat
-                the current, not the power in the part in use, is what the element takes:
-                sqrt(0.5 / 500) = 31.6 mA. Worst with the trimmer near zero (network 484 ohm)
-      3 W parts the two 1 k at half their rating, 1.5 W, in a closed box
-      pad       the 10 k 1 W at half their rating
-    A BTL amplifier puts half its differential voltage on each leg.
-    """
-    print("== the highest sine voltage per leg (leg to ground), and what limits it ==")
-    i_rv = math.sqrt(0.5 / 500)
+
+def build_tables():
+    print("== this build: DIRECT (pad off) and PAD, into the QA403's 100k and a 185 pF lead ==")
+    p = dict(BUILD, R1=trim(BUILD, **DIRECT))
+    for label, kw in (("DIRECT, 100k", DIRECT), ("PAD, 100k", PADDED)):
+        ref = transfer(np.array([1e3]), p, **kw)[0]
+        print(f"  {label:12} ratio {1/abs(ref):7.4f}:1 ({db(ref):+.3f} dB)")
+    pc = dict(BUILD, R1=trim(BUILD, Cload=185e-12, **DIRECT))
+    for label, kw in (("DIRECT", DIRECT), ("PAD", PADDED)):
+        ref, dev, stop = summary(pc, Cload=185e-12, **kw)
+        print(f"  trimmed in DIRECT with 185 pF, read in {label:6}: 20 Hz-20 kHz {dev.min():+.3f}/{dev.max():+.3f} dB,"
+              f" 20 kHz {dev[-1]:+.3f} dB; " + ' '.join(f"{f/1e3:.0f}k:{v:.1f}" for f, v in zip(STOPBAND, stop)))
+
+
+# The parts' power ratings, and the share of it this design allows in a closed box.
+RATINGS = {      # name: (ohms, rated W)
+    'R1a 1k 3W':          (1000., 3.0),
+    'R1c 14k 0.25W':      (14e3, 0.25),
+    'R3 412R 0.6W':       (412., 0.6),
+    'R5 75R 1W':          (75., 1.0),
+    'R7 3k40 0.6W':       (3400., 0.6),
+    'R9 24R9 0.25W':      (24.9, 0.25),
+    'pad 10k 0.25W':      (10e3, 0.25),
+    'pad 1k 0.25W':       (1e3, 0.25),
+}
+DERATE = 0.5
+
+
+def part_powers(f, p, rv, vin=1.0):
+    """Power in every resistor, and the trimmer's current, for vin per leg, in PAD: the only
+    position in which the pad dissipates, and the one any voltage over the QA403's 40 Vrms is
+    measured in."""
+    v = node_voltages(f, p, vin, **PADDED)
+    s = 2j * math.pi * f
+    vnet = v[1] - v[2]
+    i_c34 = (v[2] - v[4]) / (p['R3'] + 1 / (s * p['C34']))
+    i_pad = v[7] / (PAD[0] + PAD[1])
+    pw = {'R1a 1k 3W':     abs(vnet) ** 2 / 1000.,
+          'R1c 14k 0.25W': abs(vnet) ** 2 / 14e3,
+          'R3 412R 0.6W':  abs(i_c34) ** 2 * p['R3'],
+          'R5 75R 1W':     abs(v[4] - v[5]) ** 2 / p['R5'],
+          'R7 3k40 0.6W':  abs(v[5] - v[6]) ** 2 / p['R7'],
+          'R9 24R9 0.25W': abs(v[6] - v[7]) ** 2 / p['R9'],
+          'pad 10k 0.25W': abs(i_pad) ** 2 * PAD[0] / 2,
+          'pad 1k 0.25W':  abs(i_pad) ** 2 * PAD[1]}
+    i_rv = abs(vnet) / (1000 + rv)
+    return pw, i_rv
+
+
+RATING_FREQS = (1e3, 5e3, 10e3, 12e3, 15e3, 20e3, 30e3, 50e3, 70e3, 100e3, 150e3, 250e3, 500e3, 1e6)
+
+
+def rating(verbose=True):
+    """The highest sine voltage per leg (leg to ground) the parts take, over frequency, at the
+    trimmer setting that is worst for each part. Every resistor is checked at DERATE of its rating;
+    the trimmer is a Bourns 3296, 0.5 W at 70 C over the whole 500 ohm element: used as a rheostat
+    the current, sqrt(0.5 / 500) = 31.6 mA, is what the element takes; the coils' 120 V (Wurth
+    gives it without saying between what) is read as node to ground, 85 Vrms of sine anywhere.
+    A BTL amplifier puts half its differential voltage on each leg."""
+    i_max = math.sqrt(0.5 / 500)
     worst = {}
     for rv in (5.0, 140.0, 281.0):          # networks 484, 513 (nominal trim), 540 ohm
         p = dict(BUILD, R1=network(rv))
-        for f in (1e3, 5e3, 7.5e3, 10e3, 12e3, 15e3, 20e3, 30e3, 50e3, 100e3, 250e3, 500e3):
-            v = node_voltages(f, p, 1.0)
-            vnet = abs(v[1] - v[2])
-            lim = {'coil 120 Vpk': 120 / math.sqrt(2),
-                   'trimmer 31.6 mA': i_rv * (1000 + rv) / vnet,
-                   '1k 3W at 1.5 W': math.sqrt(1.5 * 1000) / vnet,
-                   'pad 10k at 0.5 W': math.sqrt(0.5 / 10e3) * 21e3 / abs(v[7])}
+        for f in RATING_FREQS:
+            pw, i_rv = part_powers(f, p, rv)
+            lim = {'coil 120 Vpk': 120 / math.sqrt(2), 'trimmer 31.6 mA': i_max / i_rv}
+            for name, (_r, watts) in RATINGS.items():
+                lim[name] = math.sqrt(DERATE * watts / pw[name])
             name = min(lim, key=lim.get)
             if f not in worst or lim[name] < worst[f][0]:
                 worst[f] = (lim[name], name, rv)
-    for f, (vmax, name, rv) in sorted(worst.items()):
-        print(f"  {f/1e3:6.1f} kHz: {vmax:5.0f} Vrms per leg   ({name}, trimmer at {rv:.0f} ohm)")
-    print("  rating: 85 Vrms per leg to 12 kHz, falling as 1/f to 53 Vrms at 20 kHz, 35 Vrms from 20 to"
-          " 100 kHz; a BTL amplifier may put twice that across its terminals")
+    if verbose:
+        print(f"== the highest sine voltage per leg (leg to ground), every resistor at {DERATE:.0%} of its rating ==")
+        for f, (vmax, name, rv) in sorted(worst.items()):
+            print(f"  {f/1e3:6.1f} kHz: {vmax:5.0f} Vrms per leg   ({name}, trimmer at {rv:.0f} ohm)")
+        print("  rating: 75 Vrms per leg to 15 kHz (the pad), falling to 55 Vrms at 20 kHz (the trimmer),"
+              " 30 Vrms from 30 kHz to 1 MHz (trimmer, R7 3.40k, R3 412R); a BTL amplifier may put twice"
+              " that across its terminals")
+    return worst
+
+
+def cmrr(n=500, seed=2):
+    """Common mode in, difference out: both legs built from parts drawn within tolerance, each
+    trimmed on its own in DIRECT (pad off), then driven together. Prints the 95th percentile of
+    |H+ - H-| / |H| in dB, i.e. how much of a common-mode signal the QA403's differential input
+    sees as signal, and the trimmed legs' worst passband deviation."""
+    print(f"== common mode to difference, 95th percentile of {n} boards, each leg trimmed alone ==")
+    freqs = np.array([50., 1e3, 10e3, 20e3, 100e3])
+    cases = (('coils +-5 %, pad 0.1 % (as built)',     0.05, 0.001, False),
+             ('coils +-5 %, pad 1 % upper arms (rev A)', 0.05, 0.010, False),
+             ('coils +-20 %, pad 0.1 %',              0.20, 0.001, False),
+             ('coils +-5 % paired to 1 %, pad 0.1 %', 0.05, 0.001, True))
+    for label, tol_l, tol_pad, paired in cases:
+        rng = np.random.default_rng(seed)
+        res = {'DIRECT untrimmed': [], 'DIRECT': [], 'PAD': []}
+        ripple = []
+        for _ in range(n):
+            legs = []
+            l_pair = [1 + rng.uniform(-tol_l, tol_l) for _ in range(2)]
+            for leg in range(2):
+                q = dict(BUILD, R1=network(140.))
+                for i, k in enumerate(('L1', 'L3')):
+                    q[k] *= l_pair[i] * (1 + rng.uniform(-0.01, 0.01)) if paired else 1 + rng.uniform(-tol_l, tol_l)
+                q['C1'] *= 1 + rng.uniform(-0.025, 0.025)
+                q['C34'] *= 1 + rng.uniform(-0.025, 0.025)
+                for k in ('C7', 'C9'):
+                    q[k] *= 1 + rng.uniform(-0.05, 0.05)
+                for k in ('R3', 'R5', 'R7', 'R9'):
+                    q[k] *= 1 + rng.uniform(-0.01, 0.01)
+                pad = (PAD[0] * (1 + rng.uniform(-tol_pad, tol_pad)), PAD[1] * (1 + rng.uniform(-0.001, 0.001)))
+                h0 = transfer(freqs, q)
+                q['R1'] = trim(q)
+                legs.append((h0, transfer(freqs, q), transfer(freqs, q, pad=pad, tap=True)))
+                ripple.append(np.abs(db(transfer(PASSBAND, q)) - db(transfer(np.array([1e3]), q))[0]).max())
+            for i, key in enumerate(res):
+                hp, hn = legs[0][i], legs[1][i]
+                res[key].append(np.abs(hp - hn) / np.abs((hp + hn) / 2))
+        print(f"  {label}: trimmed passband within +-{max(ripple):.3f} dB")
+        for key, vals in res.items():
+            p95 = db(np.percentile(np.array(vals), 95, axis=0))
+            print(f"    {key:17} " + '  '.join(f"{f/1e3:g}k {v:6.1f}" for f, v in zip(freqs, p95)))
 
 
 def dissipation():
@@ -213,7 +326,9 @@ if __name__ == '__main__':
     monte_carlo(0.05, 0.025, 0.01)
     monte_carlo(0.10, 0.025, 0.01)
     monte_carlo(0.02, 0.01, 0.01)
+    build_tables()
     dissipation()
     rating()
+    cmrr()
     analyzer_ranges()
     noise()

@@ -14,6 +14,12 @@ Reichelt (reichelt.de) were not reachable from the session that wrote the docume
 were Bürklin, Conrad, RS and TME product pages (403 or 503). All of them carry the same makers,
 so nothing below is settled until it has been looked up there too.
 
+**Update of 2 November 2026:** a second review changed four lines, all found at JLCPCB: the
+coils are the unshielded Würth 7447480102 (C1331132), the pad's upper arms TE YR1B10KCC 0.1 %
+(C1364313), R4/R14 and R6/R16 0.6 W Vishay MRS25 (C1235858, C1366835), and the toggle must have
+gold contacts, and the pad switch is a **4PDT** toggle (two poles per leg, so the pad comes off
+the output in DIRECT). Sections 1.1, 1.6 and 1.7 say so; the rest of this list is as it was.
+
 How to use this: work through section 1 part by part, fill the result table in section 3, and
 answer the questions in section 2 where a page says so. Record for every part the **exact
 manufacturer part number, distributor order number, unit price at the quantity in the table,
@@ -52,7 +58,7 @@ build adds or changes against the repo, and still has to be found:**
 | AP's values instead of the repo's E24 ones | 412 Ω, 3.40 kΩ, 24.9 Ω (0.6 W), 75.0 Ω (1 W), all 1 % metal film; **390 pF 630 V polypropylene** instead of 2 × 220 pF | 1.4, 1.5 | resistors yes (E96 is standard there); 390 pF: look for WIMA FKP2J003901D00HSSD / JSSD or Kemet PFR |
 | The 20 kHz trim | 2 × 1.00 kΩ 1 % 3 W per leg, 14.0 kΩ, **500 Ω 25-turn trimmer (Bourns 3296W-1-501LF)** | 1.2, 1.3 | trimmer yes; 3 W 1 % resistors: check Vishay RS02B / CPF3 or Chinese 3 W metal film 1 % |
 | The 20:1 pad instead of 9 k / 1 k | 9.53 kΩ and 1.00 kΩ, **0.1 %**, 0.5 W, axial | 1.6 | 0.1 % axial is thin there; 1 % at 50 ppm is the stated fallback |
-| Toggle in the front wall, relay footprint kept for the matrix | DPDT ON-ON panel toggle, wired into the relay's footprint (the Omron G6A-274P is not bought yet) | 1.7 | yes, toggles are commodity |
+| Toggle in the front wall | 4PDT ON-ON panel toggle with gold contacts, wired into the ten holes of W1 | 1.7 | yes, toggles are commodity |
 | BNC instead of XLR | 4 × PCB right-angle BNC with panel nut, **Molex 73100-0105** | 1.8 | yes, and Chinese equivalents; the panel nut is the thing to confirm |
 | 4 mm safety sockets instead of Cliff test jacks | 3 × shrouded 4 mm PCB socket ≥ 20 A, **Cliff FCR7350 R/B/G** | 1.8 | Cliff unlikely; a shrouded Chinese 4 mm PCB socket at ≥ 20 A is acceptable if it is right-angle and the datasheet gives the rating |
 | All connectors in one long wall | **Hammond 1444-862** chassis + **1434-86** bottom plate, 10 mm M3 spacers | 1.9 | no; Digi-Key, Mouser, Reichelt |
@@ -71,8 +77,9 @@ Also still open: every question in section 2.
 | | |
 |---|---|
 | Hard | 1000 µH, **±5 % or better**, rated current ≥ 0.5 A, DCR ≤ 1.5 Ω, radial through-hole, 5 mm pin pitch (so it fits the one footprint), self-resonance ≥ 1 MHz |
-| First choice | **Würth WE-TIS 7447471102**, shielded, ±10 %, 2.1 Ω, 0.46 A / 0.68 A, SRF 1.1 MHz, 120 V, Ø11 × 11.5 mm, 5 mm pitch. JLCPCB part C1331105 (pre-order; JLCPCB says ±20 %, the datasheet ±10 %). Not in LCSC's own shop; JLCPCB global sourcing quoted it on 1 November 2026: Digi-Key 3.01 € (339 in stock, 8-14 business days), RS 2.74 € at five (25 in stock), Element14 2.97 € (58), Mouser 3.37 € (139). The ±10 % is absorbed by the trimmer (see the design document) |
-| Fallback | **Würth 7687480102** (WE-TI HV, 400 V DC rating, unshielded ±5 %). Digi-Key: 285 in stock, 1.61 € |
+| First choice | **Würth 7687480102** (WE-TI HV, unshielded ±5 %, 1.0 Ω, 0.8 A, 400 V DC), Digi-Key 1.61 €, 285 in stock on 1 November 2026, bought locally and soldered by hand; the 120 V 7447480102 (JLCPCB/LCSC C1331132, pre-order, 2.14 €) is the same coil. Since 2 November 2026 the fitted coil family, for linearity and leg matching (see the design review, "Inductors") |
+| Comparison only | **Würth WE-TIS 7447471102**, shielded, ±10 % (JLCPCB says ±20 %), 2.1 Ω, 0.46 A / 0.68 A; JLCPCB C1331105. The first draw of rev A fitted it; now one board's worth for the linearity comparison in test 4 |
+| Also unshielded ±5 % | **Würth 7687480102** (WE-TI HV, 400 V DC rating). Digi-Key: 285 in stock, 1.61 € |
 | Same coil, lower voltage rating | Würth 7447480102 (WE-TI, 120 V DC). Digi-Key: 0 in stock, back order to 26 May 2027; **JLCPCB/LCSC C1331132, pre-order, 2.14 €, minimum 4**. The 120 V rating is enough for this filter (the inductor never sees more than about 20 V), so this part is fully acceptable; at 2.14 € it is the fallback if the HV part is not in stock at 1.61 € |
 | Other ±5 % radials, acceptable | Fastron 09P-102J-50 (±5 %, 2.6 Ω, 280 mA - DCR and current are below the hard line, only if nothing else exists), Hammond 1537R (±5 %, 0.83 Ω, 1.25 A, but Ø15 × 32 mm - fits only with a footprint change), TDK B78148S1105J000 (±5 %, 130 mA - too little current, reject) |
 | Not acceptable as a straight swap | anything ±10 % or ±20 % (Bourns RLB1314-102KL, Würth WE-TIS 7447471102 / 744731102, Coilcraft RFS1317-105KL, Bourns SRR1280-102K, TDK B82477) - unless **twenty** are bought to select five matched pairs from, which is a legitimate plan if the price is low; then note it as such |
@@ -121,16 +128,16 @@ not worth a second shop.
 |---|---|
 | Hard | **0.1 %**, ≤ 25 ppm/K, ≥ 0.5 W, through-hole axial |
 | First choice | Vishay Dale CMF55 or PTF56 0.1 %, or Vishay MBB/MBE 0207 0.1 %; TE Connectivity Neohm, Welwyn RC55Y. Record whichever shop has both values in 0.1 % |
-| Fallback | 0.1 % is a convenience, not a necessity - the ratio is measured in place anyway. If 0.1 % costs over 3 € a piece, take 1 % at ≤ 50 ppm/K and say so |
+| Settled | **TE YR1B10KCC** (10.0 kΩ) and **YR1B1K0CC** (1.00 kΩ), 0.1 %, 15 ppm, 0.25 W, C1364313 / C1364308, both in stock at JLCPCB on 2 November 2026; 2 × 10 kΩ over 1 kΩ per leg |
+| Not a fallback any more | 1 % upper arms. The ratio is measured in place, but the QA403 subtracts the two legs in its analogue input, so the legs' ratios must match each other: 1 % arms leave −36 dB of common mode in the difference, 0.1 % arms −52 dB |
 
 ### 1.7 Pad switch - 2 pieces
 
 | | |
 |---|---|
-| Hard | DPDT, ON-ON (two stable positions, no centre-off), **non-shorting** (break before make), panel mount for a 1 mm aluminium wall, solder lugs |
-| Wanted | a **locking lever** (pull to switch), so DIRECT is not selected by accident; **gold-plated contacts**, because the current is microamps and silver contacts can grow a film that conducts unevenly at such currents |
-| First choice | a miniature toggle of that kind from APEM's 5000 or C&K's 7000 series, both of which offer locking levers and gold contacts as options; record the exact part number, price and panel hole diameter. A plain silver-contact toggle (Knitter MTA 206, house brands) works, but is the second choice |
-| Not now | the **Omron G6A-274P-ST-US DC12** relay keeps its footprint on the board but is not bought until the matrix controller exists; if a shop has it cheaply, note the price for later |
+| Hard | **4PDT**, ON-ON (two stable positions, no centre-off), **non-shorting** (break before make), panel mount for a 1 mm aluminium wall, solder lugs, open-contact dielectric rating ≥ 250 V |
+| Hard, too | **gold-plated contacts**: a dry circuit, silver is not acceptable. Wanted: a **locking lever** (pull to switch), so DIRECT is not selected by accident; gold-plated contacts because the current is microamps and silver contacts can grow a film that conducts unevenly at such currents |
+| First choice | **APEM 5666CDB**: 4PDT ON-ON, 1/4-40 bushing, solder lugs, gold-plated contacts (rated 0.4 VA at 20 V, which is a switching rating: the filter is switched with the amplifier off). Otherwise a 4PDT from APEM's 5000 or C&K's 7000 series with gold contacts; record the exact part number, price and the dielectric rating between open contacts |
 
 ### 1.8 Connectors
 
@@ -166,8 +173,8 @@ pieces, ENIG not required. Quote the price with shipping to Germany at the time 
    220 pF is settled. Give part numbers and prices.
 4. **Mouser stock** for every "0 in stock" and "back order" line above: Würth 7447480102,
    Vishay PAC500005000FAC000, Vishay KP1830122633, Kemet PFR5472F630J13L4BULK.
-5. **Omron G6A-274P-ST-US DC12** price at Mouser, Reichelt and LCSC, for later (Reichelt lists
-   Omron signal relays under its own names; search "G6A-274P"). Not needed for the first build.
+5. **The 4PDT toggle with gold contacts** (APEM 5666CDB or equivalent) at Mouser, RS and
+   Reichelt: price, stock, and the dielectric rating between open contacts from the data sheet.
 6. **Two BNC leads**, male to male, 50 Ω, 20-30 cm, equal length, for the filter's output to
    the QA403's L+ and L−: a shop and a price. (The QA403 is connected by cable; its front-panel
    BNC pitch does not matter.)
