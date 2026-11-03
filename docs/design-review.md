@@ -366,9 +366,9 @@ is **±5 % film, bought in twenties and selected**: twenty 4.7 nF at 0.67 € an
 0.51 € cost less than one reel minimum, and an LCR meter sorts them into ±1 % sets in ten
 minutes. Anything but C0G is out if ceramic is ever used.
 
-**Inductors:** Würth **7447480102** (WE-TI: 1 mH ±5 %, 1.15 Ω, 0.8 A, unshielded drum core,
-JLCPCB C1331132, pre-order) - the 120 V sibling of the repo's 7687480102 (WE-TI HV, 400 V),
-the same coil family that V2 measured at −133 dB HD3. An earlier revision of this fork fitted
+**Inductors:** Würth **7687480102** (WE-TI HV: 1 mH ±5 %, 1.0 Ω, 0.8 A, 400 V, unshielded drum
+core; Digi-Key, soldered by hand) - the repo's own part, the coil V2 measured at −133 dB HD3.
+Its 120 V sibling 7447480102 is the same coil (JLCPCB C1331132, pre-order). An earlier revision of this fork fitted
 the shielded WE-TIS 7447471102 for its lower hum pickup, and the argument for the unshielded
 coil (taken from the review that followed) is linearity: the shielding sleeve closes the
 magnetic path around the drum and shortens the air gap that keeps a ferrite coil linear, so
@@ -391,20 +391,22 @@ every coil in the same orientation.
 and nothing is hand-selected. The Monte Carlo that decides this: 200 boards with the coils
 anywhere within their tolerance and the capacitors anywhere within ±5 %, each leg then trimmed
 with R1 alone, in DIRECT, into the analyzer's 100 kΩ. The coil as fitted is the
-unshielded Würth WE-TI 7447480102, ±5 % with 1.15 Ω of winding resistance.
+unshielded Würth WE-TI HV 7687480102, ±5 % with 1.0 Ω of winding resistance (the table was
+computed with the 7447480102's 1.15 Ω; the difference is under 0.001 dB).
 
 | Parts as delivered | Untrimmed, worst leg | Trimmed, worst leg | R1 range the trim needed |
 |---|---|---|---|
-| **WE-TI 7447480102, ±5 %, 1.15 Ω; C ±5 %** (the board as ordered) | 0.11 dB | **0.032 dB** | 495-534 Ω |
+| **WE-TI (HV) 7687480102 / 7447480102, ±5 %, 1.0-1.15 Ω; C ±5 %** (the board as built) | 0.11 dB | **0.032 dB** | 495-534 Ω |
 | WE-TIS 7447471102, ±10 % (datasheet), 2.1 Ω; C ±5 % | 0.17 dB | 0.034 dB | 484-543 Ω |
 | WE-TIS as JLCPCB lists it, ±20 %, 2.1 Ω; C ±5 % | 0.30 dB | 0.12 dB (3 % of legs out of the trimmer's reach) | 462-563 Ω |
 
 Within the trimmer's reach the trimmed residual is the same whatever the parts: it is the shape
 of the curve, not the tolerance, that sets it. What the tolerance does set is how well the two
 legs match at the top of the band (see "Leg matching"). So the
-board goes through assembly except the ten film capacitors, which JLCPCB has only on pre-order
-(19-21 working days): they are bought locally, measured and paired between the legs, and
-soldered by hand. The hand work is: solder the capacitors, drill the front wall, wire the toggle (ten wires),
+board goes through assembly except what JLCPCB has only on pre-order (the capacitors quoted at
+19-21 working days): the ten film capacitors, the four coils, the two 412 Ω and the three Cliff
+sockets are bought locally, the capacitors and coils measured and paired between the legs, and
+soldered by hand. The hand work is: solder those, drill the front wall, wire the toggle (ten wires),
 turn two trimmers, measure the pad ratio. Of the five boards, two are assembled; JLCPCB lets
 the assembly count differ from the board count.
 
@@ -461,13 +463,13 @@ an AUX-0025 (Axiometrix shop, October 2026).
 
 | Qty | Part | For | LCSC | Note | ≈ |
 |---|---|---|---|---|---|
-| 4 | **Würth WE-TI 7447480102**, 1 mH ±5 %, 1.15 Ω, 0.8 A, unshielded | L1-L4 | C1331132 | JLCPCB part, pre-order (2.14 € at JLCPCB on 1 November 2026). Alternative on the same footprint, for test 4's comparison: the shielded WE-TIS 7447471102, C1331105 (JLCPCB lists it ±20 %) | 2.1 € |
+| 4 | **Würth WE-TI HV 7687480102**, 1 mH ±5 %, 1.0 Ω, 0.8 A, unshielded | L1-L4 | C5523460 | **soldered by hand**, from Digi-Key (1.61 €, 285 in stock on 1 November 2026); at JLCPCB only pre-order (the 120 V 7447480102, C1331132, 2.14 €). Alternative on the same footprint, for test 4's comparison: the shielded WE-TIS 7447471102, C1331105 (JLCPCB lists it ±20 %) | 2.1 € |
 | 4 | UNI-ROYAL MFR03SF1001A10, 1.00 kΩ 1 % 3 W 50 ppm | input network | C58750 | in stock; Vishay RS02B1K000FE12 (C3397612) is the AP part at $3.71 | $0.06 |
 | 2 | 14.0 kΩ 1 % 0.25 W | input network | C127223 | | $0.01 |
 | 2 | Bourns 3296W-1-501LF, 500 Ω 25-turn | 20 kHz knee | C69564 | in stock | $0.97 |
 | 6 | WIMA FKP2J002201D00HSSD, 220 pF 630 V ±2.5 % | C1, C5 and the bypass pairs C2+C9, C6+C10 | C5742108 | **soldered by hand**, bought locally (Bürklin, also in ±1 %): JLCPCB quoted 19 working days of pre-order; 390 pF is not stocked, so two 220 pF in parallel make 440 pF as the repo has it (1 dB less at 250 kHz than AP's 390 pF, nothing else) | $0.23 |
 | 4 | WIMA FKP2F014701I00JA00, 4.7 nF 250 V ±5 % | C3, C4, C7, C8 | C20412818 | **soldered by hand**, bought locally (Digi-Key): JLCPCB quoted 21 working days of pre-order | $0.41 |
-| 2 | 412 Ω 1 % **0.6 W**, Vishay MRS25000C4120FCT00 | bypass across L1 | C1235858 | 0207 body, same footprint; 3 in stock at JLCPCB on 2 November 2026, so likely pre-order; same part: Vishay MBB02070C4120FRP00 (C1758271), Yageo MF0207FTE52-412R (C3401155) | - |
+| 2 | 412 Ω 1 % **0.6 W**, Vishay MRS25000C4120FCT00 | bypass across L1 | C1235858 | **soldered by hand**, bought locally: 3 in stock at JLCPCB on 2 November 2026; 0207 body, same footprint; same part: Vishay MBB02070C4120FRP00 (C1758271), Yageo MF0207FTE52-412R (C3401155) | - |
 | 2 | 75.0 Ω 1 % 1 W, CCO MF1W | between stages | C160685 | | $0.05 |
 | 2 | 3.40 kΩ 1 % **0.6 W**, Vishay MRS25000C3401FCT00 | across L3 | C1366835 | 0207 body, same footprint; 125 in stock at JLCPCB on 2 November 2026 | - |
 | 2 | 24.9 Ω 1 % 0.25 W, Yageo MFR-25FBF52-24R9 | output | C3542579 | | $0.03 |
@@ -475,7 +477,7 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 2 | TE YR1B1K0CC, 1.00 kΩ 0.1 % 15 ppm | pad, lower arm | C1364308 | in stock | $0.50 |
 | 1 | Neutrik NC3FAAH2, female XLR, horizontal PCB | J4, input | C368522 | in stock at LCSC; AP's input connector | $0.84-1.80 |
 | 1 | Neutrik NC3MAAH, male XLR, horizontal PCB | J5, output | C368463 | in stock at LCSC; AP's output connector; the QA403 hangs on an XLR-to-two-BNC lead | $0.79-1.80 |
-| 3 | Cliff FCR7350 R / B / G, 4 mm safety socket, PCB | J1-J3, at 19.05 mm for a dual banana | C6041087 / C6555263 / C6041085 | pre-order at $11-12 each at LCSC; 6.80 € at Digi-Key - buy there and solder the three by hand if the JLCPCB price stands | $11 |
+| 3 | Cliff FCR7350 R / B / G, 4 mm safety socket, PCB | J1-J3, at 19.05 mm for a dual banana | C6041087 / C6555263 / C6041085 | **soldered by hand**: pre-order at $11-12 each at LCSC; 6.80 € at Digi-Key - bought there and solder the three by hand if the JLCPCB price stands | $11 |
 | 1 | **4PDT** toggle ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; APEM 5666CDB or similar | pad switch, in the front wall | - | ten wires into W1; a dry circuit, silver contacts are not suitable; not a JLCPCB part (RS, Mouser) | 8-15 € |
 | 4 | screws for the two XLR flanges | the front wall | - | M3 as drawn on the front wall (3.2 mm holes); check against Neutrik's drawing of the NC3FAAH2 / NC3MAAH whether the flange takes M3 through or a 2.9 mm self-tapping screw, and drill to suit | 0.5 € |
 | 1 | Hammond 1444-862 chassis + 1434-86 bottom plate | box | - | flat 1 mm aluminium walls; all connectors in the front long wall | 31 € |

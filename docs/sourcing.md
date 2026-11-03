@@ -77,7 +77,7 @@ Also still open: every question in section 2.
 | | |
 |---|---|
 | Hard | 1000 µH, **±5 % or better**, rated current ≥ 0.5 A, DCR ≤ 1.5 Ω, radial through-hole, 5 mm pin pitch (so it fits the one footprint), self-resonance ≥ 1 MHz |
-| First choice | **Würth 7447480102** (WE-TI, unshielded ±5 %, 1.15 Ω, 0.8 A, 120 V DC), JLCPCB/LCSC C1331132, pre-order, 2.14 €, minimum 4. Since 2 November 2026 the fitted coil, for linearity and leg matching (see the design review, "Inductors") |
+| First choice | **Würth 7687480102** (WE-TI HV, unshielded ±5 %, 1.0 Ω, 0.8 A, 400 V DC), Digi-Key 1.61 €, 285 in stock on 1 November 2026, bought locally and soldered by hand; the 120 V 7447480102 (JLCPCB/LCSC C1331132, pre-order, 2.14 €) is the same coil. Since 2 November 2026 the fitted coil family, for linearity and leg matching (see the design review, "Inductors") |
 | Comparison only | **Würth WE-TIS 7447471102**, shielded, ±10 % (JLCPCB says ±20 %), 2.1 Ω, 0.46 A / 0.68 A; JLCPCB C1331105. The first draw of rev A fitted it; now one board's worth for the linearity comparison in test 4 |
 | Also unshielded ±5 % | **Würth 7687480102** (WE-TI HV, 400 V DC rating). Digi-Key: 285 in stock, 1.61 € |
 | Same coil, lower voltage rating | Würth 7447480102 (WE-TI, 120 V DC). Digi-Key: 0 in stock, back order to 26 May 2027; **JLCPCB/LCSC C1331132, pre-order, 2.14 €, minimum 4**. The 120 V rating is enough for this filter (the inductor never sees more than about 20 V), so this part is fully acceptable; at 2.14 € it is the fallback if the HV part is not in stock at 1.61 € |

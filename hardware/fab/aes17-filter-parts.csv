@@ -4,13 +4,13 @@ R2,1.00k 3W,UNI-ROYAL MFR03SF1001A10,R_Axial_DIN0614_L14.3mm_D5.7mm_P20.32mm_Hor
 R3,14.0k,14.0k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C127223,1 % metal film 0.25 W (CCO MF1/4W-14K),yes
 RV1,500R,Bourns 3296W-1-501LF,Potentiometer_Bourns_3296W_Vertical,C69564,"Bourns 3296W-1-501LF, 25 turns",yes
 C1,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only",NO - solder by hand
-R4,412R,Vishay MRS25000C4120FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1235858,"Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C4120FRP00 = C1758271, Yageo MF0207FTE52-412R = C3401155",yes
+R4,412R,Vishay MRS25000C4120FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1235858,"Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; soldered by hand (Digi-Key, Mouser, Buerklin); any 412 R 1 % 0.6 W in a 0207 body: Vishay MBB0207, Yageo MF0207FTE52",NO - solder by hand
 C2,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
 C9,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
-L1,1mH,Wurth 7447480102,L_Radial_D11.5mm_P5.00mm,C1331132,"Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105",yes
+L1,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
 C3,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R5,75.0R 1W,75.0R 1W,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C160685,"1 %, 1 W metal film (CCO MF1W-75R)",yes
-L2,1mH,Wurth 7447480102,L_Radial_D11.5mm_P5.00mm,C1331132,"Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105",yes
+L2,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
 R6,3.40k,Vishay MRS25000C3401FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1366835,"Vishay MRS25000C3401FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C3401FCT00 = C1382495",yes
 C4,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R7,24.9R,24.9R,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3542579,1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9),yes
@@ -22,13 +22,13 @@ R12,1.00k 3W,UNI-ROYAL MFR03SF1001A10,R_Axial_DIN0614_L14.3mm_D5.7mm_P20.32mm_Ho
 R13,14.0k,14.0k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C127223,1 % metal film 0.25 W (CCO MF1/4W-14K),yes
 RV2,500R,Bourns 3296W-1-501LF,Potentiometer_Bourns_3296W_Vertical,C69564,"Bourns 3296W-1-501LF, 25 turns",yes
 C5,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only",NO - solder by hand
-R14,412R,Vishay MRS25000C4120FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1235858,"Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C4120FRP00 = C1758271, Yageo MF0207FTE52-412R = C3401155",yes
+R14,412R,Vishay MRS25000C4120FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1235858,"Vishay MRS25000C4120FCT00, 1 %, 0.6 W, 50 ppm; soldered by hand (Digi-Key, Mouser, Buerklin); any 412 R 1 % 0.6 W in a 0207 body: Vishay MBB0207, Yageo MF0207FTE52",NO - solder by hand
 C6,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
 C10,220p,WIMA FKP2J002201D00HSSD,C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C5742108,"WIMA FKP2J002201D00HSSD 630 V 2.5 % or FKP2J002201D00ESSD 1 % (Buerklin 42D8516); soldered by hand, LCSC number for reference only; one of two in parallel = 440 pF",NO - solder by hand
-L3,1mH,Wurth 7447480102,L_Radial_D11.5mm_P5.00mm,C1331132,"Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105",yes
+L3,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
 C7,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R15,75.0R 1W,75.0R 1W,R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal,C160685,"1 %, 1 W metal film (CCO MF1W-75R)",yes
-L4,1mH,Wurth 7447480102,L_Radial_D11.5mm_P5.00mm,C1331132,"Wurth WE-TI 7447480102, unshielded drum core, +-5 %, 1.15 R, 0.8 A; alternative on the same footprint: shielded WE-TIS 7447471102 = C1331105",yes
+L4,1mH,Wurth 7687480102,L_Radial_D11.5mm_P5.00mm,C5523460,"Wurth WE-TI HV 7687480102, unshielded drum core, +-5 %, 1.0 R, 0.8 A, 400 V; soldered by hand (Digi-Key); the 120 V 7447480102 (C1331132) and, for comparison, the shielded WE-TIS 7447471102 fit the same footprint",NO - solder by hand
 R16,3.40k,Vishay MRS25000C3401FCT00,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1366835,"Vishay MRS25000C3401FCT00, 1 %, 0.6 W, 50 ppm; same 0207 body: MBB02070C3401FCT00 = C1382495",yes
 C8,4.7n,WIMA FKP2F014701I00JA00,C_Rect_L7.2mm_W7.2mm_P5.00mm_FKS2_FKP2_MKS2_MKP2,C20412818,"WIMA FKP2F014701I00JA00 250 V 5 %; soldered by hand (Digi-Key), LCSC number for reference only",NO - solder by hand
 R17,24.9R,24.9R,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C3542579,1 % metal film 0.25 W (Yageo MFR-25FBF52-24R9),yes
@@ -36,7 +36,7 @@ R18,10.0k 0.1%,TE YR1B10KCC,R_Axial_DIN0207_L6.3mm_D2.5mm_P15.24mm_Horizontal,C1
 R19,10.0k 0.1%,TE YR1B10KCC,R_Axial_DIN0207_L6.3mm_D2.5mm_P15.24mm_Horizontal,C1364313,"0.1 %, 15 ppm, 0.25 W (TE YR1B10KCC), same family as the 1.00 k",yes
 R20,1.00k 0.1%,TE YR1B1K0CC,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,C1364308,"0.1 %, 15 ppm, 0.25 W (TE YR1B1K0CC)",yes
 J4,IN XLR,Neutrik NC3FAAH2,Jack_XLR_Neutrik_NC3FAAH2_Horizontal,C368522,"Neutrik NC3FAAH2, pin 2 = +, pin 3 = -, pin 1 and G = ground",yes
-J1,IN +,Cliff FCR7350R,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087,"Cliff FCR7350R red, amplifier +; with J2 at 19.05 mm for a dual banana plug; pre-order at LCSC, cheaper from Digi-Key",yes
-J2,IN -,Cliff FCR7350B,Banana_Cliff_FCR7350B_S16N-PC_Horizontal,C6555263,"Cliff FCR7350B black, amplifier -",yes
-J3,GND,Cliff FCR7350G,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085,"Cliff FCR7350G green, common / chassis",yes
+J1,IN +,Cliff FCR7350R,Banana_Cliff_FCR7350R_S16N-PC_Horizontal,C6041087,"Cliff FCR7350R red, amplifier +; with J2 at 19.05 mm for a dual banana plug; soldered by hand (Digi-Key)",NO - solder by hand
+J2,IN -,Cliff FCR7350B,Banana_Cliff_FCR7350B_S16N-PC_Horizontal,C6555263,"Cliff FCR7350B black, amplifier -; soldered by hand (Digi-Key)",NO - solder by hand
+J3,GND,Cliff FCR7350G,Banana_Cliff_FCR7350G_S16N-PC_Horizontal,C6041085,"Cliff FCR7350G green, common / chassis; soldered by hand (Digi-Key)",NO - solder by hand
 J5,OUT XLR,Neutrik NC3MAAH,Jack_XLR_Neutrik_NC3MAAH_Horizontal,C368463,"Neutrik NC3MAAH, pin 2 = +, pin 3 = -, pin 1 and G = ground",yes

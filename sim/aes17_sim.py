@@ -131,9 +131,9 @@ def monte_carlo(tolL, tolC, tolR, n=400, seed=1):
 
 
 # This build: the AUX-0025 values with two 220 pF for the 390 pF and the unshielded Wurth WE-TI
-# 7447480102 coils (1.15 ohm), AP's input network with a 500 ohm trimmer: 1k || 14k || (1k + RV),
+# 7687480102 coils (1.0 ohm), AP's input network with a 500 ohm trimmer: 1k || 14k || (1k + RV),
 # and the 20:1 pad (2 x 10.0 k over 1.00 k), on the output in PAD only.
-BUILD = dict(AUX0025, C34=440e-12, Ldcr=1.15)
+BUILD = dict(AUX0025, C34=440e-12, Ldcr=1.0)
 PAD = (20e3, 1e3)
 DIRECT = dict()                         # the analyzer on F, the pad switched off
 PADDED = dict(pad=PAD, tap=True)        # the analyzer on the pad's tap

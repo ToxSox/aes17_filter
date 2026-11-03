@@ -172,8 +172,8 @@ def add_fp_line(fp, x1, y1, x2, y2, layer=pcbnew.F_SilkS, width=0.12):
 
 
 def fp_radial_coil(board):
-    """Radial drum-core inductor, 5 mm pitch, body up to 11 mm (Würth WE-TI 7447480102: 10.5 mm, as
-    fitted; the shielded WE-TIS 7447471102: 11 x 11.5 mm, 0.65 mm leads). Courtyard 11.5 mm."""
+    """Radial drum-core inductor, 5 mm pitch, body up to 11 mm (Würth WE-TI HV 7687480102 and
+    WE-TI 7447480102: 10.5 mm; the shielded WE-TIS 7447471102: 11 x 11.5 mm). Courtyard 11.5 mm."""
     fp = new_footprint(board, 'L_Radial_D11.5mm_P5.00mm', 'Radial inductor, 5 mm pitch, body up to 11 mm')
     add_tht_pad(fp, 1, 0, 0, 1.3, 2.6, pcbnew.PAD_SHAPE_RECT)
     add_tht_pad(fp, 2, 5.0, 0, 1.3, 2.6)
