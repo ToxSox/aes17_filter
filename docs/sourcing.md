@@ -27,7 +27,9 @@ stock on hand, stated lead time if out of stock, and the URL.** A part that only
 reel or a 1 000-piece minimum is "not available" for this purpose. Where a specification is
 marked *hard*, a part that misses it is not a substitute, however cheap.
 
-Quantities are for **two boards plus the spares the document asks for**. Shops to check, in
+Quantities are for **two boards plus the spares the document asks for**; this was the search
+worksheet. The build now assembles all five boards, and the quantities to buy are in
+hardware/README.md, "Shopping list, bought locally (five boards)". Shops to check, in
 this order: mouser.de, reichelt.de, digikey.de (to confirm the figures here have not moved),
 buerklin.com, rs-online.de or conrad.de, tme.eu, and for inductors also Farnell/element14 and
 soselectronic.com. For the enclosure, also hammfg.com for the drawing.
