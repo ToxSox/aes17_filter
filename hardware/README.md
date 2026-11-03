@@ -72,11 +72,11 @@ The board was gone over once more with the usual rules for audio layout. What th
   apart.
 - **More distance between the stages.** The second coil of each leg is 38 mm from the first
   instead of 32 mm. Coupling between two drum cores falls with the cube of the distance, so
-  L1 → L2, the one path that bypasses the filter, is about 4.5 dB weaker on top of the shielding.
+  L1 → L2, the one path that bypasses the filter, is about 4.5 dB weaker.
 - **One chassis bond, where the cables come in.** H5 is a plated hole on ground in the
   connector strip, next to the input XLR: with a metal spacer it ties the ground plane to the
   bottom plate and so to the chassis, and cable shield currents go to the chassis there instead
-  of crossing the filter. The other four holes are plain.
+  of crossing the filter. The other six holes are plain.
 
 What stayed as it was, because it was right: the two legs mirror images, so each sees the same
 parasitics; the shunt capacitors' grounds meeting in the middle of the board, so the
@@ -173,14 +173,25 @@ pin and four pegs to solder. Assembling two boards instead of five brings the pa
 
 ## Building the two boards
 
-1. Check the assembled board against `fab/aes17-filter-parts.csv`; measure the four coils if
-   an LCR meter is at hand (not required, the trimmer takes care of their spread).
+1. Check the assembled board against `fab/aes17-filter-parts.csv`.
    Then solder what JLCPCB leaves out, per board: the 412 Ω 0.6 W in R4 and R14; the coils,
    L1/L2 (+ leg) and L3/L4 (− leg), all four with the same winding sense (see below); 220 pF in C1, C2, C9 (+) and C5, C6, C10 (−),
-   4.7 nF in C3, C4 (+) and C7, C8 (−); and the Cliff sockets, red J1, black J2, green J3. With
-   an LCR meter, measure coils and capacitors first and give the two legs the closest pairs
-   (L1/L3, L2/L4, C1/C5, C2+C9 / C6+C10, C3/C7, C4/C8); the polypropylene parts have no
-   polarity.
+   4.7 nF in C3, C4 (+) and C7, C8 (−); and the Cliff sockets, red J1, black J2, green J3. Before
+   soldering, **measure coils and capacitors and give the two legs the closest pairs** (L1/L3,
+   L2/L4, C1/C5, C2+C9 / C6+C10, C3/C7, C4/C8); the polypropylene parts have no polarity. For
+   the frequency response the trimmer takes care of the spread, but not for the legs' phase:
+   pairing **both** coils and capacitors to 1 % moves the common mode in the difference from
+   −31 to −45 dB at 20 kHz and from −14 to −29 dB at 100 kHz (simulation, 95 % of boards);
+   pairing only one of the two gains 2-4 dB, because the other still sets the phase.
+
+   **Pairing without an LCR meter**, with the QA403: its output through a series resistor
+   into the part, the part's other end to ground; the left input across the part, the right
+   input on the output. Sweep once to find where the left reads 3 dB below the right, then
+   read every part of that value at that frequency: 1 % in value is about 0.04 dB there. The
+   resistor sets the frequency: 6.8 kΩ for the 4.7 nF (about 5 kHz), 47 kΩ for the 220 pF
+   (about 10 kHz with the lead's capacitance), 100 Ω for the 1 mH coils (about 16 kHz). Keep
+   the leads and the part's position the same for every part of one value; only the
+   differences count.
 
    **Winding sense of the coils.** For the filter either way round works, but an unshielded
    drum core picks up stray magnetic fields (a mains transformer, a load bank), and the

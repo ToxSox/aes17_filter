@@ -157,6 +157,17 @@ def trim(p, lo=440.0, hi=700.0, **kw):
     return (lo + hi) / 2
 
 
+def wideband():
+    """What the filter does above 20 kHz, where a wideband THD+N reading still looks: the
+    harmonics of a 20 kHz tone and the top of an 80-90 kHz measurement bandwidth."""
+    print("== above the band: the trimmed build in DIRECT, relative to 1 kHz ==")
+    p = dict(BUILD, R1=trim(BUILD))
+    freqs = np.array([1e3, 20e3, 30e3, 40e3, 60e3, 80e3])
+    h = transfer(freqs, p)
+    for f, v in zip(freqs[1:], h[1:]):
+        print(f"  {f/1e3:4.0f} kHz {db(v) - db(h[0]):+6.2f} dB  {np.degrees(np.angle(v)):7.1f} deg")
+
+
 def build_tables():
     print("== this build: DIRECT (pad off) and PAD, into the QA403's 100k and a 185 pF lead ==")
     p = dict(BUILD, R1=trim(BUILD, **DIRECT))
@@ -212,8 +223,9 @@ def rating(verbose=True):
     """The highest sine voltage per leg (leg to ground) the parts take, over frequency, at the
     trimmer setting that is worst for each part. Every resistor is checked at DERATE of its rating;
     the trimmer is a Bourns 3296, 0.5 W at 70 C over the whole 500 ohm element: used as a rheostat
-    the current, sqrt(0.5 / 500) = 31.6 mA, is what the element takes; the coils' 120 V (Wurth
-    gives it without saying between what) is read as node to ground, 85 Vrms of sine anywhere.
+    the current, sqrt(0.5 / 500) = 31.6 mA, is what the element takes; the coils' 400 V (WE-TI HV;
+    Wurth gives it without saying between what) is read as node to ground, 283 Vrms of sine
+    anywhere, and never sets the limit.
     A BTL amplifier puts half its differential voltage on each leg."""
     i_max = math.sqrt(0.5 / 500)
     worst = {}
@@ -221,7 +233,7 @@ def rating(verbose=True):
         p = dict(BUILD, R1=network(rv))
         for f in RATING_FREQS:
             pw, i_rv = part_powers(f, p, rv)
-            lim = {'coil 120 Vpk': 120 / math.sqrt(2), 'trimmer 31.6 mA': i_max / i_rv}
+            lim = {'coil 400 Vpk': 400 / math.sqrt(2), 'trimmer 31.6 mA': i_max / i_rv}
             for name, (_r, watts) in RATINGS.items():
                 lim[name] = math.sqrt(DERATE * watts / pw[name])
             name = min(lim, key=lim.get)
@@ -234,6 +246,8 @@ def rating(verbose=True):
         print("  rating: 75 Vrms per leg to 15 kHz (the pad), falling to 55 Vrms at 20 kHz (the trimmer),"
               " 30 Vrms from 30 kHz to 1 MHz (trimmer, R7 3.40k, R3 412R); a BTL amplifier may put twice"
               " that across its terminals")
+        print("  several frequencies at once (audio and a class-D carrier, a two-tone test): the powers add,"
+              " so the sum of (V / Vmax(f))^2 over the tones must stay at or below 1")
     return worst
 
 
@@ -244,10 +258,16 @@ def cmrr(n=500, seed=2):
     sees as signal, and the trimmed legs' worst passband deviation."""
     print(f"== common mode to difference, 95th percentile of {n} boards, each leg trimmed alone ==")
     freqs = np.array([50., 1e3, 10e3, 20e3, 100e3])
-    cases = (('coils +-5 %, pad 0.1 % (as built)',     0.05, 0.001, False),
-             ('coils +-5 %, pad 1 % upper arms (rev A)', 0.05, 0.010, False),
-             ('coils +-20 %, pad 0.1 %',              0.20, 0.001, False),
-             ('coils +-5 % paired to 1 %, pad 0.1 %', 0.05, 0.001, True))
+    # paired: '' nothing, 'L' the coils, 'C' the film capacitors, 'LC' both; a pair is measured
+    # and matched to 1 % between the legs (one value drawn within tolerance per pair, then each
+    # leg's part within 1 % of it)
+    cases = (('coils +-5 %, pad 0.1 % (as built)',     0.05, 0.001, ''),
+             ('coils +-5 %, pad 1 % upper arms (rev A)', 0.05, 0.010, ''),
+             ('coils +-20 %, pad 0.1 %',              0.20, 0.001, ''),
+             ('coils +-5 % paired to 1 %, pad 0.1 %', 0.05, 0.001, 'L'),
+             ('capacitors paired to 1 %, coils not',  0.05, 0.001, 'C'),
+             ('coils and capacitors paired to 1 %',   0.05, 0.001, 'LC'))
+    tol_c = {'C1': 0.025, 'C34': 0.025, 'C7': 0.05, 'C9': 0.05}
     for label, tol_l, tol_pad, paired in cases:
         rng = np.random.default_rng(seed)
         res = {'DIRECT untrimmed': [], 'DIRECT': [], 'PAD': []}
@@ -255,14 +275,13 @@ def cmrr(n=500, seed=2):
         for _ in range(n):
             legs = []
             l_pair = [1 + rng.uniform(-tol_l, tol_l) for _ in range(2)]
+            c_pair = {k: 1 + rng.uniform(-t, t) for k, t in tol_c.items()}
             for leg in range(2):
                 q = dict(BUILD, R1=network(140.))
                 for i, k in enumerate(('L1', 'L3')):
-                    q[k] *= l_pair[i] * (1 + rng.uniform(-0.01, 0.01)) if paired else 1 + rng.uniform(-tol_l, tol_l)
-                q['C1'] *= 1 + rng.uniform(-0.025, 0.025)
-                q['C34'] *= 1 + rng.uniform(-0.025, 0.025)
-                for k in ('C7', 'C9'):
-                    q[k] *= 1 + rng.uniform(-0.05, 0.05)
+                    q[k] *= l_pair[i] * (1 + rng.uniform(-0.01, 0.01)) if 'L' in paired else 1 + rng.uniform(-tol_l, tol_l)
+                for k, t in tol_c.items():
+                    q[k] *= c_pair[k] * (1 + rng.uniform(-0.01, 0.01)) if 'C' in paired else 1 + rng.uniform(-t, t)
                 for k in ('R3', 'R5', 'R7', 'R9'):
                     q[k] *= 1 + rng.uniform(-0.01, 0.01)
                 pad = (PAD[0] * (1 + rng.uniform(-tol_pad, tol_pad)), PAD[1] * (1 + rng.uniform(-0.001, 0.001)))
@@ -327,6 +346,7 @@ if __name__ == '__main__':
     monte_carlo(0.10, 0.025, 0.01)
     monte_carlo(0.02, 0.01, 0.01)
     build_tables()
+    wideband()
     dissipation()
     rating()
     cmrr()
