@@ -108,7 +108,7 @@ for the QA403, both of which an AUX-0025 takes as well.
 ## Ordering and building
 
 [hardware/README.md](hardware/README.md): upload the three files in `hardware/fab/` to JLCPCB,
-five boards, two assembled, Economic. The JLCPCB files hold only parts JLCPCB had in stock, so
+five boards, all five assembled, Economic. The JLCPCB files hold only parts JLCPCB had in stock, so
 the assembly waits for nothing. Everything it had only on pre-order is left out and bought in
 Germany (Bürklin, Digi-Key): the ten WIMA capacitors, the four coils, the two 412 Ω and the three
 Cliff sockets. They are soldered by hand after assembly, about 55 joints per board; the

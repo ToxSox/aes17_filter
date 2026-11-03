@@ -423,8 +423,8 @@ board goes through assembly except what JLCPCB has only on pre-order (the capaci
 19-21 working days): the ten film capacitors, the four coils, the two 412 Ω and the three Cliff
 sockets are bought locally, the capacitors and coils measured and paired between the legs, and
 soldered by hand. The hand work is: solder those, drill the front wall, wire the toggle (ten wires),
-turn two trimmers, measure the pad ratio. Of the five boards, two are assembled; JLCPCB lets
-the assembly count differ from the board count.
+turn two trimmers, measure the pad ratio. All five boards are assembled (two for this bench,
+two for a colleague's, one spare); JLCPCB's minimum is two.
 
 **Connectors:** the AUX-0025's, so the same cables test either filter. Input: a female XLR
 (Neutrik NC3FAAH2, horizontal PCB mount; pin 2 is +, pin 3 is −, pin 1 and the shell contact
@@ -474,8 +474,8 @@ shoulders lie against it.
 The authoritative list is generated: [hardware/fab/aes17-filter-bom.csv](../hardware/fab/aes17-filter-bom.csv)
 in JLCPCB's columns and `aes17-filter-parts.csv` with notes. Prices are LCSC on 1 November 2026,
 single quantity, in US dollars where that is what the shop shows; "pre-order" means JLCPCB
-sources the part after payment and it can only be used for their assembly. Two assembled boards
-with boxes come to about **250 € plus JLCPCB's assembly fees**, against 1 815 US dollars list for
+sources the part after payment and it can only be used for their assembly. A board with its box
+comes to about **125 € plus JLCPCB's assembly fees**, against 1 815 US dollars list for
 an AUX-0025 (Axiometrix shop, October 2026).
 
 | Qty | Part | For | LCSC | Note | ≈ |
@@ -499,7 +499,7 @@ an AUX-0025 (Axiometrix shop, October 2026).
 | 4 | screws for the two XLR flanges | the front wall | - | M3 as drawn on the front wall (3.2 mm holes); check against Neutrik's drawing of the NC3FAAH2 / NC3MAAH whether the flange takes M3 through or a 2.9 mm self-tapping screw, and drill to suit | 0.5 € |
 | 1 | Hammond 1444-862 chassis + 1434-86 bottom plate | box | - | flat 1 mm aluminium walls; all connectors in the front long wall | 31 € |
 | 7 | M3 spacers 10 mm + screws | board on the bottom plate; the one under H5 metal, bonding ground to the chassis | - | | 1 € |
-| | four-layer PCB 158 × 124 mm, five pieces, two assembled | | | JLCPCB | see README |
+| | four-layer PCB 158 × 124 mm, five pieces, all assembled | | | JLCPCB | see README |
 
 JLCPCB's assembly terms, from their help pages in October 2026: minimum two boards; Economic
 assembly setup $8.18 and $3.07 per unique extended part for feeder loading; through-hole parts

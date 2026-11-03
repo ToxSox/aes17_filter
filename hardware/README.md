@@ -107,7 +107,8 @@ are three constants at the top of `design.py`.
 1. **PCB.** Upload `fab/aes17-filter-gerbers.zip`. Four layers, 1.6 mm, any colour, 1 oz copper,
    HASL or ENIG as you like, five pieces (the minimum). The stack-up JLCPCB offers for four
    layers (JLC04161H-7628 or similar) is fine; nothing here depends on impedance.
-2. **Assembly.** Tick assembly, **two boards**, top side only, Economic. Upload
+2. **Assembly.** Tick assembly, **five boards** (all of them: two for this bench, two for a
+   colleague's, one spare; JLCPCB's minimum is two), top side only, Economic. Upload
    `fab/aes17-filter-bom.csv` and `fab/aes17-filter-cpl.csv`. All parts are through-hole;
    JLCPCB hand-solders those ($3.58 per order plus $0.0164 per joint, one extra day).
 3. **Parts review.** In the parts page every line with an LCSC number resolves on its own,
@@ -131,7 +132,7 @@ are three constants at the top of `design.py`.
    0.6 W, C1366835 (125 in stock).
 5. **W1 is not a part.** It is ten plated holes for the toggle's wires and is not in the BOM or
    the placement file; the 4PDT toggle is bought separately (RS, Mouser) and wired by hand.
-6. After the order: the five boards arrive, two assembled. Nothing else is needed from JLCPCB.
+6. After the order: the five boards arrive assembled. Nothing else is needed from JLCPCB.
 
 ### What JLCPCB's BOM tool quoted on 1 November 2026
 
@@ -154,24 +155,61 @@ For an assembly of five boards (quantities include JLCPCB's attrition allowance)
 About 356 € of parts for five assembled boards, 71 € per board, of which the three Cliff sockets
 are 33 € and the four BNCs 20 € (the BNCs have since left the board). The Cliff sockets are the line to take out of the assembly:
 pre-order at 11 € each plus the inspection fee, against 6.80 € at Digi-Key for a part with one
-pin and four pegs to solder. Assembling two boards instead of five brings the parts to about
-140 € plus the coils.
+pin and four pegs to solder. That quote still holds the BNCs, the Cliff sockets, the film
+capacitors and the coils, none of which is in the JLCPCB files any more; what JLCPCB fits now is
+the resistors, the trimmers and the two XLRs, so the parts bill it shows at ordering is well
+below it. The stock of all ten lines covered five boards on 3 November 2026; the tightest were
+C58750 (1 kΩ 3 W, 153 for 20) and C1366835 (3.40 kΩ, 125 for 10).
+
+## Shopping list, bought locally (five boards)
+
+JLCPCB fits the 22 parts per board it had in stock. Everything else is bought locally; the
+quantities are for all five boards and include what pairing the legs needs (see "Building the
+boards", step 1). Pair from **one pool for all five**: any matched pair can go on any board.
+**Why 24 of a ±5 % part for 20 places:** ten pairs within 1 % are wanted; the chance of finding
+them is 21 % from 20 parts, 93 % from 22 and 100 % from 24 if the values spread evenly over the
+tolerance, and 42 / 98 / 100 % for a typical reel, whose spread is narrower (simulated,
+tolerance = 3σ). Two more cover a bent lead and give the winding-sense test its sender coil.
+For a single board it would be 8 for 4 places (98 %), for two boards 12 for 8: the bigger the
+pool, the smaller the surplus per board.
+
+**On the board, soldered by hand:**
+
+| Buy | Fitted | Part | Pairing | Where |
+|---|---|---|---|---|
+| 26 | 20 | **Würth 7687480102**, 1 mH ±5 %, unshielded drum core (L1-L4) | ten pairs, L1/L3 and L2/L4 per board, from 24 | Digi-Key |
+| 26 | 20 | **WIMA FKP2F014701I00JA00**, 4.7 nF 250 V ±5 % (C3, C4, C7, C8) | ten pairs, C3/C7 and C4/C8 per board, from 24 | Digi-Key |
+| 33 | 30 | **WIMA FKP2J002201D00ESSD**, 220 pF 630 V **±1 %** (C1, C2, C5, C6, C9, C10) | two ±1 % parts differ by 2 % at most, which is what the simulation counts as paired; measure and sort anyway: the closest two as C1/C5, then C2 + C9 against C6 + C10 | Bürklin 42D8516 |
+| (40) | (30) | or the ±2.5 % FKP2J002201D00HSSD, if the ±1 % is not to be had | then pairing matters: 40 to choose from | Digi-Key, Bürklin |
+| 12 | 10 | **412 Ω 1 % 0.6 W**, Vishay MRS25000C4120FCT00 or any 0207 body (R4, R14) | none needed | Digi-Key, Mouser, Bürklin |
+| 5 each | 5 each | **Cliff FCR7350R, FCR7350B, FCR7350G**, red, black, green (J1-J3) | - | Digi-Key, Farnell |
+
+**For pairing and the verification tests, not on the board** (one set does all five boards, if
+one person pairs, trims and tests them; that is also how all five come out alike):
+
+| Buy | Part | For |
+|---|---|---|
+| 1 each | 100 Ω, 6.8 kΩ, 47 kΩ, 1 %, 0.25 W | the series resistor when pairing with the QA403: coils, 4.7 nF, 220 pF |
+| 2 + 1 | 10 kΩ and 1 kΩ, 1 %, **3 W or more**, metal film (the UNI-ROYAL MFR03S on the board, or a Vishay PR03) | test 4's reference divider, 2 × 10 k over 1 k as the pad: at 75 Vrms it runs at about 4 % of its rating, so it adds no self-heating distortion of its own |
+| 1 | 1 Ω, 1 % | test 5's current shunt in the green lead |
+| 4, optional | Würth WE-TIS 7447471102, shielded | test 4's comparison, one board's worth (availability outside JLCPCB not checked) |
+
+Plus the box, the toggle and the leads in the next table.
 
 ## What is not on the board
 
-| Qty for two boards | Part | Where |
+| Qty for five boards | Part | Where |
 |---|---|---|
-| 8 | screws for the XLR flanges: M3 × 8 and nuts if the flange holes are through-holes, else 2.9 mm self-tapping (Neutrik's drawing of the NC3FAAH2 / NC3MAAH decides; not checked) | any |
-| 1 | a cable from the amplifier's terminals to a male XLR plug (pin 2 +, pin 3 −), or dual banana leads - the same cable then feeds an AUX-0025 | self-made |
-| 2 | an XLR-female-to-two-BNC-male lead to the QA403: pin 2 to L+ centre, pin 3 to L− centre, pin 1 to both BNC shells; about 30 cm, both legs equal | self-made (Neutrik NC3FXX, two BNC plugs, two pieces of RG58 or RG174) |
-| 2 | **4PDT** toggle, ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; best with a locking lever | APEM 5666CDB or another 4PDT with gold contacts; the switch carries microamperes at 100 kΩ, a dry circuit, so standard silver contacts (a plain Knitter MTA 206, for one) are not suitable. Gold contacts are rated to switch only 0.4 VA at 20 V: they carry the full voltage closed, but are switched with the amplifier off |
-| 2 | insulating sheet, 0.25 mm polyester or fish paper, cut to the bottom plate around the spacers | any |
-| 2 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
-| 14 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate (seven per board); the one under H5 metal, with a star washer on the bottom plate | any |
-| 6 | Cliff FCR7350 R, B, G if bought outside JLCPCB | Digi-Key, Farnell |
-| | wire for the toggle: ten pieces of about 25 mm, 0.25 mm² stranded, into W1's holes | |
+| 20 | screws for the XLR flanges: M3 × 8 and nuts if the flange holes are through-holes, else 2.9 mm self-tapping (Neutrik's drawing of the NC3FAAH2 / NC3MAAH decides; not checked) | any |
+| 2 | a cable from the amplifier's terminals to a male XLR plug (pin 2 +, pin 3 −), or dual banana leads - the same cable then feeds an AUX-0025; one per bench | self-made |
+| 2 | an XLR-female-to-two-BNC-male lead to the QA403: pin 2 to L+ centre, pin 3 to L− centre, pin 1 to both BNC shells; about 30 cm, both legs equal; one per bench | self-made (Neutrik NC3FXX, two BNC plugs, two pieces of RG58 or RG174) |
+| 5 | **4PDT** toggle, ON-ON, non-shorting, **gold contacts**, panel mount, 1/4 in bushing, solder lugs; best with a locking lever | APEM 5666CDB or another 4PDT with gold contacts; the switch carries microamperes at 100 kΩ, a dry circuit, so standard silver contacts (a plain Knitter MTA 206, for one) are not suitable. Gold contacts are rated to switch only 0.4 VA at 20 V: they carry the full voltage closed, but are switched with the amplifier off |
+| 5 | insulating sheet, 0.25 mm polyester or fish paper, cut to the bottom plate around the spacers | any |
+| 5 | Hammond 1444-862 chassis and 1434-86 bottom plate | Digi-Key, Mouser, Reichelt; about 20 € and 11 € |
+| 35 | M3 spacers, 10 mm, and M3 screws, for the board on the bottom plate (seven per board); the one under H5 metal, with a star washer on the bottom plate | any |
+| | wire for the toggle: ten pieces per board of about 25 mm, 0.25 mm² stranded, into W1's holes | |
 
-## Building the two boards
+## Building the boards
 
 1. Check the assembled board against `fab/aes17-filter-parts.csv`.
    Then solder what JLCPCB leaves out, per board: the 412 Ω 0.6 W in R4 and R14; the coils,

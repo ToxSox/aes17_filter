@@ -27,7 +27,9 @@ stock on hand, stated lead time if out of stock, and the URL.** A part that only
 reel or a 1 000-piece minimum is "not available" for this purpose. Where a specification is
 marked *hard*, a part that misses it is not a substitute, however cheap.
 
-Quantities are for **two boards plus the spares the document asks for**. Shops to check, in
+Quantities are for **two boards plus the spares the document asks for**; this was the search
+worksheet. The build now assembles all five boards, and the quantities to buy are in
+hardware/README.md, "Shopping list, bought locally (five boards)". Shops to check, in
 this order: mouser.de, reichelt.de, digikey.de (to confirm the figures here have not moved),
 buerklin.com, rs-online.de or conrad.de, tme.eu, and for inductors also Farnell/element14 and
 soselectronic.com. For the enclosure, also hammfg.com for the drawing.
@@ -109,8 +111,10 @@ Also still open: every question in section 2.
 | 390 pF (bypass across L1, one per leg) | 10 | same as above | WIMA FKP2 390 pF 630 V, ±5 % or ±2.5 % (part number pattern FKP2J003901D00JSSD / …HSSD - confirm the exact code on the shop page) | Kemet PFR5391…630, Vishay KP1830 series 390 pF |
 | 4.7 nF (C7, C9, two per leg) | 20 | polypropylene, **≥ 250 V DC**, 5 mm pitch, body ≤ 7.2 × 6.5 mm | **Settled: WIMA FKP2F014701I00JA00** (250 V, ±5 %), JLCPCB/LCSC C20412818, pre-order, 0.41 €, minimum 19 - or Digi-Key, 1 852 in stock, 0.67 €. Twenty, to select four pairs | WIMA FKP2F014701I00HSSD (±2.5 %, Digi-Key 5 000 minimum - **check Reichelt and the JLCPCB shop**), Kemet PFR5472F630J13L4BULK (±1 %, 630 V, Digi-Key 0 stock - **check Mouser**) |
 
-No selection: ±5 % is fine with the trimmer. Tighter grades at the same price are welcome but
-not worth a second shop.
+Selection after all: ±5 % is fine with the trimmer for the frequency response, but pairing
+coils and capacitors between the legs gains 14 dB of common-mode rejection at 20-100 kHz (see
+"Leg matching" in the design review). hardware/README.md's shopping list has the quantities:
+12 of each ±5 % part for 8 places, plus spares; the 220 pF in ±1 % needs no surplus.
 
 ### 1.5 Small resistors, 1 %, through-hole - 4 pieces each
 
