@@ -777,6 +777,37 @@ written so that it is a change of footprints, not a redesign.
   is the other sensible point on the curve, and only relevant if a 40 kHz bandwidth measurement
   is ever wanted.
 
+### Held over for a rev B, and why not now
+
+The third review (below) proposed four changes to the board. None is made in rev A: each
+answers a risk that a test on the first built board measures, two of them cost almost nothing
+to fit later, and a layout change made now, unmeasured, carries its own risk of new mistakes.
+The tests decide; these are the candidates if they fail.
+
+- **Shielded coils, or a steel box, against hum.** The unshielded drum cores pick up stray
+  fields, and the 66 mm between the legs makes a field from a nearby transformer or load cable
+  partly differential. The fitted coil is the one with a distortion record (V2), the shielded
+  one is not measured for linearity; and the shielded WE-TIS 7447471102 fits the same
+  footprint, so swapping the four coils is the whole remedy. A steel box is mechanical only and
+  changes nothing on the board. *Decided by:* test 4, hum with the box turned and the
+  load-cable distance test.
+- **The shunt capacitors on the signal line instead of 25 mm stubs.** The stubs and the leads
+  put some 20 nH in series with C1, C3 and C4, so the 4.7 nF shunts resonate near 15-20 MHz and
+  turn inductive above. That is ten times above any class-D carrier; what lies there is the
+  edges' high harmonics, at a small fraction of the carrier, and the QA403 does not see them
+  anyway. Moving the capacitors means re-laying the core of both legs. *Decided by:* test 7,
+  the stop band per stage up to 20 MHz.
+- **Larger pad resistors.** The pad's 10 kΩ parts run at half their 0.25 W at 75 Vrms and
+  warm by some 25-35 K; the ratio moves by about 0.004 dB, and at 20 Hz the film's temperature
+  ripple could make a third harmonic, estimated well under −110 dB because the body's thermal
+  time constant smooths a 40 Hz power ripple. 0.1 % / 15 ppm in a larger body from one family
+  is hard to find, and a mixed pad gives up the tracking that 0.1 % was chosen for. *Decided
+  by:* test 4 at 20 Hz and 75 V against a reference divider that does not warm, and test 6's
+  pad ratio after 15 minutes at 70 V.
+- **The toggle's wires sorted, F away from PAD and OUT.** Not held over: 0.5 pF between the
+  poles costs 0.6 dB of stop band at 1 MHz in PAD, as much as the pad resistors' own
+  capacitance, and nothing in the audio band. Dropped.
+
 ## The second review, point by point
 
 An outside audio and hardware review of rev A (source hash 7f42e40) came in on 2 November 2026,
@@ -816,7 +847,7 @@ were re-simulated here; the board did not change, the documentation and the simu
 | `part_powers()` only in PAD; the coils' 120 V in `rating()` | **not a limit / stale** | above 20 kHz the shunt capacitors set the currents in both positions; the coil figure is now 400 V and never binds |
 | wideband THD+N through the filter | **right**, true of every pre-filter | the attenuation and phase above 20 kHz are in "What this asks of the measurement software", from `wideband()` |
 | leave the green socket open with BTL amplifiers, use a USB isolator | **no** for the first: that sends the carrier's common-mode current through the analyzer lead | "Ground, and bridged amplifiers" says why it stays connected, that the remaining loop is common mode on the lead, and that the computer on battery breaks it; the isolator is unchecked |
-| 25 mm stubs to the shunt capacitors: series resonance near 15-20 MHz | **right**, far above any carrier | test 7 measures to 20 MHz; feed-through placement is a rev B candidate if it shows |
+| 25 mm stubs to the shunt capacitors: series resonance near 15-20 MHz | **right**, far above any carrier | test 7 measures to 20 MHz; feed-through placement is a rev B candidate if it shows (see "Held over for a rev B") |
 | a power-on arc burns the toggle's gold contacts | **no** | closed contacts carry, they do not switch; switching under load was already excluded |
 | 0.5 pF between the toggle's poles bypasses the pad | **negligible** | 0.6 dB less stop band at 1 MHz in PAD, as much as the pad resistors' own capacitance |
 | amplifiers without post-filter feedback move the 20 kHz trim by hundredths of a dB | **smaller** | 5-10 µH of output inductance moves it by 0.005-0.009 dB |
