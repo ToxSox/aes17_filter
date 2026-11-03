@@ -8,7 +8,7 @@ board 158 x 124 mm, four layers, Hammond 1444-862 chassis
 SHA-256 of the order files (in fab/) and of the board:
   602c2be37cf8928c50c4e8a33958df8f4181d30bc280ecc74d315c54323858b9  aes17-filter-gerbers.zip
   d632ec883f616e34a58fb583ea5c6d2cd2907fa9184712ccb2a6566019e60732  aes17-filter-bom.csv
-  b41548e154c34a1a030f272f93c8e38079a4e05d706a8ef7e9b7427fff6132b3  aes17-filter-cpl.csv
+  1f35f181762405be37678ac0d51ba4c81e647d714fe1e4c8d10b1378694dae8d  aes17-filter-cpl.csv
   bf22990634daf15789a0ab42b1f41459be5bcbae3ccace96b7954d60e4891fce  aes17-filter-parts.csv
   f2cfb7817e8bf07bb7fd19071b177386b1c3c30123460d5b06f13c055265ac9f  aes17-filter-drc.txt
   ca3474c39b51a052f155b66d3c4db7d725877b2b27eb7888ecf65e57dbbc17ec  aes17-filter-schematic.pdf

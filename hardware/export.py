@@ -16,6 +16,7 @@ Run make_pcb.py first; this only reads the .kicad_pcb and design.py.
 """
 import csv
 import hashlib
+import math
 import os
 import re
 import shutil
@@ -67,12 +68,17 @@ def ascii_only(text):
 # JLCPCB's placement wants the centre of the part and a rotation in its own convention. KiCad's
 # footprint origin is pad 1 for axial and radial parts, so the centre is taken from the courtyard
 # (the part's outline) instead. Rotation offsets per reference, in degrees, added to KiCad's
-# rotation when JLCPCB's preview shows a part turned the wrong way. Set from JLCPCB's 3D preview of
-# 1 November 2026: its header and 3296W trimmer models are turned a quarter against KiCad's; its
-# NC3FAAH2 model a quarter the other way and its NC3MAAH model a half turn. The headers and the
-# trimmers are symmetric in their pins, so a half turn too many still fits the holes; the XLRs
-# only fit one way, which the holes enforce whatever this file says.
-ROTATION_OFFSET = {'J4': 270, 'J5': 180, 'RV1': 90, 'RV2': 90}
+# rotation so that JLCPCB's footprint (EasyEDA's, from its parts library) lands pad for pad on
+# KiCad's. Found on 3 November 2026 by matching the pads of EasyEDA's footprints for C368522,
+# C368463 and C69564 to KiCad's: its NC3FAAH2 is a quarter turn against KiCad's, its NC3MAAH and
+# 3296W a half turn. The trimmers would fit the holes either way round (pins 2 and 3 are joined,
+# so swapped ends only reverse the direction of adjustment); the XLRs only fit one way.
+ROTATION_OFFSET = {'J4': 90, 'J5': 0, 'RV1': 270, 'RV2': 270}
+
+# JLCPCB places a part by the origin of its own footprint. For the resistors and the trimmers that
+# is the middle of the part, where part_centre() finds it; for the XLRs it is not. Their origin in
+# KiCad's footprint coordinates (mm, y down, before rotation), from the same pad matching.
+JLC_ORIGIN = {'J4': (0.635, 1.59), 'J5': (3.81, 2.54)}
 
 
 def part_centre(fp):
@@ -87,6 +93,17 @@ def part_centre(fp):
     xs = [pcbnew.ToMM(p.GetPosition().x) for p in fp.Pads()]
     ys = [pcbnew.ToMM(p.GetPosition().y) for p in fp.Pads()]
     return (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+
+
+def jlc_position(fp, ref):
+    """Where JLCPCB's footprint origin for this part lies on the board, in mm."""
+    if ref not in JLC_ORIGIN:
+        return part_centre(fp)
+    x, y = JLC_ORIGIN[ref]
+    a = math.radians(fp.GetOrientationDegrees())
+    pos = fp.GetPosition()
+    return (pcbnew.ToMM(pos.x) + x * math.cos(a) + y * math.sin(a),
+            pcbnew.ToMM(pos.y) - x * math.sin(a) + y * math.cos(a))
 
 
 def bom_and_cpl():
@@ -106,7 +123,7 @@ def bom_and_cpl():
             continue
         key = (design.comment(ref, value), footprint, lcsc)
         bom_rows.setdefault(key, []).append(ref)
-        cx, cy = part_centre(fp)
+        cx, cy = jlc_position(fp, ref)
         rot = (fp.GetOrientationDegrees() + ROTATION_OFFSET.get(ref, 0)) % 360
         cpl_rows.append((ref, f"{cx:.3f}", f"{-cy:.3f}", 'Top', f"{rot:.0f}"))
     with open(os.path.join(FAB, 'aes17-filter-bom.csv'), 'w', newline='') as f:
