@@ -9,7 +9,8 @@ anything that has a 100 kΩ input.
 
 **Status: designed, simulated, generated, not yet built - a prototype, not yet a reference.**
 The Gerbers and the JLCPCB files are in `hardware/fab/`, checked against each other by
-`hardware/check_release.py`; the first order has not been placed. Everything below the
+`hardware/check_release.py`; the first five boards were ordered in November 2026 and have not
+been built or measured yet. Everything below the
 simulation line is therefore a claim, not a measurement. The design review's
 [verification plan](docs/design-review.md#verification-what-makes-it-a-reference) lists what has
 to pass before it counts as a reference: the ferrite coils' linearity first, then the ground with
